@@ -1,0 +1,250 @@
+<script src="/assets/moment/min/moment-with-locales.min.js"></script>
+<script src="/assets/bootstrap-year-calendar/js/bootstrap-year-calendar.min.js"></script>
+<script src="/assets/bootstrap-year-calendar/js/languages/bootstrap-year-calendar.de.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		var holidays = [];
+		var enumerateDaysBetweenDates = function(data) {
+			_.each(data, function(value) {
+				var currDate = moment(value.start).startOf('day');
+				var lastDate = moment(value.end).startOf('day');
+				if (value.publicHoliday == true) {
+					color = '#f1d4cd';
+					holidays.push({date: currDate.clone(), color: color});
+				} else {
+					color = '#cfe7cb';
+					do {
+						//console.log(color);
+						holidays.unshift({date: currDate.clone(), color: color});
+					} while (currDate.add(1, 'days').diff(lastDate) < 0);
+				}
+			});
+		};
+
+		reloadAbsenceRemaining(holiday_statistic, current_view_year);
+		enumerateDaysBetweenDates(public_holidays_json);
+		console.log(holiday_statistic);
+
+		var content = '';
+		var popupcontent = '';
+		var calendar = $('#calendar').calendar({
+			displayWeekNumber: true,
+			style: 'custom',
+			language: 'de',
+			enableRangeSelection: true,
+			disabledDays: preparedVacationlocks(vacationlocks_json),
+			selectRange: function(e) {
+				if(e.events.length==0)
+					window.location.href = "/absence/employee/"+employee_id+"/new?begin="+moment(e.startDate).format('YYYY-MM-DD')+"&end="+moment(e.endDate).format('YYYY-MM-DD');
+				else
+					window.location.href = "/absence/"+e.events[0].id+"/edit";
+				//console.log(e.events[0].id);
+				//window.location.href = "/absence/employee/"+employee_id+"/new?begin="+moment(e.startDate).format('YYYY-MM-DD')+"&end="+moment(e.endDate).format('YYYY-MM-DD');
+			 },
+		    /*clickDay: function(e) {
+				$('#modal').modal();
+			},*/
+			mouseOnDay: function(e) {
+				content = '';
+				if (e.events.length > 0) {
+					// console.log(e.events);
+
+					var eventsArray = [];
+					e.events.forEach(function(element) {
+						if (!eventsArray[element.reason]) {
+							eventsArray[element.reason] = [];
+							eventsArray[element.reason]['color'] = element.color;
+						}
+						eventsArray[element.reason].push({id: element.id, name: element.name, status: element.status, day: element.day, dayDetail: element.dayDetail});
+
+						//.push({   'name' : element.name, });
+					});
+					content += '<div class="event-tooltip-content">';
+					for (var reason in eventsArray) {
+						content += '<div class="event-name" style="padding-left:5px; border-left: 4px solid ' + eventsArray[reason].color + '"><strong>' + reason + '</strong></div><div>';
+						eventsArray[reason].forEach(function(element) {
+							var statuscolor = '';
+
+							if (element.status == 'genehmigt') {
+								statuscolor = 'style="color:#0f0"';
+							} else if (element.status == 'abgelehnt') {
+								statuscolor = 'style="color:#f00"';
+							}
+							var hovered_days = _.sum(_.map(element.dayDetail, function(el){
+								return parseFloat(el.dayDetail);
+							}));
+							content += '<p style="padding-left:9px;">' + element.name + ' (' + hovered_days + ') - <span ' + statuscolor + '>' + element.status + '</span></p>';
+							_.each(element.dayDetail, function(e) {
+							//	content += '<p style="padding-left:9px;">' + moment(e.date.date).format('DD.MM.YYYY') + ' ' + e.dayDetail + ' Tag</p>';
+							});
+
+							// + '<div class="event-location"><strong>{% trans %}Berechnete Tage{% endtrans %}</strong>: ' + e.events[i].day + '</div>' + '<div class="event-location"><strong>{% trans %}Bearbeitet von{% endtrans %}</strong>: ' + e.events[i].approvedBy + '</div>'
+							// + '<div class="event-location"><strong>{% trans %}Bemerkung{% endtrans %}</strong>: ' + e.events[i].note + '</div>' + '<div class="event-location"><strong>{% trans %}Status{% endtrans %}</strong>: ' + e.events[i].status + '</div>'
+
+						});
+					}
+					content += '</div>';
+
+					$(e.element).popover({trigger: 'manual', container: 'body', html: true, content: content});
+
+					$(e.element).popover('show');
+
+					// console.log(e.events.length > 0);
+				} else {
+					content = '';
+				}
+				$('#modal-content').html(content);
+			},
+			mouseOutDay: function(e) {
+				if (e.events.length > 0) {
+					$(e.element).popover('hide');
+				}
+			},
+			dayContextMenu: function(e) {
+				$(e.element).popover('hide');
+			},
+			customDayRenderer: function(element, date) {
+				_.each(holidays, function(holiday) {
+					// console.log(date); console.log(holiday);
+					if (holiday.date.isSame(date, 'date')) {
+						$(element).css('background-color', holiday.color);
+						$(element).css('border-radius', '0px');
+					}
+				});
+				if (date.getDay() === 6 || date.getDay() === 0) {
+					$(element).css('background-color', '#e4edec');
+					$(element).css('border-radius', '0px');
+				}
+			},
+			customDataSourceRenderer: function(element, date, event) {
+				// This will override the background-color to the event's color rgb(46, 204, 113) 0px -4px 0px 0px inset
+
+				if (event[0].status == 'genehmigt' && event[0].reason == 'Urlaub') {
+					// $(element).css('color', '#2ECC71');
+					event[0].color = '#2ECC71';
+				} else if (event[0].status == 'in Bearbeitung' && event[0].reason == 'Urlaub') {
+					// $(element).css('color', '#f1c40f');
+					event[0].color = '#f1c40f';
+				}
+
+				$(element).css('box-shadow', event[0].color + ' 0px -4px 0px 0px inset');
+				$(element).css('border-radius', '0px');
+
+				if(!_.isEmpty(event[0].halfDays)){
+
+					$.each(event[0].halfDays,function(key,eventV){
+						if(eventV.date.date.substring(0,10)  == moment(date).format('YYYY-MM-DD') )
+						{
+							 if (eventV.dayDetail == 	"0.5")$(element).addClass('bc-halfdays');
+							 if (eventV.dayDetail == 	"0.0"){$(element).addClass('bc-0days');}
+						}
+					});
+				}
+				$(element).css({
+						'position':	'relative',
+				})
+				if($(element).hasClass('bc-halfdays')){
+					$(element).append('<div class="bc-halfdays-bg"></div>');
+					$(element).find('.bc-halfdays-bg').css({
+						'position':	'absolute',
+						'left' : '0',
+						'right' :	'0',
+						'width'	:	'100%',
+						'bottom':	'0',
+						'height':	'4px',
+						'background' : 'linear-gradient(to right, '+ event[0].color +' 50%, #BDC3C7 50%)',
+					});
+				}
+
+				if($(element).hasClass('bc-0days')){
+					$(element).append('<div class="bc-0days"></div>');
+					$(element).find('.bc-0days').css({
+						'position':	'absolute',
+						'left' : '0',
+						'right' :	'0',
+						'width'	:	'100%',
+						'bottom':	'0',
+						'height':	'4px',
+						'background' : 'linear-gradient(to right, '+ event[0].color +' 0%, #BDC3C7 0%)',
+					});
+				}
+
+			},
+			yearChanged: function(e) {
+				e.preventRendering = true;
+				if (initial_loading != false) {
+				$.get(route_absence_json, function(data) {
+					for (key in data) {
+						data[key].startDate = new Date(data[key].startDate.date);
+						data[key].endDate = new Date(data[key].endDate.date);
+					}
+					$('#calendar').data('calendar').setDataSource(data);
+				});
+			}
+				// $('#calendar').data('calendar').setDataSource(preparedDataSource(absences_json));
+
+				if (initial_loading == false) {
+					current_view_year = e.currentYear;
+					// $(e.target).append('<div style="text-align:center"><img src="your-loading-image.gif" /></div>');
+					$('#yearly').text('Urlaubstage - ' + e.currentYear);
+					$.ajax({
+						url: route_absence_json,
+						success: function(data) {
+							data.forEach(function(element) {
+								element.startDate = moment(element.startDate.date, 'YYYY-MM-DD HH:mm').toDate();
+								element.endDate = moment(element.endDate.date, 'YYYY-MM-DD HH:mm').toDate();
+								if (element.status == 'genehmigt' && element.reason == 'Urlaub') {
+									element.color = '#2ECC71';
+								} else if (element.status == 'in Bearbeitung' && element.reason == 'Urlaub') {
+									element.color = '#f1c40f';
+								}
+								// console.log(statuscolor);
+							});
+							$(e.target).data('calendar').setDataSource(data);
+
+							$.ajax({
+								url: "{{ path('calendar_json_absenceremaining')}}",
+								type: "POST",
+								data: {
+									id: {{employee.id}},
+									date: $('#calendar').data('calendar').getYear()
+								},
+								success: function(data) {
+									reloadAbsenceRemaining(data, current_view_year);
+								}
+							});
+
+							$.ajax({
+								url: route_statistics,
+								type: "POST",
+								data: {
+									id: employee_id,
+									year: current_view_year
+								},
+								success: function(data) {
+									if (typeof $('#pieReasons').data('chart') !== 'undefined') {
+										$('#pieReasons').data('chart').destroy();
+									}
+									generateStatisticChart(data, current_view_year);
+									$('#statistic').text('Statistik - ' + current_view_year);
+								}
+							});
+
+						}
+					});
+
+				}
+
+				initial_loading = false;
+			}
+
+		});
+	});
+</script>
+<style>
+.calendar table.month tr td.range .day-content {
+background: #33333361 !important;
+border-radious:  0 ;
+}
+</style>

@@ -1,0 +1,87 @@
+VehicleLogBundle\Entity\VehicleLog:
+    type: entity
+    table: null
+    repositoryClass: VehicleLogBundle\Repository\VehicleLogRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    gedmo:
+        soft_deleteable:
+            field_name: deleted_at
+            time_aware: false
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        deleted_at:
+            type: datetime
+            nullable: true
+        vehicleLogBeginTime:
+            type: datetime
+        vehicleLogEndTime:
+            type: datetime
+            nullable: true
+        vehicleClean:
+            type: boolean
+            default: false
+        comment:
+            type: string
+            length: 255
+            nullable: true
+        vehiclecleandate:
+            type: datetime
+            nullable: true
+        vehiclerepairdate:
+            type: datetime
+            nullable: true
+        commentrepair:
+            type: string
+            length: 255
+            nullable: true
+        vehiclerepair:
+            type: boolean
+            default: false
+        expensereason:
+            type: integer
+            nullable: true  
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: vehicleLogs
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        vehicle:
+            targetEntity: VehicleBundle\Entity\Vehicle
+            inversedBy: vehicleVehicleLogs
+            joinColumn:
+                name: vehicle_id
+                referencedColumnName: id
+        reason:
+            targetEntity: VehicleLogReason
+            inversedBy: vehicleLogs
+            joinColumn:
+                name: reason_id
+                referencedColumnName: id
+    oneToOne:
+        vehicleLogBeginPosition:
+            targetEntity: VehicleLogPosition
+            joinColumn:
+                name: begin_position_id
+                referencedColumnName: id
+        vehicleLogEndPosition:
+            targetEntity: VehicleLogPosition
+            joinColumn:
+                name: end_position_id
+                referencedColumnName: id

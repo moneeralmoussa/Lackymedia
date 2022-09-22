@@ -1,0 +1,17 @@
+{#% extends "::base.html.twig" %}
+
+{% block title %}nö{% endblock %}
+
+{% block content %}
+Hello World!
+
+{% for item in traces %}
+    <div class="col-xs-12">
+        <p class="lead">{{ item.source }}: {{ item.type }}</p>
+    </div>
+{% endfor %}
+
+
+{% endblock %#}
+
+{{ message }}

@@ -1,0 +1,384 @@
+{% block stylesheet %}
+<link rel="stylesheet" href="/bundles/app/css/animate.min.css"/>
+<script src="/bundles/app/js/instascan.min.js"></script>
+<script>
+$(document).ready(function() {
+ let scanner = new Instascan.Scanner({ video: document.getElementById('preview')});
+      scanner.addListener('scan', function (content) {
+        console.log(content);
+        cform.diplay.value=content;
+        servercodesessionbegin();
+      });
+      Instascan.Camera.getCameras().then(function (cameras) {
+        if (cameras.length > 0) {
+          scanner.start(cameras[0]);
+        } else {
+          console.error('No cameras found.');
+        }
+      }).catch(function (e) {
+        console.error(e);
+      });
+        $("body").attr("onload", "JavaScript:AutoRefresh(500000)");
+});
+  var firstNum = "";
+  var secondNum = "";
+  function AutoRefresh( t ) {
+               setTimeout("location.reload(true);", t);
+            }
+$(document).ready(function() {
+  // 3D activated 
+  var time = setInterval(function() {
+    $(".front").addClass('front-s');
+    $(".back").addClass('back-s');
+    $(".right").addClass('right-s');
+    $(".left").addClass('left-s');
+    $(".top").addClass('top-s');
+    $(".bottom").addClass('bottom-s');
+  }, 2000);
+  setTimeout(function() {
+    clearInterval(time)
+  }, 3000);
+ 
+  function on() {
+    firstNum = "";
+    secondNum = "";
+    $("#screen").text("");
+  }
+
+  function getNum(digit) {
+      secondNum += digit;
+      $("#screen").text(secondNum);
+  }
+
+  function del() {
+    secondNum = secondNum.split('');
+    secondNum.pop();
+    secondNum = secondNum.join('');
+    $("#screen").text(secondNum);
+  }
+
+  $("#c").click(function() {
+    on();
+  });
+  $("#del").click(function() {
+    del();
+  });
+  $("#one").click(function() {
+    getNum("1");
+  });
+  $("#two").click(function() {
+    getNum("2");
+  });
+  $("#three").click(function() {
+    getNum("3");
+  });
+  $("#four").click(function() {
+    getNum("4");
+  });
+  $("#five").click(function() {
+    getNum("5");
+  });
+  $("#six").click(function() {
+    getNum("6");
+  });
+  $("#seven").click(function() {
+    getNum("7");
+  });
+  $("#eight").click(function() {
+    getNum("8");
+  });
+  $("#nine").click(function() {
+    getNum("9");
+  });
+  $("#zero").click(function() {
+    getNum("0");
+  });
+  $("#d-zero").click(function() {
+    getNum("00");
+  });
+});
+</script>
+<style>
+/*Main container*/
+		*{
+			margin: 0px;
+			padding: 0px;
+		}
+		.container{
+			width: 700px;
+			margin: 0px auto;
+			padding: 60px;
+		}
+		body{
+			background-color: #EAEBEC;
+			color: #fff;
+		}
+		.calculter{
+			 background-color: #3A4655;
+			 height: 900px;
+			 width: 99%;
+			 float: left;
+			 text-align: center;
+			 border: solid 1px #3A4655;
+			 box-shadow: 0 8px 50px -7px black;
+		}
+		.h3{
+            color:  #727B86;
+            font-family:serif;
+            padding-top: 5px;
+            
+		}
+    	.displayed{
+			height: 55px;
+			width: 97%;
+			background-color:#3A4655; 
+			border: none;
+			font-size: 45px;
+			text-align: center;
+			color: #fff;
+		}
+		.diplay{
+			height: 50px;
+			width: 97%;
+			background-color:#3A4655; 
+			border: none;
+			font-size: 45px;
+			text-align: center;
+			color: #727B86;
+            border-bottom: dotted 1px
+		}
+    .buttonLogin{
+			float: left;
+			width: 99%;
+			background:#425062;
+			color:#fff;
+      margin: 0px;
+      padding: 30px;
+			font-size: 25px;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            border: 2px solid #3C4857;
+            transition: all 0.2s ease-in-out;
+  	}
+         .buttonLogin:hover {
+            background: #E0B612;
+          
+    }
+		.button{
+			float: left;
+			width: 33%;
+			background:#425062;
+			color:#fff;
+      margin: 0px;
+      padding: 30px;
+			font-size: 25px;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            border: 2px solid #3C4857;
+            transition: all 0.2s ease-in-out;
+            		}
+        .button:hover {
+            background: #E0B612;
+          
+}
+#btnc{
+	color: #D95D4E;
+}
+</style>
+{% endblock %}
+<div class="box box-primary">
+  <div class="box-header">
+  <br>
+  <center><h3 class="box-title"><img src="/bundles/app/images/logo.png" style="width: 100%;"></h3></center>
+  <center><h1>Zeiterfassung</h1></center>
+</div>
+<link href="https://fonts.googleapis.com/css?family=Reenie+Beanie" rel="stylesheet"> 
+  
+  <!-- 3d object -->
+<div class="calculter">
+<form id="myform" name="cform" class="form">
+ <div class="callout callout-primary">
+     <center><video id="preview" width ='40%'></video></center>
+     <div class="container">
+	<!--<h3 class="h3"><img src="https://giesker-laakmann.de/images/logo.png" style="width: 90%;"></h3>-->
+  	<input class="diplay" type="text" name="diplay"> 
+    <input class="displayed" type="text" name="diplayed" style="font-size: 23px">
+    <div id="keybord" class="hide" >
+          <input class="button" type="button" name="1" value="1" onclick="cform.diplay.value+='1'">
+          <input class="button" type="button" name="2" value="2" onclick="cform.diplay.value+='2'">
+          <input class="button" type="button" name="3" value="3" onclick="cform.diplay.value+='3'">
+              <br><br> 
+          <input class="button"  type="button" name="4" value="4" onclick="cform.diplay.value+='4'">
+          <input class="button" type="button" name="5" value="5" onclick="cform.diplay.value+='5'">
+          <input class="button" type="button" name="6" value="6" onclick="cform.diplay.value+='6'">
+              <br><br>
+          <input class="button" type="button" name="7" value="7" onclick="cform.diplay.value+='7'">
+          <input  class="button" type="button" name="8" value="8" onclick="cform.diplay.value+='8'">
+          <input class="button" type="button" name="9" value="9" onclick="cform.diplay.value+='9'">
+              <br><br>
+          <input id="btnc" class="button" type="button" name="C" value="C" onclick="cform.diplay.value='',cform.diplayed.value=''">
+          <input class="button" type="button" name="0" value="0" onclick="cform.diplay.value+='0'">
+          <button type="button" class="button" style="color: #00ca75;height: 100px;" onclick='servercodesessionbegin()'><i class="fa fa-fw fa-key"></i><br><p style="font-size: 11px">Eingabe QR-Code-Pin</p></button>
+              <br><br>
+          <button type="button" width='100%' class="buttonLogin" style="color: #00ca75" onclick='Trimbleservercodesessionbegin()'><i class="fa fa-fw fa-key"></i>Eingabe Personalnummer</button>
+          <button type="button" width='100%' class="buttonLogin" style="color:  beige;" onclick='hidekeybord()'><i class="fa fa-fw fa-camera"></i>Kamera</button>
+          </div>
+    <div id="divCamera">
+    <button type="button" width='100%' class="buttonLogin" style="color: #00ca75" onclick='keybord()'><i class="fa fa-fw fa-key"></i>Eingabe Personalnummer</button>
+    </div>
+    <button type="button" width='100%' class="buttonLogin" style="color: red" onclick='location.reload();'><i class="fa fa-fw fa-refresh"></i>Erneut aktivieren</button>
+</form>
+
+     <br><br>  <br><br>  <br><br><br><br>  <br><br>  <br><br>
+</div>
+ <br><br>  <br><br>  <br><br><br><br>  <br><br>
+ <audio id="Arbeitsanfang">
+  <source src="/video/Arbeitsanfang.mp3" type="audio/mpeg">
+</audio>
+<audio id="Arbeitsende">
+  <source src="/video/Arbeitsende.mp3" type="audio/mpeg">
+</audio>
+<audio id="Error">
+  <source src="/video/Error.mp3" type="audio/mpeg">
+</audio>  <br><br>
+<script>
+
+
+
+  var timeleft = 15;
+  function servercodesessionbegin()
+      {  
+          timeleft = -50 ;
+          $.ajax({
+            type: "GET",
+            async: false,
+            url:  "../employee/servercodesessionbegin/"+cform.diplay.value,
+            success: function(r) {
+              if(r == false)
+              { 
+                 document.getElementById("Error").play(); 
+                   var timeleft = 3;
+                   var downloadTimers = setInterval(function(){
+                   if((timeleft % 2)== 1)cform.diplay.value ="Error: CODE";
+                   if((timeleft % 2)== 0)cform.diplay.value = "";
+                       timeleft -= 1;
+                       if(timeleft <= -2){
+                         clearInterval(downloadTimers);
+                                   }
+                        }, 1000);   
+              }
+              else {
+                if(r.status == 'sessionStart' ){
+                  document.getElementById("Arbeitsanfang").play(); 
+                cform.diplay.value ="Arbeitsbeginn";
+                cform.diplayed.value =r.employee;
+                                    var timeleft = 6;
+                                    var downloadTimers = setInterval(function(){
+                                      if((timeleft % 2)== 1){cform.diplay.value="Arbeitsbeginn";cform.diplayed.value ="Hallo "+r.employee;}
+                                      if((timeleft % 2)== 0){cform.diplay.value = "";cform.diplayed.value ="";}
+                                      timeleft -= 1;
+                                      if(timeleft <= -2){
+                                        clearInterval(downloadTimers);
+                                      }
+                                    }, 1000); }
+                 if(r.status == 'sessionEnd' ){
+                  document.getElementById("Arbeitsende").play();
+                cform.diplay.value ="Arbeitsende";
+                cform.diplayed.value =r.employee;
+                                    var timeleft = 6;
+                                    var downloadTimers = setInterval(function(){
+                                      if((timeleft % 2)== 1){cform.diplay.value="Arbeitsende";cform.diplayed.value ="Schönen Feierabend "+r.employee;}
+                                      if((timeleft % 2)== 0){cform.diplay.value = "";cform.diplayed.value ="";}
+                                      timeleft -= 1;
+                                      if(timeleft <= -2){
+                                        clearInterval(downloadTimers);
+                                      }
+                                    }, 1000); }
+               }
+              firstNum = "";
+              secondNum = "";
+              cform.diplayed.value ="";
+              cform.diplay.value = "";
+            }
+          });
+      }
+
+
+      function Trimbleservercodesessionbegin()
+      {  
+          timeleft = -50 ;
+          $.ajax({
+            type: "GET",
+            async: false,
+            url:  "../employee/servercodesessionbegin/EM_"+cform.diplay.value,
+            success: function(r) {
+              if(r == false)
+              { 
+                 document.getElementById("Error").play(); 
+                   var timeleft = 3;
+                   var downloadTimers = setInterval(function(){
+                   if((timeleft % 2)== 1)cform.diplay.value ="Code unbekannt / Personalnummer unbekannt";
+                   if((timeleft % 2)== 0)cform.diplay.value = "";
+                       timeleft -= 1;
+                       if(timeleft <= -2){
+                         clearInterval(downloadTimers);
+                                   }
+                        }, 1000);   
+              }
+              else {
+                if(r.status == 'sessionStart' ){
+                document.getElementById("Arbeitsanfang").play(); 
+                cform.diplay.value ="Arbeitsbeginn";
+                cform.diplayed.value =r.employee;
+                                    var timeleft = 6;
+                                    var downloadTimers = setInterval(function(){
+                                      if((timeleft % 2)== 1){cform.diplay.value="Arbeitsbeginn";cform.diplayed.value ="Hallo "+r.employee;}
+                                      if((timeleft % 2)== 0){cform.diplay.value = "";cform.diplayed.value ="";}
+                                      timeleft -= 1;
+                                      if(timeleft <= -2){
+                                        clearInterval(downloadTimers);
+                                      }
+                                    }, 1000); }
+                 if(r.status == 'sessionEnd' ){
+                 document.getElementById("Arbeitsende").play();
+                cform.diplay.value ="Arbeitsende";
+                cform.diplayed.value =r.employee;
+                                    var timeleft = 6;
+                                    var downloadTimers = setInterval(function(){
+                                      if((timeleft % 2)== 1){cform.diplay.value="Arbeitsende";cform.diplayed.value ="Schönen Feierabend "+r.employee;}
+                                      if((timeleft % 2)== 0){cform.diplay.value = "";cform.diplayed.value ="";}
+                                      timeleft -= 1;
+                                      if(timeleft <= -2){
+                                        clearInterval(downloadTimers);
+                                      }
+                                    }, 1000); }
+               }
+              firstNum = "";
+              secondNum = "";
+              cform.diplayed.value ="";
+              cform.diplay.value = "";
+            }
+          });
+      }
+
+      function keybord()
+      {
+          $("#keybord").removeClass("hide");
+          $("#divCamera").addClass("hide");
+          $("#preview").addClass("hide");
+      }
+      
+      function hidekeybord()
+      {
+          $("#keybord").addClass("hide");
+          $("#divCamera").removeClass("hide");
+          $("#preview").removeClass("hide");
+      }
+    </script>
+   </div>
+   <div class="slimScrollBar" style="background: rgb(0, 0, 0) none repeat scroll 0% 0%; width: 7px; position: absolute; top: 63px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 187.126px;"></div>
+   <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div>
+ </div>
+

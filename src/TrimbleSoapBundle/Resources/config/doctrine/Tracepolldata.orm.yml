@@ -1,0 +1,23 @@
+TrimbleSoapBundle\Entity\Tracepolldata:
+    type: entity
+    table: null
+    repositoryClass: TrimbleSoapBundle\Repository\TracepolldataRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        mark:
+            type: string
+            length: '50'
+        more:
+            type: boolean
+        active:
+            type: boolean
+    lifecycleCallbacks: {  }
+    oneToMany:
+        tracedatas:
+            targetEntity: Tracedata
+            mappedBy: tracepolldata

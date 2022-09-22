@@ -1,0 +1,156 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Mitarbeiter importieren' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Importieren' } %}
+          {% block content %}
+		  {#
+			{% if app.session.flashbag.get('errors') and app.session.flashbag.get('errors') is not null %}
+		  		<div class="alert alert-danger alert-dismissible">
+					<h4>Folgende Mitarbeiter konnten nicht hinzugefügt werden:</h4>
+					<p>Bitte kontrollieren Sie die den Datensatz in Komalog.</p>
+					{% for flashMessage in app.session.flashbag.get('errors') %}
+						<p>{{ flashMessage }}</p>
+					{% endfor %}
+				</div>
+			{% endif %}
+			#}
+          {% if step == 1 %}
+              <form action="{{ path('employee_import_xlsx') }}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="excelfile" accept=".xlsx,.xls,.csv" id="file-input" class="file" data-preview-file-type="text">
+                <input type="hidden" name="step" value="{{step}}">
+              </form>
+          {% elseif step == 2 %}
+          {% if OldEmployeesWithNewData != null %}
+
+              <table class="table table-striped" style="border-style: inset;">
+              <tr style="background-color: #00e3ff;border-block: solid;">
+                  <th style="width: 4px"><center>{% trans %}Status{% endtrans %}</center></th>
+                  <th style="width: 10px">{% trans %}Name{% endtrans %}</th>
+                  <th style="width: 10px">{% trans %}Vorname{% endtrans %}</th>
+                  <th style="width: 10px">{% trans %}Straße{% endtrans %}</th>
+                  <th style="width: 10px">{% trans %}PLZ{% endtrans %}</th>
+                  <th style="width: 10px">{% trans %}Stadt{% endtrans %}</th>
+                  <th style="width: 10px">{% trans %}Mobil{% endtrans %}</th>
+                  <th style="width: 10px">{% trans %}Beschäftigt ab{% endtrans %}</th>
+                </tr>
+                <tbody>
+                 {% for OldEmployeeWithNewData in OldEmployeesWithNewData %}
+                <tr style="background-color: #fff; border-top: dashed;">
+                   <th style="background-color: #00e3ff; "><center><text>Alt<text></center></span></td>
+                    <td>{{ OldEmployeeWithNewData.name }}</td><td>{{ OldEmployeeWithNewData.prename }}</td><td>{{ OldEmployeeWithNewData.street }}</td>
+                    <td>{{ OldEmployeeWithNewData.zip_code }}</td><td>{{ OldEmployeeWithNewData.town }}</td><td>{{ OldEmployeeWithNewData.mobile }}</td><td>{{ OldEmployeeWithNewData.entry_date }}</td>
+                </tr>
+                <tr style="background-color: #fbb;">
+                    <th style="background-color: #00e3ff;"><center>Neu</center></td>
+                    <td>{% if OldEmployeeWithNewData.newname == OldEmployeeWithNewData.name %}{{ OldEmployeeWithNewData.newname }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newname }}</span>{% endif %}</td>
+                    <td>{% if OldEmployeeWithNewData.newprename == OldEmployeeWithNewData.prename %}{{ OldEmployeeWithNewData.newprename }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newprename }}</span>{% endif %}</td>
+                    <td>{% if OldEmployeeWithNewData.newstreet == OldEmployeeWithNewData.street %}{{ OldEmployeeWithNewData.newstreet }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newstreet }}</span>{% endif %}</td>
+                    <td>{% if OldEmployeeWithNewData.newzip_code == OldEmployeeWithNewData.zip_code %}{{ OldEmployeeWithNewData.newzip_code }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newzip_code }}</span>{% endif %}</td>
+                    <td>{% if OldEmployeeWithNewData.newtown == OldEmployeeWithNewData.town %}{{ OldEmployeeWithNewData.newtown }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newtown }}</span>{% endif %}</td>
+                    <td>{% if OldEmployeeWithNewData.newmobile == OldEmployeeWithNewData.mobile %}{{ OldEmployeeWithNewData.newmobile }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newmobile }}</span>{% endif %}</td>
+                    <td>{% if OldEmployeeWithNewData.newentry_date == OldEmployeeWithNewData.entry_date %}{{ OldEmployeeWithNewData.newentry_date }}{% else %} <span class="label label-danger">{{ OldEmployeeWithNewData.newentry_date }}</span>{% endif %}</td>
+              </tr>
+                 {%  endfor %}
+              </tbody></table>
+
+             {% else %} 
+
+
+             {% endif %}  
+
+              <form id="importform" action="{{ path('employee_import_xlsx') }}" method="POST" enctype="multipart/form-data">
+                  {% for name,value in knownEmployees %}
+                      <input type="hidden" name="employee_{{name}}" value="{{value}}" />
+                  {% endfor %}
+                  <table id="importtabelle">
+                   {% if step == 2  and unknownEmployees|length != 0 %}
+                      <tr><th>neu</th><th>alt</th></tr>
+                   {% endif %}   
+                      {% for name,values in unknownEmployees %}
+                          <tr>
+                              <td>{{values[0]}}</td>
+                              <td>
+                                  <select name="employee_{{name}}">
+                                      <option value="0">-- neu anlegen --</option>
+                                      <option value="-1">-- nicht importieren --</option>
+                                      {% for item in values[1] %}
+                                          <option value="{{item[0]}}"{% if ((1-item[2])*100)>98 and item[2]==values[2] %} selected="selected"{% endif %}>{{item[1]}} ({{((1-item[2])*100)|number_format(2,',','.')}})</option>
+                                      {% endfor %}
+                                  </select>
+                              </td>
+                          </tr>
+                      {% endfor %}
+                  </table>
+                <input type="hidden" name="step" value="{{step}}" />
+                <input id="importformsubmit" type="submit" name="submit" value="absenden" class="btn btn-success" />
+              </form>
+          {% else %}
+            <div class="alert alert-success alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+              <h4><i class="icon fa fa-check"></i> {% trans %}Mitarbeiter eingefügt{% endtrans %}</h4>
+              {{ inserted }} {% trans %}Mitarbeiter eingefügt{% endtrans %}
+            </div>
+            <a href="{{ path('employee_index') }}" class="btn btn-info pull-right">{% trans %}Zurück zur Übersicht{% endtrans %}</a>
+          {% endif %}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{#
+<div class="col-xs-12">
+    {% if step == 1 %}
+        <h2>{% trans %}Datei wählen{% endtrans %}</h2>
+        <form action="{{ path('employee_import_xlsx') }}" method="POST" enctype="multipart/form-data">
+            <p>
+                <input type="file" name="excelfile" accept=".xlsx,.xls,.csv">
+            </p>
+            <ul class="list-inline">
+                <li>
+                    <a href="{{ path('employee_index') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+                </li>
+                <li>
+                    <input type="submit" value="{% trans %}Import starten{% endtrans %}" class="btn btn-primary">
+                </li>
+            </ul>
+        </form>
+    {% else %}
+        <h2>{% trans %}Mitarbeiter eingefügt{% endtrans %}</h2>
+        <p>
+            {{ inserted }} {% trans %}Mitarbeiter eingefügt{% endtrans %}
+        </p>
+        <ul class="list-inline">
+            <li>
+                <a href="{{ path('employee_index') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+            </li>
+        </ul>
+    {% endif %}
+</div>
+#}
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/assets/bootstrap-fileinput/css/fileinput.min.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/assets/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/assets/bootstrap-fileinput/js/locales/de.js"></script>
+    <script type="text/javascript">
+      $( document ).ready(function() {
+        $("#input-id").fileinput({
+          language: "de",
+        });
+        {% if step == 2  and unknownEmployees|length == 0 and OldEmployeesWithNewData == null %}
+            $('#importformsubmit').click();
+            $('#importtabelle').hide();
+            $('#importformsubmit').hide();
+        {% endif %}
+      });
+    </script>
+{% endblock %}
+

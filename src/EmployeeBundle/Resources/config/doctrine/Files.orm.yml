@@ -1,0 +1,45 @@
+EmployeeBundle\Entity\Files:
+    type: entity
+    table: files
+    repositoryClass: EmployeeBundle\Repository\FilesRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        title:
+            type: string
+            length: 255
+            nullable: true
+            column: title
+        info:
+            type: string
+            length: 255
+            nullable: true
+            column: info
+        type:
+            type: string
+            length: 255
+            nullable: true
+            column: type
+        name:
+            type: string
+            length: 255
+            nullable: true
+            column: name
+        createAt:
+            type: datetime
+            nullable: true
+        deletedAt:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: { }
+    manyToOne:
+          employee:
+              targetEntity: Employee
+              nullable: true
+              joinColumn:
+                  name: employee_id
+                  referencedColumnName: id

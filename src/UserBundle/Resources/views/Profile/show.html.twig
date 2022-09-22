@@ -1,0 +1,85 @@
+{% extends 'base_new.html.twig' %}
+{% set title = app.user.username ~ ' Profil bearbeiten' %}
+
+{% block content %}
+
+          <div class="box box-widget widget-user">
+            <!-- Add the bg color to the header using any of the bg-* classes -->
+            <div class="widget-user-header bg-black" style="background: url('/bundles/app/img/spedition-giesker-laakmann-06.jpg') center center;">
+              <h3 class="widget-user-username">{{ app.user.username}}</h3>
+              <h5 class="widget-user-desc">{{ app.user.employee.department.description}}</h5>
+            </div>
+            <div class="widget-user-image">
+              <img class="img-circle" src="/bundles/app/img/platzhalter.jpg" alt="User Avatar">
+            </div>
+
+            <div class="box-footer">
+              <div class="row">
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <!-- <span class="description-text">/</span> -->
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 border-right">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <!-- <span class="description-text">/</span> -->
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4">
+                  <div class="description-block">
+                    <h5 class="description-header"></h5>
+                    <!-- <span class="description-text">/</span> -->
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+                <!-- /.col -->
+              </div>
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <h4>{{app.user.employee.salutation}} {{app.user.employee.name}} <small> {{app.user.employee.countrycode}}</small></h4>
+                  <h5>{{app.user.employee.zipcode}} {{app.user.employee.town}} {{app.user.employee.street}}</h5>
+                  <a href="{{ path('fos_user_profile_edit')}}">Profil bearbeiten</a> |
+                  <a href="{{ path('fos_user_change_password')}}">Passwort ändern</a>
+                  <hr style="margin:8px auto">
+                  <span class="label label-info">{{app.user.employee.phone | default("")}}</span>
+                  <span class="label label-info">{{app.user.employee.fax | default("")}}</span>
+                  <span class="label label-info">{{app.user.employee.mobile | default("")}}</span>
+                  <span class="label label-default">{{app.user.employee.birthday|date('d.m.Y') | default("")}}</span>
+                  <span class="label label-default">{{app.user.employee.department.description | default("")}}</span>
+                </div>
+              </div>
+              <!-- /.row -->
+            </div>
+          </div>
+{% endblock content %}
+
+{% block stylesheet %}
+<style>
+.media
+ {
+     /*box-shadow:0px 0px 4px -2px #000;*/
+     margin: 20px 0;
+     padding:30px;
+ }
+ .dp
+ {
+     border:10px solid #eee;
+     transition: all 0.2s ease-in-out;
+ }
+ .dp:hover
+ {
+     border:2px solid #eee;
+     transform:rotate(360deg);
+     -ms-transform:rotate(360deg);
+     -webkit-transform:rotate(360deg);
+     /*-webkit-font-smoothing:antialiased;*/
+ }
+</style>
+{% endblock %}

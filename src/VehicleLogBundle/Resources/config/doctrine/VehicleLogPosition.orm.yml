@@ -1,0 +1,38 @@
+VehicleLogBundle\Entity\VehicleLogPosition:
+    type: entity
+    table: null
+    repositoryClass: VehicleLogBundle\Repository\VehicleLogPositionRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        name:
+            type: string
+            length: 255
+            nullable: true
+        lat:
+            type: decimal
+            precision: '8'
+            scale: '5'
+        lon:
+            type: decimal
+            precision: '8'
+            scale: '5'
+        mileage:
+            type: integer
+    lifecycleCallbacks: {  }
+    manyToOne:
+        vehicle:
+            targetEntity: VehicleBundle\Entity\Vehicle
+            inversedBy: vehicleVehicleLogPositions
+            joinColumn:
+                name: vehicle_id
+                referencedColumnName: id

@@ -1,0 +1,45 @@
+AbsenceBundle\Entity\AbsenceClearingRecords:
+    type: entity
+    table: null
+    gedmo:
+     soft_deleteable:
+       field_name: deletedAt
+       time_aware: false
+    repositoryClass: AbsenceBundle\Repository\AbsenceClearingRecordsRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: string
+            length: 255
+        value:
+            type: integer
+        comment:
+            type: string
+            length: 512
+        createAt:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: create
+        deletedAt:
+            type: datetime
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: absence_clearing_records
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        absenceClearing:
+            targetEntity: EmployeeBundle\Entity\AbsenceClearing
+            inversedBy: absence_clearing_records
+            joinColumn:
+                name: absence_clearing_id
+                referencedColumnName: id

@@ -1,0 +1,821 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrtenbuch' %}
+
+{% block content %}
+	{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') or is_granted('ROLE_ACCOUNTING') %}
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="row">
+					{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Download' } %}
+						{% block content %}
+							<div class='input-group date' id='datetimepickerdownload'>
+								<input type='text' class="form-control" />
+								<span class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</span>
+								<span class="input-group-btn">
+									<a class="btn" href="{{ path('vehicle_log_loadMonthCarusageCsv_short') }}" onclick="this.href='{{ path('vehicle_log_loadMonthCarusageCsv_short') }}'+$('#datetimepickerdownload').data('DateTimePicker').date().format('YYYY-MM-DD');" target="_blank" role="button" style="color:#fff;background-color:#cd0001;">{% trans %}Download{% endtrans %}</a>
+								</span>
+							</div>
+						{% endblock %}
+					{% endembed %}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
+	<div class="row hidden-md hidden-lg">
+		<div class="col-xs-12">
+			<div class="row">
+			{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'QR Scannen' } %}
+				{% block content %}
+					<div id="coordinates">
+						<div class="form-group">
+							<label class="btn col-xs-12" style="color:#fff;background-color:#cd0001;">
+								{% trans %}QR Scannen{% endtrans %}
+								<input type="file" id="file_path" name="file[path]" required="required" accept="image/jpeg" class="hidden fileSelection" />
+							</label> <img id="scan_qr_img" src="/bundles/vehicle/css/graphics/loader.white.gif" style="display:none;" />
+							<input type="text" id="fileSelector" class="form-control hidden" readonly="readonly" />
+						</div>
+					</div>
+				{% endblock %}
+			{% endembed %}
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="row">
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'PKW' } %}
+					{% block content %}
+						<div id="draw_activities_container">
+							<img id="draw_activities_img" src="/bundles/vehicle/css/graphics/loader.white.gif" style="display:none;" />
+						</div>
+						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') or is_granted('ROLE_ACCOUNTING') %}
+							<div class="hidden-xs" style="height: calc(100vh - 71px);margin-top:20px;">
+								<div id="calendar"></div>
+							</div>
+						{% else %}
+							<div class="table-responsive hidden-xs">
+								<table id="vehicle-log" class="table table-hover table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>
+												{% trans %}Name{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Typ{% endtrans %}
+											</th>
+											<th>
+												{% trans %}Standort{% endtrans %}
+											</th>
+											<th>
+												{% trans %}Kilometer{% endtrans %}
+											</th>
+											<th>
+												{% trans %}Sauber{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Kommentar{% endtrans %}
+											</th>
+									</thead>
+
+									<tbody>
+										{% for item in vehicles %}
+											{% if (not item.vehicleVehicleLogPositions is empty)
+											and (not item.vehicleVehicleLogs is empty)
+											and (item.vehicleVehicleLogs.last.vehicleLogEndPosition is empty)
+											and (item.vehicleVehicleLogs.last.employee.user.id != current_user_id) %}
+												<tr data-key="{{ item.id }}">
+													<td>
+														<a>
+															{{ item.name }}
+														</a>
+													</td>
+													<td class="hidden-xs">
+														<a>
+															{{ item.vehicletype.name }} ({{ item.comment }})
+														</a>
+													</td>
+													<td
+														{% if not item.vehicleVehicleLogPositions is empty %}
+															{% if (not item.vehicleVehicleLogs is empty) and (item.vehicleVehicleLogs.last.vehicleLogEndPosition is empty) %}>
+																<a>
+																	{% trans %}Unterwegs{% endtrans %}
+															{% elseif not item.vehicleVehicleLogPositions.last.name is empty %}>
+																<a>
+																	{{ item.vehicleVehicleLogPositions.last.name }}
+															{% else %} class="lastposition">
+																<a>
+																	{
+																		"lat":{{ item.vehicleVehicleLogPositions.last.lat }},
+																		"lng":{{ item.vehicleVehicleLogPositions.last.lon }}
+																	}
+															{% endif %}
+														{% else %}>
+															<a>
+														{% endif %}
+														</a>
+													</td>
+													<td>
+														<a>
+															{% if not item.vehicleVehicleLogPositions is empty %}
+																{{ item.vehicleVehicleLogPositions.last.mileage }}
+															{% endif %}
+														</a>
+													</td>
+													<td>
+														<a>
+															{% if not item.vehicleVehicleLogs is empty %}
+																{% if item.vehicleVehicleLogs.last.vehicleClean == 1 %}
+																	Ja
+																{% elseif item.vehicleVehicleLogs.last.vehicleClean == 0 %}
+																	Nein
+																{% else %}
+																	Keine Angabe
+																{% endif %}
+														{% endif %}
+														</a>
+													</td>
+													<td class="hidden-xs">
+														<a>
+															{% if not item.vehicleVehicleLogs is empty %}
+																{{ item.vehicleVehicleLogs.last.comment }}
+															{% endif %}
+														</a>
+													</td>
+												</tr>
+											{% else %}
+												<tr data-key="{{ item.id }}">
+													<td>
+														<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+															{{ item.name }}
+														</a>
+													</td>
+													<td class="hidden-xs">
+														<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+															{{ item.vehicletype.name }} ({{ item.comment }})
+														</a>
+													</td>
+													<td
+														{% if not item.vehicleVehicleLogPositions is empty %}
+															{% if (not item.vehicleVehicleLogs is empty) and (item.vehicleVehicleLogs.last.vehicleLogEndPosition is empty) %}>
+																<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+																	{% trans %}Unterwegs{% endtrans %}
+															{% elseif not item.vehicleVehicleLogPositions.last.name is empty %}>
+																<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+																	{{ item.vehicleVehicleLogPositions.last.name }}
+															{% else %} class="lastposition">
+																<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+																	{
+																		"lat":{{ item.vehicleVehicleLogPositions.last.lat }},
+																		"lng":{{ item.vehicleVehicleLogPositions.last.lon }}
+																	}
+															{% endif %}
+														{% else %}>
+															<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+														{% endif %}
+														</a>
+													</td>
+													<td>
+														<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+															{% if not item.vehicleVehicleLogPositions is empty %}
+																{{ item.vehicleVehicleLogPositions.last.mileage }}
+															{% endif %}
+														</a>
+													</td>
+													<td>
+														<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+															{% if not item.vehicleVehicleLogs is empty %}
+																{% if item.vehicleVehicleLogs.last.vehicleClean == 1 %}
+																	Ja
+																{% elseif item.vehicleVehicleLogs.last.vehicleClean == 0 %}
+																	Nein
+																{% else %}
+																	Keine Angabe
+																{% endif %}
+														{% endif %}
+														</a>
+													</td>
+													<td class="hidden-xs">
+														<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+															{% if not item.vehicleVehicleLogs is empty %}
+																{{ item.vehicleVehicleLogs.last.comment }}
+															{% endif %}
+														</a>
+													</td>
+												</tr>
+											{% endif %}
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						{% endif %}
+						<!-- Swiper -->
+						<i class="fa fa-search hidden-sm hidden-md hidden-lg" style="position: absolute;top: 13px;left: 27px;font-size: 20px;"></i>
+						<input class="hidden-sm hidden-md hidden-lg" min="0" inputmode="numeric" pattern="[0-9]*" id="searchInput" onkeyup="searchThroughVehicles()" placeholder="Suche nach Kennzeichen...">
+						<div class="swiper-container hidden-sm hidden-md hidden-lg">
+							<div class="swiper-wrapper">
+								{% for item in vehicles %}
+									<div class="swiper-slide card-2" style="background-color:#fff;padding:20px;">
+										<div style="display:flex;flex-direction:column;height:100%;">
+											<div class="row" style="margin-bottom: 10px;">
+												<h2 class="col-xs-8">{{ item.name }}</h2>
+												<i class="col-xs-4 fa fa-car fa-2x text-right" style="margin-top:20px;"></i>
+											</div>
+											<div class="row" style="margin-bottom:10px;">
+												<div class="col-xs-4">
+													{% trans %}Standort:{% endtrans %}
+												</div>
+												<div class="col-xs-8 text-right">
+													{% if not item.vehicleVehicleLogPositions is empty %}
+														{% if (not item.vehicleVehicleLogs is empty) and (item.vehicleVehicleLogs.last.vehicleLogEndPosition is empty) %}
+															{% trans %}Unterwegs{% endtrans %}
+														{% elseif not item.vehicleVehicleLogPositions.last.name is empty %}
+															{{ item.vehicleVehicleLogPositions.last.name }}
+														{% else %}
+															{
+																"lat":{{ item.vehicleVehicleLogPositions.last.lat }},
+																"lng":{{ item.vehicleVehicleLogPositions.last.lon }}
+															}
+														{% endif %}
+													{% endif %}
+												</div>
+											</div>
+											<p>
+												{% trans %}Kilometer:{% endtrans %}
+												<span style="float:right;">
+													{% if not item.vehicleVehicleLogPositions is empty %}
+														{{ item.vehicleVehicleLogPositions.last.mileage }} km
+													{% endif %}
+												</span>
+											</p>
+											<p>
+												{% trans %}Sauber:{% endtrans %}
+												<span style="float:right;">
+													{% if not item.vehicleVehicleLogs is empty %}
+														{% if item.vehicleVehicleLogs.last.vehicleClean == 1 %}
+															Ja
+														{% elseif item.vehicleVehicleLogs.last.vehicleClean == 0 %}
+															Nein
+														{% else %}
+															Keine Angabe
+														{% endif %}
+													{% endif %}
+												</span>
+											</p>
+											<p>
+												{% trans %}Status:{% endtrans %}
+												<span style="float:right;">
+													{% if not item.vehicleVehicleLogPositions is empty %}
+														{% if (not item.vehicleVehicleLogs is empty) and (item.vehicleVehicleLogs.last.vehicleLogEndPosition is empty) %}
+															{% trans %}Unterwegs{% endtrans %}
+														{% else %}
+															{% trans %}Verf&uuml;gbar{% endtrans %}
+														{% endif %}
+													{% else %}
+															{% trans %}Verf&uuml;gbar{% endtrans %}
+													{% endif %}
+												</span>
+											</p>
+											{% if (not item.vehicleVehicleLogPositions is empty)
+											and (not item.vehicleVehicleLogs is empty)
+											and (item.vehicleVehicleLogs.last.vehicleLogEndPosition is empty)
+											and (item.vehicleVehicleLogs.last.employee.user.id != current_user_id) %}
+												<a class="btn disabled" style="margin-top:auto;width:100%;color:#fff;background-color:#cd0001;">
+													Buchen
+												</a>
+											{% else %}
+												<a class="btn" style="margin-top:auto;width:100%;color:#fff;background-color:#cd0001;" href="{{ path('vehicle_log_showVehicle', {'vehicle_id':item.id}) }}">
+													Buchen
+												</a>
+											{% endif %}
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					{% endblock %}
+				{% endembed %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block stylesheet %}
+<link href='/assets/fullcalendar/dist/fullcalendar.css' rel='stylesheet' />
+<link href='/assets/fullcalendar-scheduler/dist/scheduler.css' rel='stylesheet' />
+<link href="/assets/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+<style>
+	.fc-view-container .fc-resource-area tr{
+		cursor: pointer;
+	}
+
+	#searchInput {
+		width: 100%; /* Full-width */
+		font-size: 16px; /* Increase font-size */
+		padding: 12px 20px 12px 40px; /* Add some padding */
+		border: 1px solid #ddd; /* Add a grey border */
+		margin-bottom: 12px; /* Add some space below the input */
+	}
+
+	.swiper-container {
+		width: 100%;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	.swiper-slide {
+		background-position: center;
+		background-size: cover;
+		width: calc(100vw - 140px);
+		min-height: 300px;
+		height: auto;
+	}
+
+	.card-2 {
+		box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	}
+
+	@media only screen and (max-width: 992px) {
+		#vehicle-log_wrapper div.dataTables_scrollBody {
+			max-height: calc(100vh - 500px) !important;
+		}
+	}
+
+	@media only screen and (min-width: 468px) {
+		.swiper-slide {
+			width: calc(50vw);
+		}
+	}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script src='/assets/moment/min/moment-with-locales.min.js'></script>
+<script src='/assets/fullcalendar/dist/fullcalendar.js'></script>
+<script src='/assets/fullcalendar-scheduler/dist/scheduler.js'></script>
+<script src='/assets/fullcalendar/dist/locale/de.js'></script>
+<script src="/assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="/bundles/app/js/jsqrcode-combined.min.js"></script>
+<script type="text/javascript" src="/bundles/app/js/html5-qrcode.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+<script>
+    var geocoder = false;
+    var editReservation_url;
+
+    function geocodeLatLng(latlng,target) {
+        geocoder.geocode({'location': latlng}, function(results, status) {
+			if (status === 'OK') {
+				if (results[1]) {
+					$(target).val(results[1].formatted_address);
+				} else {
+					console.log('No results found');
+				}
+			} else {
+				console.log('Geocoder failed due to: ' + status);
+			}
+        });
+    }
+
+    function geocodeAddress(address,target) {
+        geocoder.geocode({'address': address}, function(results, status) {
+			if (status === 'OK') {
+				var pos = results[0].geometry.location;
+				console.log(pos);
+				$(target+'Lat').val(pos.lat);
+				$(target+'Lon').val(pos.lng);
+			} else {
+				alert('Geocode was not successful for the following reason: ' + status);
+			}
+        });
+    }
+
+    function saveReservation(reservationForm) {
+        var id = $(reservationForm).find("input[name=itemid]").val();
+        if($(reservationForm).find("input[name=action]").val() == 'edit') {
+            var url = "{{ path('vehicle_reservation_ajax_edit_short') }}"+id;
+        } else if($(reservationForm).find("input[name=action]").val() == 'delete') {
+            var url = "{{ path('vehicle_reservation_ajax_delete_short') }}"+id;
+        } else {
+            var url = "{{ path('vehicle_reservation_ajax_create') }}";
+        }
+        $.ajax({
+            url: url,
+            data: $(reservationForm).serialize(),
+            type: 'POST',
+            dataType: 'json',
+        }).always(function(msg) {
+            //console.log(msg);
+            $('#modal').modal('hide');
+            $('#calendar').fullCalendar( 'refetchEvents' );
+        });
+    }
+
+    function clickActivity(activity) {
+        var content;
+
+        $('.datetimepickerBegin').off('dp.change');
+        $('.datetimepickerEnd').off('dp.change');
+
+        if (activity["type"] == "create") {
+            var url = "{{ path('vehicle_reservation_ajax_create') }}";
+            if (activity["vehicle_id"]) {
+                url = url + "/" + activity["vehicle_id"];
+            }
+
+            $.ajax({
+                url: url,
+            }).done(function(msg) {
+                content = "<div style=\"height:630px;\">"+msg+"</div>"
+
+                $('#modal-title').html("{% trans %}Neue Reservierung{% endtrans %}");
+                $('#modal-content').html(msg);
+                $('#modal').modal();
+
+                $('.datetimepicker').datetimepicker({
+                    locale: 'de'
+                });
+
+                $('#vehiclelogbundle_vehiclereservation_beginPosition').on('blur',function(){
+                    geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclereservation_beginPosition');
+                });
+
+                $('#vehiclelogbundle_vehiclereservation_endPosition').on('blur',function(){
+                    geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclereservation_endPosition');
+                });
+            });
+        } else if (activity["type"] == "reserved") {
+            var id = activity["itemId"].split("_");
+            var editReservation_url = "{{ path('vehicle_reservation_ajax_edit_short') }}"+id[2];
+            $.ajax({
+                url: editReservation_url,
+            }).done(function(msg) {
+                content = "<div style=\"height:630px;\">"+msg+"</div>"
+
+                $('#modal-title').html("{% trans %}Reservierung f&uuml;r{% endtrans %} "+activity["taskName"]);
+                $('#modal-content').html(msg);
+                $('#modal').modal();
+
+                $('.datetimepicker').datetimepicker({
+                    locale: 'de'
+                });
+                if ($('#vehiclelogbundle_vehiclereservation_beginPosition').val() == '') {
+                    var pos = {
+                        lat: Number($('#vehiclelogbundle_vehiclereservation_beginPositionLat').val()),
+                        lng: Number($('#vehiclelogbundle_vehiclereservation_beginPositionLon').val()),
+                    };
+                    geocodeLatLng(pos, '#vehiclelogbundle_vehiclereservation_beginPosition');
+                }
+
+                if ($('#vehiclelogbundle_vehiclereservation_endPosition').val() == '') {
+                    var pos = {
+                        lat: Number($('#vehiclelogbundle_vehiclereservation_endPositionLat').val()),
+                        lng: Number($('#vehiclelogbundle_vehiclereservation_endPositionLon').val()),
+                    };
+                    geocodeLatLng(pos, '#vehiclelogbundle_vehiclereservation_endPosition');
+                }
+
+                $('#vehiclelogbundle_vehiclereservation_beginPosition').on('blur',function(){
+                    geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclereservation_beginPosition');
+                });
+
+                $('#vehiclelogbundle_vehiclereservation_endPosition').on('blur',function(){
+                    geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclereservation_endPosition');
+                });
+            });
+        } else {
+            var id = activity["itemId"].split("_");
+            content = "" //"<div style=\"height:400px;\">"
+                + "<div class=\"form-group\"><label class=\"control-label\" for=\"datetimepickerBegin\">{% trans %}Beginn{% endtrans %}</label><div class='input-group' id='datetimepickerBegin'>"+activity["startPoint"]["name"]+"<br>"+activity["startDate"].format('DD.MM.YYYY HH:mm')+"</div></div>"
+                + "<div class=\"form-group\"><label class=\"control-label\" for=\"datetimepickerEnd\">{% trans %}Ende{% endtrans %}</label><div class='input-group' id='datetimepickerEnd'>"+activity["endPoint"]["name"]+"<br>"+activity["endDate"].format('DD.MM.YYYY HH:mm')+"</div></div>"
+                + "<div class=\"form-group\"><label class=\"control-label\" for=\"driverStatus\">{% trans %}Fahrer{% endtrans %}</label><div class='input-group' id='driverStatus'>"+activity["driver"]["name"]+"</div></div>"
+                + "<div class=\"form-group\"><label class=\"control-label\" for=\"statusStatus\">{% trans %}Status{% endtrans %}</label><div class='input-group' id='statusStatus'>"+((activity["type"]=="available")?"{% trans %}Verf&uuml;gbar{% endtrans %}":"{% trans %}Unterwegs{% endtrans %}")+"</div></div>"
+                + "<ul class=\"list-inline\">"
+                + "<li><a class=\"btn btn-success\" href=\"{{ path('vehicle_log_edit_short') }}"+id[2]+"\" role=\"button\">{% trans %}Bearbeiten{% endtrans %}</a></li>";
+
+            if (activity["type"] == "in_use") {
+                content = content + "<li><a class=\"btn btn-primary\" href=\"{{ path('vehicle_log_finalize_short') }}"+id[2]+"\" role=\"button\">{% trans %}Ankommen{% endtrans %}</a></li>";
+            }
+
+            content = content + "</ul>";
+                //+ "</div>";
+            $('#modal-title').html("{% trans %}Status f&uuml;r{% endtrans %} "+activity["taskName"]);
+            $('#modal-content').html(content);
+            $('#modal').modal();
+        }
+    }
+
+    $(document).ready(function() {
+		$('#vehicle-log').DataTable({
+			scrollY: 'calc(100vh - 310px)',
+			scrollX: true,
+			scrollXInner: "100%",
+			scrollCollapse: true,
+			paging: false,
+			order: [
+				[0, 'desc']
+			],
+			searching: false,
+			info: false,
+			language: {
+				url: "//cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+			},
+			dom: 'Bfrtip',
+			buttons: {
+				buttons: [{
+					extend: 'print',
+					text: '<i class="fa fa-print"></i> Print',
+					title: $('h1').text(),
+					exportOptions: {
+						columns: ':not(.no-print)'
+					},
+					footer: true,
+				}, {
+					extend: 'pdfHtml5',
+					text: '<i class="fa fa-file-pdf-o"></i> PDF',
+					title: $('h1').text(),
+					pageSize: 'A0',
+					orientation: 'landscape',
+					exportOptions: {
+						columns: ':not(.no-print)'
+					},
+					footer: true
+				}, {
+					extend: 'copy'
+				}, {
+					extend: 'csv'
+				}, {
+					extend: 'excel'
+				}],
+				dom: {
+					container: {
+						className: 'dt-buttons'
+					},
+					button: {
+						className: 'btn btn-default'
+					}
+				}
+			},
+		});
+
+		var swiper = new Swiper('.swiper-container', {
+			effect: 'coverflow',
+			grabCursor: true,
+			centeredSlides: true,
+			slidesPerView: 'auto',
+			loop: true,
+			freeMode: true,
+			freeModeSticky: true,
+			coverflowEffect: {
+				rotate: 50,
+				stretch: 0,
+				depth: 100,
+				modifier: 1,
+				slideShadows : false,
+			},
+		});
+
+		$('#datetimepickerdownload').datetimepicker({
+				locale: 'de',
+				defaultDate: '{{base_date|date('Y-m-d')}}',
+		});
+
+        geocoder = new google.maps.Geocoder;
+
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') or is_granted('ROLE_ACCOUNTING') %}
+        var cal = $('#calendar').fullCalendar({
+            // defaultDate: moment(new Date()),
+            header: {
+                left: 'today prev,next',
+                center: 'title',
+                right: 'timelineDay,timelineWeek,timelineMonth,timelineYear'
+            },
+            height: 'parent',
+            themeSystem: 'bootstrap3',
+            defaultView: 'timelineWeek',
+            schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+            locale: 'de',
+            displayEventTime: true,
+            nowIndicator: true,
+            eventOverlap:false,
+            businessHours: true,
+            selectable: true,
+            selectHelper: true,
+            resourcesInitiallyExpanded: false,
+						buttonText: {
+							year:    'Jahr',
+						},
+            select: function(start, end, event, view, resource) {
+        		var item = {
+                    "startDate":moment(start).toISOString(),
+                    "startPoint":event.beginPosition,
+                    "endDate":moment(end).toISOString(),
+                    "endPoint":event.endPosition,
+                    "taskName":event.name,
+                    "status":"test", //event.status,
+                    "id":event.id,
+                    "type":"create",
+                    "itemId":event.id,
+                    "driver":event.driver,
+                    "vehicle_id":resource.id,
+                };
+                console.log(item);
+                clickActivity(item);
+                $('#calendar').fullCalendar('unselect');
+            },
+            eventClick:  function(event, jsEvent, view) {
+                var item = {
+                    "startDate":event.start,
+                    "startPoint":event.beginPosition,
+                    "endDate":event.end,
+                    "endPoint":event.endPosition,
+                    "taskName":event.name,
+                    "status":"test", //event.status,
+                    "id":event.id,
+                    "type":event.type,
+                    "itemId":event.id,
+                    "driver":event.driver,
+                };
+                console.log(item);
+                clickActivity(item);
+            },
+            eventDrop: function(event, delta, revertFunc) {
+                var item = {
+                    "startDate":event.start,
+                    "startPoint":event.beginPosition,
+                    "endDate":event.end,
+                    "endPoint":event.endPosition,
+                    "taskName":event.name,
+                    "status":"test", //event.status,
+                    "id":event.id,
+                    "type":event.type,
+                    "itemId":event.id,
+                    "driver":event.driver,
+                };
+
+                if (event.type === "reserved") {
+                    clickActivity(item);
+                } else {
+                    $('#calendar').fullCalendar( 'refetchEvents' );
+                }
+            },
+            eventResize: function(event, delta, revertFunc) {
+                var item = {
+                    "startDate":event.start,
+                    "startPoint":event.beginPosition,
+                    "endDate":event.end,
+                    "endPoint":event.endPosition,
+                    "taskName":event.name,
+                    "status":"test", //event.status,
+                    "id":event.id,
+                    "type":event.type,
+                    "itemId":event.id,
+                    "driver":event.driver,
+                };
+
+                if (event.type === "reserved") {
+                    clickActivity(item);
+                } else {
+                    $('#calendar').fullCalendar( 'refetchEvents' );
+                }
+            },
+            resourceRender: function(resourceObj, labelTds, bodyTds) {
+				labelTds.find('.fc-cell-content').each(function(){
+						if (!$(this).attr('data-listener')) {
+								$(this).on('click', function(){
+										window.open('{{ path('vehicle_log_showVehicle_short') }}'+resourceObj.id+'','_blank');
+								});
+						}
+				});
+            },
+            eventRender: function(event, element) {
+                if(event.icon){
+                    element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i> ");
+                }
+            },
+			viewRender: function(view,element) {
+				$('.fc-time-area tbody > tr, .fc-resource-area tbody > tr').hover(
+					function() {
+						$('.fc-resource-area tbody').find('[data-resource-id="' + $(this).data('resource-id') + '"]').css( "background-color", "rgba(0, 0, 0, 0.2)");
+						$('.fc-time-area tbody').find('[data-resource-id="' + $(this).data('resource-id') + '"]').css( "background-color", "rgba(0, 0, 0, 0.2)");
+					}, function() {
+						$('.fc-resource-area tbody').find('[data-resource-id="' + $(this).data('resource-id') + '"]').css( "background-color", "transparent");
+						$('.fc-time-area tbody').find('[data-resource-id="' + $(this).data('resource-id') + '"]').css( "background-color", "transparent");
+					}
+				);
+			},
+            editable: true,
+            resourceColumns: [
+                {
+                    labelText: 'Name',
+                    field: 'pNumber',
+                    width: '70'
+                },
+                {
+                    labelText: 'Typ',
+                    field: 'brand'
+                },
+                {
+                    labelText: 'Standort',
+                    field: 'position'
+                },
+                {
+                    labelText: 'Kilometer',
+                    field: 'mileage'
+                },
+                {
+                    labelText: 'Sauber',
+                    field: 'clean',
+                    width: '70'
+                },
+								{
+                    labelText: 'PIN',
+                    field: 'pin',
+                    width: '70',
+		                render: function(resource, el) {
+		                    el.attr('data-listener',true)
+		                    el.on('click', function(e){
+		                        swal({
+		                            text: "PIN vergeben",
+		                            type: 'warning',
+		                            input: 'number',
+		                            inputValue: el.find('.fc-cell-text').text(),
+		                            showCancelButton: true,
+		                            confirmButtonText: 'Übernehmen',
+		                            cancelButtonText: 'Ignorieren'
+		                        }).then(function(result){
+		                            if(result.value) {
+		                                el.find('.fc-cell-text').text(result.value);
+		                                $.ajax({
+		                                    type: "POST",
+		                                    url: "{{ path('vehicle_pin_update')}}",
+		                                    data: {
+												id: resource.id,
+												pin: result.value
+											},
+		                                    success: function(r){
+		                                        console.log(r);
+		                                    }
+		                                });
+		                            }
+		                        });
+		                    });
+		                },
+                },
+                {
+                    labelText: 'Kommentar',
+                    field: 'comment',
+                }
+            ],
+            resources: {
+                url: "{{ path('vehicle_loadPkwsJson')}}",
+                error: function() {
+                }
+            },
+            events: "{{ path('vehicle_log_loadReservationsByMonth_short') }}",
+        });
+		{% endif %}
+
+        // for webcam support
+        $('.fileSelection').change(function(event) {
+            $('#scan_qr_img').show();
+            qrCodeDecoder(URL.createObjectURL(event.target.files[0]));
+        });
+
+        qrcode.callback = showInfo;
+    });
+
+    // decode the img
+    function qrCodeDecoder(dataUrl) {
+        qrcode.decode(dataUrl);
+    }
+
+    // show info from qr code
+    function showInfo(data) {
+        window.location.assign(data);
+    }
+
+	function searchThroughVehicles() {
+		// Declare variables
+		var swiper, input, filter, slides, h2, i, txtValue;
+		swiper = document.querySelector('.swiper-container').swiper;
+		input = document.getElementById('searchInput');
+		filter = input.value.toUpperCase();
+		slides = document.getElementsByClassName("swiper-slide");
+
+		if (input.value.length >= 2 )
+		// Loop through all list items, and hide those who don't match the search query
+		for (i = 0; i < slides.length; i++) {
+			h2 = slides[i].getElementsByTagName("h2")[0];
+			txtValue = h2.textContent || h2.innerText;
+			if (txtValue.toUpperCase().indexOf(filter) > -1) {
+				swiper.slideTo(i);
+			}
+		}
+	}
+</script>
+{% endblock %}

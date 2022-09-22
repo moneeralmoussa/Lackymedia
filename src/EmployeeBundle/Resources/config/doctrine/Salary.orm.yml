@@ -1,0 +1,43 @@
+EmployeeBundle\Entity\Salary:
+    type: entity
+    table: salary
+    repositoryClass: EmployeeBundle\Repository\SalaryRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        employeeId:
+            type: integer
+            nullable: false
+        salary:
+            type: decimal    
+            scale: '2'
+            nullable: false
+        comment:
+            type: string
+            length: 10
+            nullable: true
+        fromDate:
+            type: datetime
+            nullable: true
+        toDate:
+            type: datetime
+            nullable: true
+        createAt:
+            type: datetime
+            nullable: true
+        deletedAt:
+            type: datetime
+            nullable: true    
+    lifecycleCallbacks: {  }
+    
+    # oneToOne:
+    #     employee:
+    #         targetEntity: EmployeeBundle\Entity\Employee
+    #         inversedBy: contract
+    #         joinColumn:
+    #             name: employee_id
+    #             referencedColumnName: id

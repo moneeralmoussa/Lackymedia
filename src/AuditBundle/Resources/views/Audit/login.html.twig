@@ -1,0 +1,14 @@
+<tr>
+  <td class="col-min">
+    <span class="label bg-purple-active color-palette"><i class="fa fa-user"></i></span>
+  </td>
+  <td>
+    <strong>{{ audit_rename(log.source.typLabel) }}</strong> {{ audit_assoc(log.source) }} hat sich eingeloggt
+  </td>
+  <td class="col-min">{{ log.loggedAt|time_diff }}</td>
+  <td class="col-min">
+    <a class="btn btn-xs btn-link" href="{{ path('app_audit_diff', {id: log.id}) }}">
+      <i class="fa fa-search" title="Show diff"></i>
+    </a>
+  </td>
+</tr>

@@ -1,0 +1,49 @@
+VehicleBundle\Entity\ConsumptionDetail:
+    type: entity
+    table: null
+    repositoryClass: VehicleBundle\Repository\ConsumptionDetailRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    gedmo:
+        soft_deleteable:
+            field_name: deleted_at
+            time_aware: false
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        deleted_at:
+            type: datetime
+            nullable: true
+        label:
+            type: string
+            length: '50'
+        value:
+            type: decimal
+            precision: 10
+            scale: '3'
+        unit:
+            type: string
+            length: '10'
+        comment:
+            type: text
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        consumption:
+            targetEntity: VehicleBundle\Entity\Consumption
+            inversedBy: consumptionDetails
+            joinColumn:
+                name: consumption_id
+                referencedColumnName: id

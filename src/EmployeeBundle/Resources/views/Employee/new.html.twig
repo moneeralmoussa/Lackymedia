@@ -1,0 +1,31 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Mitarbeiter hinzufügen' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Mitarbeiter hinzufügen' } %}
+            {% block content %}
+              {{ form_start(form) }}
+                  {{ form_widget(form) }}
+                  <input type="submit" value="{% trans %}Mitarbeiter anlegen{% endtrans %}" class="btn btn-info pull-right"/>
+              {{ form_end(form) }}
+            {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+          $('.datetimepicker').datetimepicker({
+            locale: 'de'
+          });
+        });
+    </script>
+{% endblock %}

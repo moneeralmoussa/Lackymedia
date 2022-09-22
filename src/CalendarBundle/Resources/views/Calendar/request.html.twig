@@ -1,0 +1,27 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Anträge' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="nav-tabs-custom">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#tab_1" data-toggle="tab">Offene Anfragen <span class="badge">{{absencesPending|length}}</span></a></li>
+					<li><a href="#tab_2" data-toggle="tab">genehmigte Anfragen <span class="badge">{{absencesApproved|length}}</span></a></li>
+					<li><a href="#tab_3" data-toggle="tab">abgelehnte Anfragen <span class="badge">{{absencesDeclined|length}}</span></a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="tab_1">
+						{% include 'CalendarBundle:Calendar:partials/tabs-with-user.html.twig' with {'absences': absencesPending} %}
+					</div>
+					<div class="tab-pane" id="tab_2">
+						{% include 'CalendarBundle:Calendar:partials/tabs-with-user.html.twig' with {'absences': absencesApproved} %}
+					</div>
+					<div class="tab-pane" id="tab_3">
+						{% include 'CalendarBundle:Calendar:partials/tabs-with-user.html.twig' with {'absences': absencesDeclined} %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

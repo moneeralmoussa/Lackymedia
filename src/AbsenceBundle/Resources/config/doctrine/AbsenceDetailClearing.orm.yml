@@ -1,0 +1,53 @@
+AbsenceBundle\Entity\AbsenceDetailClearing:
+    type: entity
+    table: null
+    repositoryClass: AbsenceBundle\Repository\AbsenceDetailClearingRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        date:
+            type: date
+        UseAsHolidays:
+            type: boolean
+        dayDetail:
+            type: decimal
+            precision: 10
+            scale: '1'
+            nullable: true
+            options:
+                default: 0
+        createdat:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: create
+        updatedat:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: update
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: AbsenceDetailClearing
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        absence:
+            targetEntity: AbsenceBundle\Entity\Absence
+            inversedBy: AbsenceDetailClearing
+            joinColumn:
+                name: absence_id
+                referencedColumnName: id
+        reason:
+            targetEntity: Reason
+            joinColumn:
+                name: reason_id
+                referencedColumnName: id

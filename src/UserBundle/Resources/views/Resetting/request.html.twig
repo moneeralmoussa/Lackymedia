@@ -1,0 +1,22 @@
+{% extends "base_new.html.twig" %}
+{% set title = 'Passwort ändern' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Passwort ändern' } %}
+          {% block content %}
+            <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
+                <div>
+                    <label for="username">E-Mail:</label>
+                    <input type="text" id="username" name="username" required="required" class="form-control"/><br />
+                    <input type="submit" value="Anfragen" class="btn btn-info pull-right"/>
+                </div>
+            </form>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

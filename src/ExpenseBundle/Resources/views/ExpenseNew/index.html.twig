@@ -1,0 +1,42 @@
+{% extends "master.html.twig" %}
+
+{% block navigationlist_items %}
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+  <li><a href="{{ path('expenses_employee_index') }}">{% trans %}Mitarbeiterspesen{% endtrans %}</a></li>
+  <li><a href="{{ path('expenses_countryspecificexpenses_index') }}">{% trans %}Spesensätze{% endtrans %}</a></li>
+{% endif %}
+{% endblock %}
+
+{% block pagetitle %}
+<div class="col-xs-12">
+	<h1>{% trans %}Spesen{% endtrans %}</h1>
+	<hr>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12 col-md-4">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/employee.png" alt="{% trans %}Personal{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Mitarbeiterspesen{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich die Spesen des Personals an.{% endtrans %}</p>
+      <a href="{{ path('expenses_employee_index') }}" class="btn btn-primary">{% trans %}Mitarbeiter ansehen{% endtrans %}</a>
+    </div>
+  </article>
+</div>
+
+<div class="col-xs-12 col-md-4">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/expenses.png" alt="{% trans %}Spesen{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Spesensätze{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich die Spesensätze an.{% endtrans %}</p>
+      <a href="{{ path('expenses_countryspecificexpenses_index') }}" class="btn btn-primary">{% trans %}Spesensätze ansehen{% endtrans %}</a>
+    </div>
+  </article>
+</div>
+
+{% endblock %}

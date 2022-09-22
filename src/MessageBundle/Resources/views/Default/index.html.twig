@@ -1,0 +1,175 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Nachrichten Liste' %}
+{% block content %}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs" style="margin-bottom:20px;">
+
+             <li><a data-toggle="tab" href="#allm"> <p onclick="document.getElementById('allhide').classList.remove('hid1')"> Nachrichten Liste </p></a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="allm" class="tab-pane fade in active" >
+                <div class="table-responsive" >
+                    <table id='all' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Nachricht{% endtrans %}</th>
+                                <th>{% trans %}Symbol{% endtrans %}</th>
+                                <th>{% trans %}createAt{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for message in messages %}
+                               <tr>
+                                    <td>{{ message.employee.Fullname }}</a></td>
+                                    <td>{{ message.message }}</td>
+                                    <td>{% if message.type == 1  %}Important{% elseif message.type == 2 %}Warning{% elseif message.type == 3 %}Information{% endif %}</td>
+                                    <td>{{ message.createAt|date('d.m.Y') }}</td>
+                               </tr>
+                                {% endfor %}
+                        </tbody>
+                      <tfoot>
+                        <tr>
+                                    <th>{% trans %}Name{% endtrans %}</th>
+                                    <th>{% trans %}Nachricht{% endtrans %}</th>
+                                    <th>{% trans %}Symbol{% endtrans %}</th>
+                                    <th>{% trans %}createAt{% endtrans %}</th>
+                         </tr>
+                     </tfoot>
+                    </table>
+                </div>
+            </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+     <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/jquery.dataTables.min.css" />
+
+   <style>
+   th input {
+        width: 90%;
+    }
+     </style>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/bundles/newApp/date-eu.js"></script>
+    <script type="text/javascript" src="/bundles/newApp/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript">
+
+    var editor; // use a global for the submit and return data rendering in the examples
+
+$(document).ready(function() {
+  $('tbody').scroll(function(e) { //detect a scroll event on the tbody
+  	/*
+    Setting the thead left value to the negative valule of tbody.scrollLeft will make it track the movement
+    of the tbody element. Setting an elements left value to that of the tbody.scrollLeft left makes it maintain 			it's relative position at the left of the table.
+    */
+    $('thead').css("left", -$("tbody").scrollLeft()); //fix the thead relative to the body scrolling
+    $('thead th:nth-child(1)').css("left", $("tbody").scrollLeft()); //fix the first cell of the header
+    $('tbody td:nth-child(1)').css("left", $("tbody").scrollLeft()); //fix the first column of tdbody
+  });
+});
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#all tfoot th').each( function (i) {
+        if(i != '4'){
+        var title = $('#all thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+        }
+    } );
+
+    // DataTable
+    var table = $('#all').DataTable( {
+        scrollY:        "700px",
+        scrollCollapse: true,
+        paging:         true,
+        fixedColumns:   true,
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+} );
+
+    </script>
+{% endblock %}

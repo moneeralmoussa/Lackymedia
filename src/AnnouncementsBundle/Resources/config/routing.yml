@@ -1,0 +1,4 @@
+announcements_announcement:
+    resource: "@AnnouncementsBundle/Resources/config/routing/announcement.yml"
+    prefix:   /announcement
+

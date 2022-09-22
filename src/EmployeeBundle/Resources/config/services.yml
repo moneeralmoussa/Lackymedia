@@ -1,0 +1,14 @@
+services:
+#    employee.example:
+#        class: EmployeeBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    employee.form.employeeType:
+      class: EmployeeBundle\Form\EmployeeType
+      arguments: ["%dse_roles%"]
+      tags:
+        - { name: form.type }
+    employee.form.newEmployeeType:
+      class: EmployeeBundle\Form\NewEmployeeType
+      arguments: ["%dse_roles%"]
+      tags:
+        - { name: form.type }

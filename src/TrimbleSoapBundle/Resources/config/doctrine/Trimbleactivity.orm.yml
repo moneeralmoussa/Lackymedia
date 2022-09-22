@@ -1,0 +1,26 @@
+TrimbleSoapBundle\Entity\Trimbleactivity:
+    type: entity
+    table: null
+    repositoryClass: TrimbleSoapBundle\Repository\TrimbleactivityRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        activityKey:
+            type: string
+            length: '10'
+            unique: true
+            column: activity_key
+        name:
+            type: string
+            nullable: true
+            length: 255
+        messageType:
+            type: string
+            length: '10'
+            nullable: true
+            column: message_type
+    lifecycleCallbacks: {  }

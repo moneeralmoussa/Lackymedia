@@ -1,0 +1,54 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Verträge' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Verträge' } %}
+          {% block content %}
+            <div class="table-responsive">
+                <table class="table table-datatable table-striped table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th>{% trans %}Bezeichnung{% endtrans %}</th>
+                            <th>{% trans %}Urlaubstage{% endtrans %}</th>
+                            <th>{% trans %}Wochenarbeitszeit{% endtrans %}</th>
+                            <th>{% trans %}Bereitschaft 24/7{% endtrans %}</th>
+                            <th>{% trans %}Spesen st. 8h{% endtrans %}</th>
+                            <th>{% trans %}Spesen st. 24h{% endtrans %}</th>
+                            <th>{% trans %}Weiterbilungsspesen{% endtrans %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for contract in contracts %}
+                        <tr>
+                            <td><a href="{{ path('contract_show', { 'id': contract.id }) }}">{{ contract.name }}</a></td>
+                            <td>{{ contract.holidays }}</td>
+                            <td>{{ contract.weeklyHoursOfWork }}</td>
+                            <td>{% if contract.standby %}Ja{% else %}Nein{% endif %}</td>
+                            <td>{{ contract.additionalExpenses8h }}</td>
+                            <td>{{ contract.additionalExpenses24h }}</td>
+                            <td>{{ contract.trainingOvertimePremium }}</td>
+                            <td>
+                              <div class="btn-group">
+                                <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                  <li><a href="{{ path('contract_show', { 'id': contract.id }) }}">Vertrag ansehen</a></li>
+                                  <li><a href="{{ path('contract_edit', { 'id': contract.id }) }}">Vertrag bearbeiten</a></li>
+                                </ul>
+                              </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ path('contract_new') }}" class="btn btn-info pull-right">{% trans %}Neuer Vertrag{% endtrans %}</a>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

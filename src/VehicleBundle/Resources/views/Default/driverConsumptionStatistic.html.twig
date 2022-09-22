@@ -1,0 +1,151 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Mein Verbrauch letzte Woche' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			{% if consumptions %}
+				<div class="box box-danger" id="consumption">
+					<div class="box-header with-border">
+						<h3 class="box-title">Verbrauch vom {{ consumptions[0].consumptionBeginTime|date('d.m.Y') }} - {{ consumptions[0].consumptionEndTime|date('d.m.Y') }}</h3>
+					</div>
+					<!-- /.box-header -->
+					<div class="box-body">
+						<p>Die <span style="color:#c31924;"><b>roten</b></span> Zahlen zeigen die Daten deiner letzten verf&uuml;gbaren Woche an, siehe oben.<br>
+						Die <b>schwarzen</b> Zahlen sind der Durschnitt aus all deinen verf&uuml;gbaren Wochen.</p>
+					</div>
+				</div>
+
+				<div class="box box-solid">
+					<div class="box-header with-border">
+						<h3 class="box-title">
+							LKW
+							{% if consumptions[0].vehicle %}
+								{{ consumptions[0].vehicle.manufactur }}
+							{% endif %}
+							{% if consumptions[0].vehicle %}{{ consumptions[0].vehicle.vehicletype.name|replace({' ': ''})[:6] }}
+								<span class="hidden-xs">
+									{{ consumptions[0].vehicle.vehicletype.name|replace({' ': ''})[6:] }}
+								</span>
+							{% endif %}
+						</h3>
+					</div>
+					<!-- /.box-header -->
+					<div class="box-body row" style="text-align:center;">
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>Gefahrene Kilometer</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('Strecke-KM') %}
+									{{ consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') }}
+								{% elseif consumptions[0].detailByLabel('End-KM') and consumptions[0].detailByLabel('Start-KM') %}
+									{{ (consumptions[0].detailByLabel('End-KM').value - consumptions[0].detailByLabel('Start-KM').value)|number_format(0,',','.') }}
+								{% else %}
+									0
+								{% endif %}
+								km
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgDistance }} km
+							</p>
+						</div>
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>Verbrauch L/100 km</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('Kraftstoffverbrauch beim Fahren') and (consumptions[0].detailByLabel('Strecke-KM') and (consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+									{{ consumptions[0].detailByLabel('Kraftstoffverbrauch beim Fahren').value|number_format(1,',','.') }}
+								{% else %}
+									00,0
+								{% endif %}
+								L
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgConsumptionOn100km }} L
+							</p>
+						</div>
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>Verbrauch in L</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('Kraftstoffverbrauch beim Fahren') and (consumptions[0].detailByLabel('Strecke-KM') and (consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+									{{ ((consumptions[0].detailByLabel('Kraftstoffverbrauch beim Fahren').value/100)*(consumptions[0].detailByLabel('Strecke-KM').value))|number_format(1,',','.') }}
+								{% else %}
+									00,0
+								{% endif %}
+								L
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgConsumption }} L
+							</p>
+						</div>
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>Tempomat-Zeit</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('Tempomat-Zeit') and (consumptions[0].detailByLabel('Strecke-KM') and (consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+									{{ consumptions[0].detailByLabel('Tempomat-Zeit').value|number_format(1,',','.') }}%
+								{% else %}
+									00,0%
+								{% endif %}
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgCruiseControl }}%
+							</p>
+						</div>
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>Leerlauf</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('Zeit Motor im Leerlauf') and consumptions[0].detailByLabel('Stillstandzeit Nebenantrieb') and (consumptions[0].detailByLabel('Strecke-KM') and (consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0))%}
+									{{ (consumptions[0].detailByLabel('Zeit Motor im Leerlauf').value * (100 - consumptions[0].detailByLabel('Stillstandzeit Nebenantrieb').value) / 100)|number_format(1,',','.') }}%
+								{% elseif consumptions[0].detailByLabel('Zeit Motor im Leerlauf') and (consumptions[0].detailByLabel('Strecke-KM') and (consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0))%}
+									{{ consumptions[0].detailByLabel('Zeit Motor im Leerlauf').value|number_format(1,',','.') }}%
+								{% else %}
+									00,0%
+								{% endif %}
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgFreeWheel }}%
+							</p>
+						</div>
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>N-Antrieb</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('Zeit Motor im Leerlauf') and consumptions[0].detailByLabel('Stillstandzeit Nebenantrieb') and (consumptions[0].detailByLabel('Strecke-KM') and (consumptions[0].detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0))%}
+									{{ (consumptions[0].detailByLabel('Zeit Motor im Leerlauf').value * consumptions[0].detailByLabel('Stillstandzeit Nebenantrieb').value / 100)|number_format(1,',','.') }}%
+								{% else %}
+									00,0%
+								{% endif %}
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgNDrive }}%
+							</p>
+						</div>
+						<div class="col-xs-12 col-md-6 col-lg-3">
+							<p>&nbsp;</p>
+							<h4>zu schnelle km/100 km</h4>
+							<p style="font-size: xx-large;color: #c31924;">
+								{% if consumptions[0].detailByLabel('zu schnell km') %}
+									{{ consumptions[0].detailByLabel('zu schnell km').value|number_format(3,',','.') }}
+								{% endif %}
+							</p>
+							<p style="font-size: xx-large;">
+								&Oslash; {{ avgConsumptions.avgDrivenToFast }}
+							</p>
+						</div>
+					</div>
+					<!-- /.box-body -->
+				</div>
+				<!-- /.box -->
+			{% else %}
+				<div class="box box-danger" id="consumption">
+					<div class="box-body">
+						<strong>Trotz Adminrechten f&auml;hrst du leider keinen LKW!</strong>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

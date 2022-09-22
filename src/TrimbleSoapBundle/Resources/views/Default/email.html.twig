@@ -1,0 +1,9 @@
+<h3>{{ employees|length }} nicht abgemeldete Fahrer</h3>
+
+<p>Guten Morgen,</p>
+<p>Folgende Fahrer haben sich am {{ date|date('d.m.Y') }} nicht abgemeldet:</p>
+<ul>
+{% for employee in employees %}
+    <li>{{ employee.driver }} auf <a href="https://management.giesker-laakmann.de{{ path('vehicle_detail', {'id':employee.vehicle.id}) }}">{{ employee.vehicle }}</a></li>
+{% endfor %}
+</ul>

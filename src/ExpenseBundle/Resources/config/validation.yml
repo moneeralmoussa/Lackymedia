@@ -1,0 +1,4 @@
+ExpenseBundle\Entity\Expense:
+    properties:
+        name:
+            - NotBlank: ~

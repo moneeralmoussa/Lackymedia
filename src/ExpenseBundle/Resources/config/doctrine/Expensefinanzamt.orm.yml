@@ -1,0 +1,48 @@
+ExpenseBundle\Entity\Expensefinanzamt:
+    type: entity
+    table: null
+    repositoryClass: ExpenseBundle\Repository\ExpensefinanzamtRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        employeeId:
+            type: integer
+        date:
+            type: date
+            nullable: false
+        expenses1:
+            type: integer
+            nullable: false
+        expenses2:
+            type: integer
+            nullable: false
+        expenses3:
+            type: integer
+            nullable: false
+        status:
+            type: integer
+            nullable: false      
+        createAt:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: create            
+
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: expensefinanzamts
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        byemployee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            joinColumn:
+                name: status
+                referencedColumnName: id        

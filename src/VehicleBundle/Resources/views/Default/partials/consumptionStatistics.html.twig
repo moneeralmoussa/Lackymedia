@@ -1,0 +1,366 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Verbrauchsstatistik' %}
+
+{% block content %}
+	{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_PERSONAL') %}
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="row">
+					{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Bericht w&auml;hlen' } %}
+						{% block content %}
+							<div class="input-group">
+								<!-- <label for="reports">Bericht ausw&auml;hlen:</label> -->
+								<select class="form-control" id="reports">
+									{% for reportDate in reportDates %}
+										<option data-startdate="{{ reportDate.consumptionBeginTime|date('Y-m-d') }} 00:00:00" data-enddate="{{ reportDate.consumptionEndTime|date('Y-m-d') }} 23:59:59">
+											{{ reportDate.consumptionBeginTime|date('d.m.Y') }} - {{ reportDate.consumptionEndTime|date('d.m.Y') }}
+										</option>
+									{% endfor %}
+								</select>
+								<span class="input-group-btn">
+									<a class="btn btn-success" id="go">
+										{% trans %}Anzeigen{% endtrans %}
+									</a>
+								</span>
+							</div>
+						{% endblock %}
+					{% endembed %}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if consumptions %}
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-danger" id="consumption">
+					<div class="box-header with-border">
+						<h3 class="box-title">
+							Verbrauchsstatistik {{ consumptions[0].consumptionBeginTime|date('d.m.Y') }} - {{ consumptions[0].consumptionEndTime|date('d.m.Y') }}
+						</h3>
+						<div class="box-tools pull-right">
+							<button type="button" class="btn btn-box-tool" data-widget="collapse">
+								<i class="fa fa-minus"></i>
+							</button>
+						</div>
+					</div>
+					<!-- /.box-header -->
+					<div class="box-body">
+						<small>Folgende Fahrzeuge sind weniger als 5KM gefahren worden und sind in der Statistik ausgenommen:
+							{% for consumption in consumptions %}
+								{% if consumption.vehicle and consumption.detailByLabel('Strecke-KM').value < 5 %}
+									<a href="{{ path('vehicle_detail', { 'id': consumption.vehicle.id }) }}">
+										L {{ consumption.vehicle.trimbleId }}
+									</a>
+									({% if (consumption.driver and (usr.employee.id == consumption.driver.id)) %}ich{% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') ) %}
+										{{ consumption.driver.name }}
+									{% endif %}),
+								{% endif %}
+							{% endfor %}
+						</small>
+						<div class="table-responsive">
+							<table id="consumptiontable" class="table table-striped table-hover table-condensed">
+								<thead style="background: rgb(205,0,1); color: #fff;">
+									<tr>
+										<th>{% trans %}Marke{% endtrans %}</th>
+										<th>{% trans %}LKW{% endtrans %}</th>
+										<th class="hidden-xs">{% trans %}Kennz.{% endtrans %}</th>
+										<th>{% trans %}Fahrer{% endtrans %}</th>
+										<th>{% trans %}Strecke{% endtrans %} km</th>
+										<th>{% trans %}Verbrauch{% endtrans %} L/100 km</th>
+										<th>{% trans %}Verbrauch in L{% endtrans %}</th>
+										<th>{% trans %}Tempomat{% endtrans %}</th>
+										<th>{% trans %}Leerlauf{% endtrans %}</th>
+										<th>{% trans %}N-Antrieb{% endtrans %}</th>
+										<th>{% trans %}zu<span class="hidden-xs"> </span>schnell{% endtrans %} km/100<span class="hidden-xs"> </span>km</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									{% include 'VehicleBundle:Default:partials/consumption_loop.html.twig' %}
+								</tbody>
+								<tfoot style="background: rgb(205,0,1); color: #fff;">
+									<tr>
+										<th>
+											<input type="text" style="color:#000;" data-col="0" placeholder="Suche Marke" />
+										</th>
+										<th>
+											<input type="text" style="color:#000;" data-col="1" placeholder="Suche LKW" />
+										</th>
+										<th class="hidden-xs">
+											<input type="text" style="color:#000;" data-col="2" placeholder="Suche Kennz." />
+										</th>
+										<th>
+											<input type="text" style="color:#000;" data-col="3" placeholder="Suche Fahrer" />
+										</th>
+										<th id="route-avg" class="text-right"></th>
+										<th id="consumption-avg" class="text-right"></th>
+										<th id="consumption-sum" class="text-right"></th>
+										<th id="cruise-control-avg" class="text-right"></th>
+										<th id="neutral-avg" class="text-right"></th>
+										<th id="auxiliary-drive-avg" class="text-right"></th>
+										<th id="too-fast-avg" class="text-right"></th>
+										<th></th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					<!-- /.box-body -->
+				</div>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block stylesheet %}
+	<link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+	<style>
+		table.dataTable.table-condensed>thead>tr>th:nth-child(5),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(6),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(7),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(8),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(9),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(10),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(11) {
+			text-align: right;
+			padding-right: 5px;
+			padding-left: 20px;
+		}
+
+		table.dataTable.table-condensed>thead>tr>th:nth-child(5):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(6):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(7):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(8):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(9):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(10):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(11):after,
+		table.dataTable.table-condensed>thead>tr>th:last-child:after{
+			opacity: 0!important;
+		}
+
+		#consumption {
+			margin-bottom: 0;
+		}
+
+		.table-responsive {
+			margin-bottom: 0;
+		}
+
+		thead th {
+			white-space: nowrap;
+		}
+
+		#consumptiontable_wrapper div.dataTables_scrollBody {
+			min-height: 300px;
+		}
+
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_PERSONAL') %}
+			@media only screen and (min-width: 992px) {
+				#consumptiontable_wrapper div.dataTables_scrollBody {
+					max-height: calc(100vh - 480px) !important;
+				}
+			}
+		{% else %}
+			@media only screen and (min-width: 992px) {
+				#consumptiontable_wrapper div.dataTables_scrollBody {
+					max-height: calc(100vh - 320px) !important;
+				}
+			}
+		{% endif %}
+	</style>
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+	<script>
+		function calcAVG() {
+			$( "#consumptiontable tfoot tr:last th" ).each(function( index ) {
+				if (index > 3) {
+					$( this ).text('');
+				}
+			});
+
+			var routeavg = 0;
+			var consumptionavg = 0;
+			var cruisecontrolavg = 0;
+			var neutralavg = 0;
+			var auxiliarydriveavg = 0;
+			var consumptionsum = 0;
+			var toofastavg = 0;
+			var rows = $("#consumptiontable").dataTable().$('tr', { "filter": "applied" });
+			// console.log(rows);
+
+			for(var i=0;i<rows.length;i++) {
+				routeavg += parseFloat($(rows[i]).find("td:eq(4) span").html());
+				consumptionavg += parseFloat($(rows[i]).find("td:eq(5) > span").html());
+				consumptionsum += parseFloat($(rows[i]).find("td:eq(6) > span").html());
+				cruisecontrolavg += parseFloat($(rows[i]).find("td:eq(7) > span").html());
+				neutralavg += parseFloat($(rows[i]).find("td:eq(8) > span").html());
+				auxiliarydriveavg += parseFloat($(rows[i]).find("td:eq(9) > span").html());
+				toofastavg += parseFloat($(rows[i]).find("td:eq(10) > span").html());
+			}
+
+			$('.dataTables_scrollFoot #route-avg').html('&Oslash; ' + (routeavg / rows.length).toFixed(0));
+			$('.dataTables_scrollFoot #consumption-avg').html('&Oslash; ' + (consumptionavg / rows.length).toFixed(1));
+			$('.dataTables_scrollFoot #consumption-sum').html('&sum; ' + consumptionsum.toFixed(1));
+			$('.dataTables_scrollFoot #cruise-control-avg').html('&Oslash; ' + (cruisecontrolavg / rows.length).toFixed(1)+ '%');
+			$('.dataTables_scrollFoot #neutral-avg').html('&Oslash; ' + (neutralavg / rows.length).toFixed(1)+ '%');
+			$('.dataTables_scrollFoot #auxiliary-drive-avg').html('&Oslash; ' + (auxiliarydriveavg / rows.length).toFixed(1) + '%');
+			$('.dataTables_scrollFoot #too-fast-avg').html('&Oslash; ' + (toofastavg / rows.length).toFixed(3));
+		}
+
+		$(document).ready(function() {
+			calcAVG();
+
+			var table = $('#consumptiontable').DataTable({
+				destroy: true,
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_PERSONAL') %}
+					scrollY: 'calc(100vh - 520px)',
+				{% else %}
+					scrollY: 'calc(100vh - 380px)',
+				{% endif%}
+				scrollX: true,
+				scrollXInner: "100%",
+				scrollCollapse: true,
+				paging: false,
+				order: [
+					[4, 'desc']
+				],
+				searching: true,
+				info: false,
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+				},
+				dom: 'Bfrtip',
+				buttons: {
+					buttons: [{
+						extend: 'print',
+						text: '<i class="fa fa-print"></i> Print',
+						title: $('h1').text(),
+						exportOptions: {
+							columns: ':not(.no-print)'
+						},
+						footer: true,
+					}, {
+						extend: 'pdfHtml5',
+						text: '<i class="fa fa-file-pdf-o"></i> PDF',
+						title: $('h1').text(),
+						pageSize: 'A0',
+						orientation: 'landscape',
+						exportOptions: {
+							columns: ':not(.no-print)'
+						},
+						footer: true
+					}, {
+						extend: 'copy'
+					}, {
+						extend: 'csv'
+					}, {
+						extend: 'excel'
+					}],
+					dom: {
+						container: {
+							className: 'dt-buttons'
+						},
+						button: {
+							className: 'btn btn-default'
+						}
+					}
+				},
+			});
+
+			table.on( 'search.dt', function () {
+				// console.log('test');
+				calcAVG();
+			});
+
+			table.footer().columns().each( function ( colIdx ) {
+				$( 'input', table.column().footer() ).on('keyup change', function () {
+					table.column($(this).data('col'))
+					.search(this.value)
+					.draw();
+					calcAVG();
+				});
+			});
+
+			$('#go').on('click', function() {
+				reports = $( "#reports option:selected" );
+				startdate_post = reports.data('startdate');
+				enddate_post = reports.data('enddate');
+				$.ajax({
+					url: '{{ path('vehicle_ajax_consumption_statistics') }}',
+					data: {
+						startdate: startdate_post,
+						enddate: enddate_post
+					},
+					type: 'POST',
+					dataType: 'json',
+					success: function(data) {
+						// console.log(data);
+						$('#consumption .box-title').text('Verbrauchsstatistik ' + reports.text());
+						$('#consumptiontable').DataTable().destroy();
+						$('#consumptiontable tbody').html(data);
+						$('#consumptiontable').DataTable({
+							destroy: true,
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_PERSONAL') %}
+								scrollY: 'calc(100vh - 520px)',
+							{% else %}
+								scrollY: 'calc(100vh - 380px)',
+							{% endif%}
+							scrollX: true,
+							scrollXInner: "100%",
+							scrollCollapse: true,
+							paging: false,
+							order: [
+								[4, 'desc']
+							],
+							searching: false,
+							info: false,
+							language: {
+								url: "//cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+							},
+							dom: 'Bfrtip',
+							buttons: {
+								buttons: [{
+									extend: 'print',
+									text: '<i class="fa fa-print"></i> Print',
+									title: $('h1').text(),
+									exportOptions: {
+										columns: ':not(.no-print)'
+									},
+									footer: true,
+								}, {
+									extend: 'pdfHtml5',
+									text: '<i class="fa fa-file-pdf-o"></i> PDF',
+									title: $('h1').text(),
+									pageSize: 'A0',
+									orientation: 'landscape',
+									exportOptions: {
+										columns: ':not(.no-print)'
+									},
+									footer: true
+								}, {
+									extend: 'copy'
+								}, {
+									extend: 'csv'
+								}, {
+									extend: 'excel'
+								}],
+								dom: {
+									container: {
+										className: 'dt-buttons'
+									},
+									button: {
+										className: 'btn btn-default'
+									}
+								}
+							},
+						}).draw();
+						calcAVG();
+					}
+				});
+			});
+		});
+	</script>
+{% endblock %}

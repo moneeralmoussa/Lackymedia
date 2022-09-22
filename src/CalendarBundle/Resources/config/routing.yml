@@ -1,0 +1,110 @@
+calendar_settings:
+    path:     calendar/settings
+    defaults: { _controller: CalendarBundle:Calendar:settings }
+
+calendar_index:
+    path:     calendar
+    defaults: { _controller: CalendarBundle:Calendar:index }
+
+calendar_show:
+    path:     calendar/employee/{id}/show
+    defaults: { _controller: CalendarBundle:Calendar:show }
+
+calendar_capacity:
+    path:     calendar/capacity
+    defaults: { _controller: CalendarBundle:Calendar:capacity }
+
+calendar_vacationlock:
+    path:     calendar/vacationlock
+    defaults: { _controller: CalendarBundle:Calendar:vacationlock }
+    methods:  [GET]
+
+calendar_global:
+    path:     calendar/global
+    defaults: { _controller: CalendarBundle:Calendar:global }
+    methods:  [GET,POST]
+
+Urlaubsanderung_global:
+    path:     calendar/Urlaubsanderung
+    defaults: { _controller: CalendarBundle:Calendar:urlaubsanderung}
+    methods:  [GET,POST]
+
+calendar_ajaxpostvacationlock:
+    path:     calendar/vacationlock
+    defaults: { _controller: CalendarBundle:Calendar:ajaxPostVacationlock }
+    methods:  [POST]
+
+calendar_ajaxgetabsence:
+    path:     calendar/absence/json
+    defaults: { _controller: CalendarBundle:Calendar:ajaxGetAbsence }
+    methods:  [POST,GET]
+
+calendar_ajaxgetvacationlock:
+    path:     calendar/vacationlock/json
+    defaults: { _controller: CalendarBundle:Calendar:ajaxGetVacationlock }
+    methods:  [GET]
+
+calendar_jsonpublicholidays:
+    path:     calendar/publicholidays/json
+    defaults: { _controller: CalendarBundle:Calendar:jsonPublicHolidays }
+    methods:  [GET]
+
+calendar_jsonpublicholidaysbydate:
+    path:     calendar/publicholidays
+    defaults: { _controller: CalendarBundle:Calendar:jsonPublicHolidaysByYear }
+    methods:  [POST,GET]
+
+calendar_request:
+    path:     calendar/requests
+    defaults: { _controller: CalendarBundle:Calendar:request }
+
+calendar_json_absencereason:
+    path:     calendar/absencereason/{id}/json
+    defaults: { _controller: CalendarBundle:Calendar:jsonAbsenceReason }
+    methods:  [POST]
+
+calendar_json_absenceremaining:
+    path:     calendar/absenceremaining/json
+    defaults: { _controller: CalendarBundle:Calendar:jsonRemainingAbsence }
+    methods:  [POST]
+
+calendar_json_absencesbetweenbyemployee:
+    path:     calendar/absences/employees/between
+    defaults: { _controller: CalendarBundle:Calendar:jsonAbsenceBetweenByEmployee }
+
+calendar_ajax:
+    path:     calendar/ajax
+    defaults: { _controller: CalendarBundle:Calendar:ajax }
+
+calendar_statistics_json:
+    path:     /statistics
+    defaults: { _controller: CalendarBundle:Calendar:jsonStatistics}
+    methods:  [POST]
+
+Azubicalendar:
+    path:     calendar/azubicalendar
+    defaults: { _controller: CalendarBundle:Calendar:Azubicalendar}
+    methods:  [GET,POST]
+
+azubijsonEmployee:
+    path:     calendar/azubijson
+    defaults: { _controller: CalendarBundle:Calendar:azubijsonEmployee}
+    methods:  [GET,POST]
+
+Dialogcalendar:
+    path:     calendar/dialogcalendar
+    defaults: { _controller: CalendarBundle:Calendar:Dialogcalendar}
+    methods:  [GET,POST]
+
+dialogjsonEmployee:
+    path:     calendar/dialogjson
+    defaults: { _controller: CalendarBundle:Calendar:dialogjsonEmployee}
+    methods:  [GET,POST]
+Reporterrors:
+    path:     calendar/reporterrors
+    defaults: { _controller: CalendarBundle:Calendar:reporterrors}
+    methods:  [GET,POST]
+updatezuzuglichabzugelich:
+    path:     calendar/updatezuzuglichabzugelich
+    defaults: { _controller: CalendarBundle:Calendar:updatezuzuglichabzugelich}
+    methods:  [GET,POST]

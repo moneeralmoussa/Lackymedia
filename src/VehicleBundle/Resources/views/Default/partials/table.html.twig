@@ -1,0 +1,41 @@
+<div class="table-responsive">
+  <table class="table table-datatable table-striped table-bordered" id="vehicletable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Typ</th>
+        <th>Subtyp</th>
+        <th>Kommentar</th>
+		<th>Komalog-ID</th>
+        <th class="action-column">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in vehicles %}
+        <tr data-key="{{ item.id }}">
+            <td>{{ item.name }}</td>
+            <td>{{ item.vehicletype.vehicletypetype.name }}</td>
+            <td>{{ item.vehicletype.name }}</td>
+            <td>{{ item.comment }}</td>
+			<td>{{ item.komalogId }}</td>
+            <!-- <td><a href="{{ path('vehicle_detail', {'id':item.id}) }}" title="{% trans %}Anzeigen{% endtrans %}" aria-label="{% trans %}Anzeigen{% endtrans %}" data-pjax="0"><span class="glyphicon glyphicon-eye-open"></span></a></td> -->
+            <td>
+              <div class="btn-group">
+                <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="{{ path('vehicle_detail', {'id':item.id}) }}" title="{% trans %}Fahrzeug anzeigen{% endtrans %}" aria-label="{% trans %}Fahrzeug anzeigen{% endtrans %}" data-pjax="0"> Fahrzeug anzeigen</a></li>
+
+                  {% if item.deletedAt is not null %}
+                    <li><a href="#!" title="{% trans %}Fahrzeug wiederherstellen{% endtrans %}" aria-label="{% trans %}Fahrzeug wiederherstellen{% endtrans %}" class="restore"> Fahrzeug wiederherstellen</a></li>
+                  {% else %}
+                    <li><a href="#!" title="{% trans %}Fahrzeug löschen{% endtrans %}" aria-label="{% trans %}Fahrzeug löschen{% endtrans %}" class="delete"> Fahrzeug löschen</a></li>
+                  {% endif %}
+                </ul>
+              </div>
+            </td>
+        </tr>
+        <!-- 'komalogId':'{{ item.komalogId }}', 'trimbleId':'{{ item.trimbleId }}', 'vehicletype':{'komalogid':'{{ item.vehicletype.komalogId }}'} -->
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

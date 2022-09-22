@@ -1,0 +1,13 @@
+IndexUploadFromDriver:
+    path:                                                /
+    defaults: { _controller:                             "EmployeeBundle:Files:index" }
+
+myPhotos:
+    path:     /myPhotos
+    defaults: { _controller: EmployeeBundle:Files:myPhotos }
+showPhotos:
+    path:     /showPhotos
+    defaults: { _controller: EmployeeBundle:Files:showPhotos }
+delPhoto:
+    path:     /uploads/{name}/{id}/del
+    defaults: { _controller: EmployeeBundle:Files:delPhoto }

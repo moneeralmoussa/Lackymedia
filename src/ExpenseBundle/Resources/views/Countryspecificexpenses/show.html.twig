@@ -1,0 +1,41 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Länderspesensatz'|trans ~ ': ' ~  countryspecificexpense.countryName %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Länderspesensatz'|trans ~ ': ' ~  countryspecificexpense.countryName } %}
+          {% block content %}
+          <table class="table">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr>
+                      <th>{% trans %}Kürzel{% endtrans %}</th>
+                      <td>{{ countryspecificexpense.countryISO }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Land{% endtrans %}</th>
+                      <td>{{ countryspecificexpense.countryName }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Spesen 8h{% endtrans %}</th>
+                      <td>{{ countryspecificexpense.expenses8h }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Spesen 24h{% endtrans %}</th>
+                      <td>{{ countryspecificexpense.expenses24h }}</td>
+                  </tr>
+              </tbody>
+          </table>
+          <a href="{{ path('expenses_countryspecificexpenses_edit', { 'id': countryspecificexpense.id }) }}" class="btn btn-info pull-right">{% trans %}Bearbeiten{% endtrans %}</a>
+          {{ form_start(delete_form) }}
+              <input class="btn btn-danger pull-right" type="submit" value="Löschen" style="margin-right:15px;">
+          {{ form_end(delete_form) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

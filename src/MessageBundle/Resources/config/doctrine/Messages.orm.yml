@@ -1,0 +1,39 @@
+MessageBundle\Entity\Messages:
+    type: entity
+    table: null
+    repositoryClass: MessageBundle\Repository\MessagesRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        message:
+            type: string
+            length: 1024
+            nullable: false
+            unique: false
+            column: message
+        type:
+            type: string
+            length: 10
+            nullable: false
+            unique: true
+            column: type
+        createAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        deletedAt:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: messagess
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id             

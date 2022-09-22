@@ -1,0 +1,78 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Dokument' %}
+
+{% block content %}
+<div class="row">
+	<div class="grid-item col-xs-12">
+		<div class="row">
+		{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Upload' } %}
+			{% block content %}
+				{% if step == 1 %}
+				<form action="{{ path('IndexUploadFromDriver') }}" method="POST" enctype="multipart/form-data">
+
+                 <div class="form-group">
+                  <label>Titel</label>
+                  <input type="text" class="form-control" placeholder="eingeben ..." name="title">
+                 </div>
+
+                <div class="form-group">
+                  <label>Informationen</label>
+                  <textarea class="form-control" rows="3" placeholder="eingeben..." name="info"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios1" value="Krankenschein" checked="">
+                      Krankenschein
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios2" value="Spesen">
+                      Spesen
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios3" value="Abrechnung">
+                      Abrechnung
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" id="optionsRadios4" value="andrer">
+                      Sonstiges
+                    </label>
+                  </div>
+                </div>
+
+				<input type="file" name="excelfile" accept=".pdf, image/png, image/jpegv" id="file-input" class="file" data-preview-file-type="text">
+				</form>
+				{% else %}
+					<div class="alert alert-success alert-dismissible">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<h4>Die Datei wurde gesendet</h4>
+					</div>
+					<a href="{{ path('app') }}" class="btn btn-info pull-right">{% trans %}Zurück zur Übersicht{% endtrans %}</a>
+				{% endif %}
+			{% endblock %}
+		{% endembed %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/assets/bootstrap-fileinput/css/fileinput.min.css" />
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="/assets/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/assets/bootstrap-fileinput/js/locales/de.js"></script>
+    <script type="text/javascript">
+		$( document ).ready(function() {
+			$("#input-id").fileinput({
+				language: "de",
+			});
+		});
+    </script>
+{% endblock %}

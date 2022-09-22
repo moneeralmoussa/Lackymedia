@@ -1,0 +1,130 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+    - { resource: "@TrimbleSoapBundle/Resources/config/services.yml" }
+    - { resource: "@EmployeeBundle/Resources/config/services.yml" }
+    - { resource: "@VehicleBundle/Resources/config/services.yml" }
+    - { resource: "@AppBundle/Resources/config/services.yml" }
+    - { resource: "@UserBundle/Resources/config/services.yml" }
+    - { resource: "@AbsenceBundle/Resources/config/services.yml" }
+    - { resource: "@VehicleLogBundle/Resources/config/services.yml" }
+    - { resource: "@LocationBundle/Resources/config/services.yml" }
+    - { resource: "@AuditBundle/Resources/config/services.yml" }
+    - { resource: "@AnnouncementsBundle/Resources/config/services.yml" }
+
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: de
+    trimble_user: trimble
+    trimble_password: ca584Babn+F_ZSAJ.qW
+
+    dse_roles:
+      'admin': 'ROLE_ADMIN'
+      'Mitarbeiter': 'Mitarbeiter'
+
+framework:
+    #esi: ~
+    translator: { fallbacks: ['de'] }
+    secret: '%secret%'
+    router:
+        resource: '%kernel.root_dir%/config/routing.yml'
+        strict_requirements: ~
+    form: ~
+    csrf_protection: ~
+    validation: ~
+    #serializer: { enable_annotations: true }
+    templating:
+        engines: ['twig']
+    default_locale: '%locale%'
+    trusted_hosts: ~
+    trusted_proxies: ~
+    session:
+        # handler_id set to null will use default session handler from php.ini
+        handler_id: ~
+    fragments: ~
+    http_method_override: true
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    form_themes:
+        - bootstrap_3_layout.html.twig
+    form:
+        resources:
+            - 'AbsenceBundle:Form:fields.html.twig'
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        host: '%database_host%'
+        port: '%database_port%'
+        dbname: '%database_name%'
+        user: '%database_user%'
+        password: '%database_password%'
+        charset: UTF8
+        # if using pdo_sqlite as your database driver:
+        #   1. add the path in parameters.yml
+        #     e.g. database_path: '%kernel.root_dir%/data/data.db3'
+        #   2. Uncomment database_path in parameters.yml.dist
+        #   3. Uncomment next line:
+        #path: '%database_path%'
+
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
+        dql:
+            string_functions:
+                MONTH: DoctrineExtensions\Query\Mysql\Month
+                YEAR: DoctrineExtensions\Query\Mysql\Year
+                DAYOFYEAR: DoctrineExtensions\Query\Mysql\DayOfYear
+                GROUP_CONCAT: DoctrineExtensions\Query\Mysql\GroupConcat
+                DATE_FORMAT: DoctrineExtensions\Query\Mysql\DateFormat
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    # port: '%mailer_port%'
+    # auth_mode: '%mailer_authmode%'
+    spool: { type: memory }
+
+fos_user:
+    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    firewall_name: main
+    user_class: EmployeeBundle\Entity\User
+    group:
+        group_class: EmployeeBundle\Entity\Group
+    from_email:
+        address: "%mailer_from_address%"
+        sender_name: "%mailer_from_sender_name%"
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            sluggable: true
+            timestampable: true
+            softdeleteable: true
+
+data_dog_audit:
+    unaudited_entities:
+        - TrimbleSoapBundle\Entity\Tracedata
+        - TrimbleSoapBundle\Entity\Tracedataproperty
+        - TrimbleSoapBundle\Entity\Tracepolldata
+        - TrimbleSoapBundle\Entity\Tracetype
+        - TrimbleSoapBundle\Entity\expenseview
+        - TrimbleSoapBundle\Entity\Trimbleactivity
+        - VehicleBundle\Entity\Consumption
+        - VehicleBundle\Entity\ConsumptionDetail
+        - AbsenceBundle\Entity\AbsenceDetailClearing

@@ -1,0 +1,39 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'aaaaaaaa'|trans ~ ': ' ~  'tttttt' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'aaaaaa'|trans ~ ': ' ~  'vehicle.name' } %}
+          {% block content %}
+          <div id="coordinates"></div>
+          <div>
+              {{ form_start(form) }}
+                  {{ form_widget(form) }}
+                  <input type="submit" value="{% trans %}Speichern{% endtrans %}" class="btn btn-info"/>
+                  <a href="" class="btn btn-danger">{% trans %}Löschen{% endtrans %}</a>
+              {{ form_end(form) }}
+          </div>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+    <script type="text/javascript">
+            $('.datetimepicker').datetimepicker({
+                locale: 'de'
+            });
+    </script>
+
+{% endblock %}

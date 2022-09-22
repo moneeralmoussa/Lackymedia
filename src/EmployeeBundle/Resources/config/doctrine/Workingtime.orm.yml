@@ -1,0 +1,60 @@
+EmployeeBundle\Entity\Workingtime:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\WorkingtimeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        dayOfWeek:
+            type: smallint
+        workBegin:
+            type: time
+            nullable: true
+        workEnd:
+            type: time
+            nullable: true
+        breakBegin:
+            type: time
+            nullable: true
+        breakEnd:
+            type: time
+            nullable: true
+        overtimePremium:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+        overtimePremiumPassenger:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+        overtimePremiumIsBrutto:
+            type: boolean
+            nullable: true
+        specialProvision:
+            type: string
+            length: 255
+            nullable: true
+        school:
+            type: boolean
+            nullable: true
+        schoolBegin:
+            type: time
+            nullable: true
+        schoolEnd:
+            type: time
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        contract:
+            targetEntity: Contract
+            inversedBy: workingtimes
+            joinColumn:
+                name: contract_id
+                referencedColumnName: id
+    

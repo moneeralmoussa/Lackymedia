@@ -1,0 +1,130 @@
+<script src="/assets/moment/min/moment-with-locales.min.js"></script>
+<script src="/assets/bootstrap-year-calendar/js/bootstrap-year-calendar.min.js"></script>
+<script src="/assets/bootstrap-year-calendar/js/languages/bootstrap-year-calendar.de.js"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+
+  $.ajax({
+      url: "{{ path('calendar_ajaxgetvacationlock')}}",
+      success: function(data) {
+        var datasource = [];
+        _.each(data, function(value,key){
+          _.each(value, function(v){
+            datasource.push(new Date(v));
+          });
+        });
+        $('#calendar').data('calendar').setDisabledDays(datasource);
+      }
+  });
+
+var content = '';
+var popupcontent = '';
+  var calendar = $('#calendar').calendar({
+        displayWeekNumber: true,
+        language: 'de',
+        clickDay: function(e) {
+          $('#modal').modal();
+          // console.log($('.event-tooltip-content'));
+         },
+        mouseOnDay: function(e) {
+          content = '';
+            if(e.events.length > 0) {
+              // console.log(e.events);
+
+              var eventsArray = [];
+              e.events.forEach(function(element) {
+                if(!eventsArray[element.reason]){
+                  eventsArray[element.reason] = [];
+                  eventsArray[element.reason]['color'] = element.color;
+                }
+                eventsArray[element.reason].push({
+                  id : element.id,
+                  name : element.name,
+                  status : element.status,
+                  day : element.day
+                });
+
+                //.push({
+                //   'name' : element.name,
+                // });
+              });
+              content += '<div class="event-tooltip-content">';
+              for(var reason in eventsArray) {
+                        content += '<div class="event-name" style="padding-left:5px; border-left: 4px solid ' + eventsArray[reason].color + '"><strong>' + reason + '</strong></div>'
+                        + '<div>';
+                eventsArray[reason].forEach(function(element) {
+                  var statuscolor ='';
+
+                  if(element.status == 'genehmigt'){
+                    statuscolor = 'style="color:#0f0"';
+                  } else if(element.status == 'abgelehnt') {
+                    statuscolor = 'style="color:#f00"';
+                  }
+
+                  content += '<p style="padding-left:9px;">'+ element.name + ' (' + element.day + ')' + ' - <span '+statuscolor+'>' + element.status +'</span></p>'
+                  // + '<div class="event-location"><strong>{% trans %}Berechnete Tage{% endtrans %}</strong>: ' + e.events[i].day + '</div>'
+                  // + '<div class="event-location"><strong>{% trans %}Bearbeitet von{% endtrans %}</strong>: ' + e.events[i].approvedBy + '</div>'
+                  // + '<div class="event-location"><strong>{% trans %}Bemerkung{% endtrans %}</strong>: ' + e.events[i].note + '</div>'
+                  // + '<div class="event-location"><strong>{% trans %}Status{% endtrans %}</strong>: ' + e.events[i].status + '</div>'
+
+                });
+              }
+              content += '</div>';
+
+                $(e.element).popover({
+                    trigger: 'manual',
+                    container: 'body',
+                    html:true,
+                    content: content
+                });
+
+                $(e.element).popover('show');
+
+                // console.log(e.events.length > 0);
+            } else {
+              content = '';
+            }
+            $('#modal-content').html(content);
+        },
+        mouseOutDay: function(e) {
+            if(e.events.length > 0) {
+                $(e.element).popover('hide');
+            }
+        },
+        dayContextMenu: function(e) {
+            $(e.element).popover('hide');
+        },
+        yearChanged: function(e) {
+          e.preventRendering = true;
+
+          // $(e.target).append('<div style="text-align:center"><img src="your-loading-image.gif" /></div>');
+
+
+          $.ajax({
+              url: "{{ path('absence_json',{id:employee.id})}}",
+              success: function(data) {
+                  data.forEach(function(element) {
+                    element.startDate = moment(element.startDate.date, 'YYYY-MM-DD HH:mm').toDate();
+                    element.endDate = moment(element.endDate.date, 'YYYY-MM-DD HH:mm').toDate();
+                  });
+                  $(e.target).data('calendar').setDataSource(data);
+              }
+          });
+        }
+    });
+
+    $.get('{{ path('absence_json',{id:employee_id})}}', function(data) {
+        for(key in data) {
+          // console.log(data[key].startDate);
+          data[key].startDate = new Date(data[key].startDate.date);
+          data[key].endDate = new Date(data[key].endDate.date);
+        }
+    $('#calendar').data('calendar').setDataSource(data);
+    });
+
+
+calendar.setYear(new Date().getFullYear());
+
+
+});
+</script>

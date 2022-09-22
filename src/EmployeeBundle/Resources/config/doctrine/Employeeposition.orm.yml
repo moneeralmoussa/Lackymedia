@@ -1,0 +1,15 @@
+EmployeeBundle\Entity\Employeeposition:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\EmployeepositionRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }

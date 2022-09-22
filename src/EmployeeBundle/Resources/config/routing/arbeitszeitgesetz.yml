@@ -1,0 +1,8 @@
+WorkingHoursShow:
+    path:                                                /
+    defaults: { _controller:                             "EmployeeBundle:WorkingHoursPause:show" }
+    methods:                                             [GET, POST]
+WorkingHoursNew:
+    path:                                                /new
+    defaults: { _controller:                             "EmployeeBundle:WorkingHoursPause:new" }
+    methods:                                             [GET, POST]

@@ -1,0 +1,4 @@
+services:
+#    vehicle_log.example:
+#        class: VehicleLogBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

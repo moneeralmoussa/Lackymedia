@@ -1,0 +1,73 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Nachricht anlegen' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Nachricht anlegen' } %}
+            {% block content %}
+              {{ form_start(form) }}
+                  {{ form_widget(form) }}
+                  <input type="submit" value="{% trans %}Nachricht anlegen{% endtrans %}" class="btn btn-info pull-right" style="background-color:red"/>
+
+              {{ form_end(form) }}
+			  <a href="/TelephoneList/ShowTelephoneList"><input type="button" href="/" value="{% trans %}Zurück{% endtrans %}" class="btn btn-info pull-right" style="background-color:green"/></a>
+            {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+    <link type="text/css" rel="stylesheet" href="/assets/tail.select/css/modern/tail.select-light-feather.css" />
+    <script type="text/javascript" src="/assets/tail.select/js/tail.select-full.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+          $("#Messagebundle_Message_employee")[0].parentElement.hidden=true;
+          $("#Messagebundle_Message_departments")[0].parentElement.hidden=false;
+        tail.select(".employee", {
+              search: true,
+              descriptions: true,
+              animate: true,              // [0.3.0]      Boolean
+              locale: 'de',
+              multiSelectAll: true,
+              });
+        tail.select(".department", {
+              search: true,
+              descriptions: true,
+              animate: true,              // [0.3.0]      Boolean
+              locale: 'de',
+              multiSelectAll: true,
+              });
+       tail.select(".type", {
+              search: false,
+              descriptions: true,
+              animate: true,
+              locale: 'de',
+              multiSelectAll: false,
+              });
+        tail.select(".group", {
+               search: false,
+               descriptions: true,
+               animate: true,
+               locale: 'de',
+               multiSelectAll: false,
+               }).on("change", function(item, state){
+                 if(item.key == 2)
+                 {
+                    $("#Messagebundle_Message_employee")[0].parentElement.hidden=false;
+                    $("#Messagebundle_Message_departments")[0].parentElement.hidden=true;
+                  }
+                  else
+                  {
+                     $("#Messagebundle_Message_employee")[0].parentElement.hidden=true;
+                     $("#Messagebundle_Message_departments")[0].parentElement.hidden=false;
+                   }
+                });
+         });
+    </script>
+{% endblock %}

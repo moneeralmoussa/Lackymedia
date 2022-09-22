@@ -1,0 +1,486 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{% trans %}Fahrzeugdetails{% endtrans %}: {{ vehicle.name }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/highslide.css" />
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+    <style type="text/css">
+        .chart {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .axis path,.axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .bar {
+            fill: #AAD0CD;
+        }
+
+        .bar-failed {
+            fill: #CC5750;
+        }
+
+        .bar-running {
+            fill: #8DB87C;
+        }
+
+        .bar-succeeded {
+            fill: #AAD0CD;
+        }
+
+        .bar-killed {
+            fill: #E4DBBF;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/gantt-chart-d3.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/highslide-with-html.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
+
+{% block jumbotron %}
+    {% include 'partials/jumbotron.html.twig' with { 'title': 'Detailansicht'|trans ~ ': ' ~ vehicle.name } %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="col-xs-12">
+        <h2>{% trans %}Fahrzeugstammdaten{% endtrans %}</h2>
+        <table class="table">
+            <thead>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>{% trans %}Name{% endtrans %}</th>
+                    <td>{{ vehicle.name }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Typ{% endtrans %}</th>
+                    <td>{{ vehicle.vehicletype.vehicletypetype.name }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Subtyp{% endtrans %}</th>
+                    <td>{{ vehicle.vehicletype.name }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Kommentar{% endtrans %}</th>
+                    <td>{{ vehicle.comment }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Trimble-Terminal-Id{% endtrans %}</th>
+                    <td>{{ vehicle.trimbleId }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Komalog-Id{% endtrans %}</th>
+                    <td>{{ vehicle.komalogId }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Komalog-Typ-Id{% endtrans %}</th>
+                    <td>{{ vehicle.vehicletype.komalogId }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-xs-12">
+        <ul class="list-inline">
+            <li>
+                <a href="{{ path('vehicle_homepage') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="draw_activities_container" class="col-xs-12" style="display:none;">
+        <h2>{% trans %}Aktivitäten{% endtrans %} <img id="draw_activities_img" src="/bundles/vehicle/css/graphics/loader.white.gif" style="display:none;" /></h2>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker1'>
+                <input type='text' class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+        
+        <div class="draw_activities" style="height:464px;width:100%;display:none;"></div>
+    </div>
+    <div id="map_container" class="col-xs-12" style="display:none;">
+        <h2>{% trans %}Fahrzeugposition{% endtrans %} <img id="save_drivers_home_img" src="/bundles/vehicle/css/graphics/loader.white.gif" style="display:none;" /></h2>
+        <ul id="save_drivers_home_button" style="display:none;" class="list-inline">
+            <li>
+                <a class="btn btn-lg btn-danger" href="#" onclick="saveDriversHome();return false;" role="button">{% trans %}Geofence{% endtrans %} {% trans %}speichern{% endtrans %}</a>
+            </li>
+        </ul>
+        <div id="map" style="height:400px;width:100%;"></div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+    <script type="text/javascript">
+        var tasks;
+        var taskNames;
+        var gantt = false;
+        var driver = false;
+        var drivers = {};
+        var map = false;
+        var geocoder = false;
+        var start_infowindow;
+        var start_marker;
+        var end_infowindow;
+        var end_marker;
+
+        var flightPlanCoordinates = [];
+        var flightPath;
+
+        var circle = false;
+        var driverHomes = {};
+        
+        hs.graphicsDir = '/bundles/vehicle/css/graphics/';
+        hs.outlineType = 'rounded-white';
+        hs.showCredits = false;
+        hs.wrapperClassName = 'draggable-header';
+
+        function draw_json_activities(json) {
+            if (json) {
+                tasks = [];
+                taskNames = [];
+                driver = false;
+                drivers = {};
+                var id_salt = (new Date()).getTime();
+
+
+                var taskStatus = {
+                    "SUCCEEDED" : "bar",
+                    "FAILED" : "bar-failed",
+                    "RUNNING" : "bar-running",
+                    "KILLED" : "bar-killed"
+                };
+
+                json["taskNames"].forEach(function (v,i,a) {
+                    taskNames.push(v);
+                });
+                json["tasks"].forEach(function (v,i,a) {
+                    tasks.push({
+                        "startDate":new Date(v["startDate"]),
+                        "startPoint":v["startPoint"],
+                        "endDate":new Date(v["endDate"]),
+                        "endPoint":v["endPoint"],
+                        "taskName":v["taskName"],
+                        "status":v["status"],
+                        "id":v["id"]+"_"+id_salt,
+                        "type":v["type"],
+                        "itemId":v["itemId"],
+                        "link":v["link"],
+                    });
+                    if (v["type"] == "driver") {
+                        driverHomes[v["itemId"]] = v["home"];
+                    }
+                });
+
+                var format = "%H:%M";
+
+                if (!gantt) {
+                    gantt = d3.gantt().taskTypes(taskNames).taskStatus(taskStatus).tickFormat(format);
+                    gantt(tasks);
+                } else {
+                    gantt.taskTypes(taskNames).redraw(tasks);
+                }
+            }
+        }
+
+        function load_activities(activity_date) {
+            var load_activities_url = "{{ path('vehicle_loadActivities_short', {'id':vehicle.id}) }}"+activity_date;
+            $("#draw_activities_img").show();
+
+            d3.json(load_activities_url, function(error, json) {
+                $("#draw_activities_img").hide();
+                if (error)
+                    return console.warn(error);
+
+                $(".draw_activities").show();
+                $(".draw_activities .activitybar").off('click');
+
+                draw_json_activities(json);
+                draw_json_map(json);
+
+                $(".draw_activities .activitybar").on('click',function(){
+                    var activity;
+                    for (activity of tasks) {
+                        if (activity.id == this.id) break;
+                    }
+                    clickActivity(activity);
+                });
+            });
+        }
+
+        function saveWorkday(did) {
+            var saveWorkday_url = "{{ path('expenses_workday_submit_create') }}";
+            $("#draw_activities_img").show();
+            $.ajax({
+              method: "POST",
+              url: saveWorkday_url,
+              data: drivers[did]
+            })
+            .done(function( msg ) {
+                console.log( msg );
+                load_activities(drivers[did]["date"]);
+            });
+        }
+
+        function saveDriversHome() {
+            var saveDriversHome_url = "{{ path('employee_home_update') }}";
+
+            $("#save_drivers_home_button").hide();
+            $("#save_drivers_home_img").show();
+            $.ajax({
+              method: "POST",
+              url: saveDriversHome_url,
+              data: {"employee":driver, "home":driverHomes[driver]}
+            })
+            .done(function( msg ) {
+                console.log( msg );
+                $("#save_drivers_home_img").hide();
+            });
+        }
+
+        function setStartDate(start) {
+            drivers[driver]["startTime"] = new Date(start["date"]);
+            drivers[driver]["startPoint"] = start["point"];
+        }
+
+        function setEndDate(end) {
+            drivers[driver]["endTime"] = new Date(end["date"]);
+            drivers[driver]["endPoint"] = end["point"];
+        }
+
+        function drawHome() {
+            google.maps.event.clearInstanceListeners(circle);
+            if (driverHomes[driver]["radius"] == null) {
+                geocoder.geocode({'address': driverHomes[driver]["address"]}, function(results, status) {
+                    if (status === 'OK') {
+                        circle.setCenter(results[0].geometry.location);
+                        circle.setRadius(2000);
+                        circle.setOptions({strokeColor: '#FF0000'});
+
+                        google.maps.event.addListener(circle, 'radius_changed', function() {
+                          driverHomes[driver]["radius"] = circle.getRadius();
+                          $("#save_drivers_home_button").show();
+                        });
+                        google.maps.event.addListener(circle, 'center_changed', function() {
+                          driverHomes[driver]["latLng"] = circle.getCenter().toJSON();
+                          $("#save_drivers_home_button").show();
+                        });
+
+                        $("#save_drivers_home_button").show();
+                    } else {
+                        alert('Geocode was not successful for the following reason: ' + status);
+                    }
+                });                
+            } else {
+                circle.setCenter(driverHomes[driver]["latLng"]);
+                circle.setRadius(driverHomes[driver]["radius"]);
+                circle.setOptions({strokeColor: '#00FF00'});
+
+                google.maps.event.addListener(circle, 'radius_changed', function() {
+                  driverHomes[driver]["radius"] = circle.getRadius();
+                  $("#save_drivers_home_button").show();
+                });
+                google.maps.event.addListener(circle, 'center_changed', function() {
+                  driverHomes[driver]["latLng"] = circle.getCenter().toJSON();
+                  $("#save_drivers_home_button").show();
+                });
+            }
+        }
+
+        function clickActivity(activity) {
+            var content;
+
+            $('.datetimepickerBegin').off('dp.change');
+            $('.datetimepickerEnd').off('dp.change');
+
+            switch(activity["type"]) {
+                case "driver":
+                    driver = activity["itemId"]; //{"name":activity["taskName"],"startTime":false,"endTime":false}
+                    if (!drivers[driver]) {
+                        drivers[driver] = {"name":activity["taskName"],"employee":driver,"date":$('#datetimepicker1').data("DateTimePicker").date().format('YYYY-MM-DD'),"truck":{{ vehicle.id }},"startTime":activity["startDate"],"startPoint":activity["startPoint"],"endTime":activity["endDate"],"endPoint":activity["endPoint"]};
+                    }
+
+                    drawHome();
+
+                    content = "<div style=\"height:400px;\">{% trans %}Erfassung für den{% endtrans %} <strong>"+$('#datetimepicker1').data("DateTimePicker").date().format('DD.MM.YYYY')+"</strong><br>"
+                            + "<div class=\"form-group\"><label class=\"control-label\" for=\"datetimepickerBegin\">{% trans %}Arbeitsbeginn{% endtrans %} (<span class=\"startAdress\"></span>)</label><div class='input-group date datetimepickerBegin' id='datetimepickerBegin'><input type='text' class=\"form-control\" /><span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-calendar\"></span></span></div></div>"
+                            + "<div class=\"form-group\"><label class=\"control-label\" for=\"datetimepickerEnd\">{% trans %}Arbeitsende{% endtrans %} (<span class=\"endAdress\"></span>)</label><div class='input-group date datetimepickerEnd' id='datetimepickerEnd'><input type='text' class=\"form-control\" /><span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-calendar\"></span></span></div></div>"
+                            + "<ul class=\"list-inline\">"
+                            + "<li><a class=\"btn btn-lg btn-success\" href=\"#\" onclick=\"saveWorkday("+driver+");return hs.close(this);\" role=\"button\">{% trans %}Speichern{% endtrans %}</a></li>"
+                            + "<li><a class=\"btn btn-lg btn-primary\" href=\""+activity["link"]+"\" target=\"_blank\">{% trans %}Mitarbeiter{% endtrans %}</a></li>"
+                            + "</ul></div>";
+                    break;
+                case "activity":
+                    if (driver) {
+                        content = "{% trans %}Arbeitszeitanpassung für<br>{% endtrans %} <strong>"+drivers[driver]["name"]+"</strong> für den <strong>"+$('#datetimepicker1').data("DateTimePicker").date().format('DD.MM.YYYY')+"</strong>:<br><br>"
+                                + activity["startDate"].toLocaleTimeString()+" (<span class=\"startAdress\"></span>)<br><a href=\"#\" onclick=\"setStartDate({'date':'"+activity["startDate"]+"','point':{'lat':"+activity["startPoint"]["lat"]+", 'lng':"+activity["startPoint"]["lng"]+"}});return hs.close(this);\">{% trans %}ist Arbeitsbeginn{% endtrans %}</a> |"
+                                + " <a href=\"#\" onclick=\"setEndDate({'date':'"+activity["startDate"]+"','point':{'lat':"+activity["startPoint"]["lat"]+", 'lng':"+activity["startPoint"]["lng"]+"}});return hs.close(this);\">{% trans %}ist Arbeitsende{% endtrans %}</a><br><br>"
+                                + activity["endDate"].toLocaleTimeString()+" (<span class=\"endAdress\"></span>)<br><a href=\"#\" onclick=\"setStartDate({'date':'"+activity["endDate"]+"','point':{'lat':"+activity["endPoint"]["lat"]+", 'lng':"+activity["endPoint"]["lng"]+"}});return hs.close(this);\">{% trans %}ist Arbeitsbeginn{% endtrans %}</a> |"
+                                + " <a href=\"#\" onclick=\"setEndDate({'date':'"+activity["endDate"]+"','point':{'lat':"+activity["endPoint"]["lat"]+", 'lng':"+activity["endPoint"]["lng"]+"}});return hs.close(this);\">{% trans %}ist Arbeitsende{% endtrans %}</a><br>";
+                    } else {
+                        content = "{% trans %}Kein Fahrer ausgewählt{% endtrans %}";
+                    }
+                    break;
+                default:
+                    content = "{% trans %}Nichts ausgewählt, bitte Administrator informieren{% endtrans %}";
+            }
+            hs.htmlExpand(false, {
+                headingText: activity["taskName"],
+                maincontentText:content
+            });
+            switch(activity["type"]) {
+                case "driver":
+                    $('.datetimepickerBegin').datetimepicker({
+                        locale: 'de',
+                        defaultDate: drivers[driver]["startTime"],
+                        date: drivers[driver]["startTime"],
+                        //sideBySide: true,
+                    });
+                    $('.datetimepickerBegin').on('dp.change', function(e){
+                        drivers[driver]["startTime"] = new Date(e.date.format('YYYY-MM-DD HH:mm:ss'));
+                    });
+                    $('.datetimepickerEnd').datetimepicker({
+                        locale: 'de',
+                        defaultDate: drivers[driver]["endTime"],
+                        date: drivers[driver]["endTime"],
+                        //sideBySide: true,
+                    });
+                    $('.datetimepickerEnd').on('dp.change', function(e){
+                        drivers[driver]["endTime"] = new Date(e.date.format('YYYY-MM-DD HH:mm:ss'));
+                    });
+                    break;
+            }
+            geocodeLatLng(activity["startPoint"],'.startAdress');
+            geocodeLatLng(activity["endPoint"],'.endAdress');
+        }
+
+        function draw_json_map(json) {
+            if (json) {
+                $("#map_container").show();
+                flightPlanCoordinates = [];
+
+                json["flightPlanCoordinates"].forEach(function (v,i,a) {
+                    flightPlanCoordinates.push(v);
+                });
+                
+                var position = flightPlanCoordinates[0];
+                map = new google.maps.Map(document.getElementById('map'), {
+                  zoom: 15,
+                  center: position
+                });
+                end_marker = new google.maps.Marker({
+                  position: position,
+                  map: map
+                });
+                start_marker = new google.maps.Marker({
+                    position: flightPlanCoordinates[flightPlanCoordinates.length-1],
+                    map: map
+                });
+
+                start_infowindow = new google.maps.InfoWindow;
+                end_infowindow = new google.maps.InfoWindow;
+
+                flightPath = new google.maps.Polyline({
+                  path: flightPlanCoordinates,
+                  geodesic: true,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2
+                });
+
+                flightPath.setMap(map);
+
+                circle = new google.maps.Circle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: {lat: 51.9156915, lng: 7.3843574},
+                    radius: 2000,
+                    editable: true,
+                    draggable: true,
+                    geodesic: true,
+                });
+                google.maps.event.addListener(circle, 'radius_changed', function() {
+                  console.log(circle.getRadius());
+                });
+                google.maps.event.addListener(circle, 'dragend', function() {
+                  console.log(circle.getCenter());
+                });
+                
+                var locationOptions = {
+                    strokeColor: '#00FF00',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#00FF00',
+                    fillOpacity: 0.35,
+                    map: map,
+                    geodesic: true,
+                };
+
+                var js_locations = [];
+                var js_location = 0;
+                {% for location in locations %}
+                js_locations[js_location] = new google.maps.Circle(locationOptions);
+                js_locations[js_location].setCenter({ lat: {{location.lat}}, lng: {{location.lon}} });
+                js_locations[js_location].setRadius({{location.geofenceMeters}});
+                js_location++;
+                {% endfor %}
+            }
+        }
+
+        function geocodeLatLng(latlng,target) {
+            geocoder.geocode({'location': latlng}, function(results, status) {
+              if (status === 'OK') {
+                if (results[1]) {
+                    if (target == '.startAdress') {
+                        start_marker.setPosition(latlng);
+                        start_infowindow.setContent("{% trans %}Start{% endtrans %}: "+results[1].formatted_address);
+                        start_infowindow.open(map, start_marker);
+                    } else {
+                        end_marker.setPosition(latlng);
+                        end_infowindow.setContent("{% trans %}Ziel{% endtrans %}: "+results[1].formatted_address);
+                        end_infowindow.open(map, end_marker);
+                    }
+                  $(target).html(results[1].formatted_address);
+                } else {
+                  window.alert('No results found');
+                }
+              } else {
+                window.alert('Geocoder failed due to: ' + status);
+              }
+            });
+        }
+
+        $( document ).ready(function() {
+            $('#draw_activities_container').show();
+            $('#datetimepicker1').datetimepicker({
+                locale: 'de',
+                format: 'L',
+                defaultDate: '{{ base_date|date('n/j/Y') }}',
+                date: '{{ base_date|date('n/j/Y') }}',
+            });
+            $('#datetimepicker1').on('dp.change', function(e){
+                console.log(e.date.format('YYYY-MM-DD'));
+                load_activities(e.date.format('YYYY-MM-DD'));
+            });
+            load_activities('{{ base_date|date('Y-m-d') }}');
+            geocoder = new google.maps.Geocoder;
+        });
+    </script>
+
+{% endblock %}

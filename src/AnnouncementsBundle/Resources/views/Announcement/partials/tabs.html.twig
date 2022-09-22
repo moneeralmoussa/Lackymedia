@@ -1,0 +1,30 @@
+{% for announcement in announcements %}
+
+  <div class="box-body chat" id="chat-box">
+  <div class="item">
+    <img src="/bundles/app/img/g&l_icon.png" alt="user image" style="border: 2px solid #dd4b39;">
+
+    <p class="message">
+      <a href="{{ path('announcement_show', { 'id': announcement.id }) }}" class="name">
+        <small class="text-muted pull-right">
+          <i class="fa fa-clock-o"></i>
+          {{ announcement.createdAt|date('d.m.Y H:i') }}</small>
+        {{ announcement.title }}
+      </a>
+      {{ announcement.text|nl2br }}
+    </p>
+    <span class="label label-warning text-left">Anzeigen bis: <i class="fa fa-clock-o"></i> {{ announcement.expireAt|date('d.m.Y H:i') }}</span>
+  </div>
+</div>
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+  <div class="text-right">
+  <a href="{{ path('announcement_edit', { 'id': announcement.id }) }}" class="btn btn-info">Bearbeiten</a>
+  <form action="{{ path('announcement_delete', { 'id': announcement.id }) }}" method="post" style="display:inline-block;">
+      <input type="hidden" name="_method" value="DELETE" />
+      {{ form_widget(delete_forms[announcement.id]) }}
+      <button type="submit" class="btn btn-danger">Löschen</button>
+  </form>
+  </div>
+  {% endif %}
+  <hr>
+{% endfor %}

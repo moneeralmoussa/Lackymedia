@@ -1,0 +1,3 @@
+app_download_restgehaltsanspruch:
+    pattern:  /download/restgehaltsanspruch
+    defaults: { _controller: AppBundle:App:downloadRestgehaltanspruch }

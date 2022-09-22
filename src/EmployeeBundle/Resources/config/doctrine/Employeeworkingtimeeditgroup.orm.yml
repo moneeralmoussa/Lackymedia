@@ -1,0 +1,27 @@
+EmployeeBundle\Entity\Employeeworkingtimeeditgroup:
+    type: entity
+    table: employeeworkingtimeeditgroup
+    repositoryClass: EmployeeBundle\Repository\EmployeeworkingtimeeditgroupRepository
+    #gedmo:
+    #  soft_deleteable:
+    #    field_name: deleted_at
+    #    time_aware: false
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        groupId:
+            type: integer
+            nullable: false
+            column: group_id   
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employeeId:
+            targetEntity: EmployeeBundle\Entity\Employee
+            nullable: true
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id

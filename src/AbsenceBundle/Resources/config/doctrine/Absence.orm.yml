@@ -1,0 +1,70 @@
+AbsenceBundle\Entity\Absence:
+    type: entity
+    table: null
+    gedmo:
+     soft_deleteable:
+       field_name: deleted_at
+       time_aware: false
+    repositoryClass: AbsenceBundle\Repository\AbsenceRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        employeeID:
+            type: integer
+            column: employee_id
+        note:
+            type: string
+            length: 255
+            nullable: true
+        day:
+            type: decimal
+            precision: 10
+            scale: 1
+        fromDate:
+            type: date
+            column: from_date
+        toDate:
+            type: date
+            column: to_date
+        createdat:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: create
+        updatedat:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: update
+        deleted_at:
+          type: datetime
+          nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: absences
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        approvedBy:
+            targetEntity: EmployeeBundle\Entity\Employee
+            joinColumn:
+                name: approved_by
+                referencedColumnName: id
+        reason:
+            targetEntity: Reason
+            joinColumn:
+                name: reason_id
+                referencedColumnName: id
+        status:
+            targetEntity: Status
+            joinColumn:
+                name: status_id
+                referencedColumnName: id

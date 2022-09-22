@@ -1,0 +1,66 @@
+# Learn more about services, parameters and containers at
+# https://symfony.com/doc/current/service_container.html
+parameters:
+    #parameter_name: value
+    upload_directory: '%kernel.root_dir%/public/uploads'
+
+services:
+    #service_name:
+    #    class: AppBundle\Directory\ClassName
+    #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
+    app.employee_controller:
+        class: EmployeeBundle\Controller\EmployeeController
+        calls:
+            - [setContainer, ["@service_container"]]
+    app.absence_details_clearing_service:
+        class:     AbsenceBundle\Service\AbsenceDetailsClearingService
+        arguments: ['@doctrine']
+    app.vacation_lock_service:
+        class:     AbsenceBundle\Service\VacationlockService
+        arguments: ['@doctrine']
+    app.public_holiday_service:
+        class:     AbsenceBundle\Service\PublicHolidayService
+        arguments: ['@doctrine']
+    app.absence_clearing_service:
+        class:     AbsenceBundle\Service\AbsenceClearingService
+        arguments: ['@doctrine']
+    app.absence_service:
+        class:     AbsenceBundle\Service\AbsenceService
+        arguments: ['@doctrine']
+    app.trimble_soap_service:
+        class:     TrimbleSoapBundle\Service\TrimbleSoapService
+        arguments: ['@doctrine']
+    app.expense_workday_service:
+        class:     ExpenseBundle\Service\ExpenseWorkdayService
+        arguments: ['@doctrine']
+    app.employee_service:
+        class:     EmployeeBundle\Service\EmployeeService
+        arguments: ['@doctrine']
+    app.upload_service:
+        class:     AppBundle\Service\UploadService
+        arguments:
+            $targetDir: '%upload_directory%'
+    app.xlsx_service:
+        class:     AppBundle\Service\XlsxService
+        arguments:
+            $targetDir: '%upload_directory%'
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Date
+        arguments: ["@translator"]
+        tags:
+            - { name: twig.extension }
+    twig.audit.extension:
+        class: AuditBundle\Twig\AuditExtension
+        tags:
+            - { name: twig.extension }
+    app.logoutlistener:
+        class: UserBundle\Listeners\LogoutListener
+        arguments:
+            userManager: "@fos_user.user_manager"
+            em: "@doctrine.orm.entity_manager"
+
+    datadog.event_subscriber.audit:
+        class: DataDog\AuditBundle\EventSubscriber\AuditSubscriber
+        arguments: ["@security.token_storage"]
+        tags:
+            - { name: doctrine.event_subscriber, connection: default, priority: 100 }

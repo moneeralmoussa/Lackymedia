@@ -1,0 +1,119 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrt bearbeiten'|trans ~ ': ' ~  vehicle.name %}
+
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Fahrtenbuch'|trans ~ ': ' ~  vehicle.name } %}
+          {% block content %}
+          <div id="coordinates"></div>
+          <div>
+              {{ form_start(form) }}
+                  {{ form_widget(form) }}
+                  <input type="submit" value="{% trans %}Speichern{% endtrans %}" class="btn btn-info"/>
+                  <a href="{{ path('vehicle_log_delete', {'id':vehicle_log.id}) }}" class="btn btn-danger">{% trans %}Löschen{% endtrans %}</a>
+              {{ form_end(form) }}
+          </div>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+    <script type="text/javascript">
+        var geocoder = false;
+
+        function geocodeLatLng(latlng,target) {
+            geocoder.geocode({'location': latlng}, function(results, status) {
+              if (status === 'OK') {
+                if (results[1]) {
+                  $(target).val(results[1].formatted_address);
+                } else {
+                  console.log('No results found');
+                }
+              } else {
+                console.log('Geocoder failed due to: ' + status);
+              }
+            });
+        }
+
+        function geocodeAddress(address,target) {
+            geocoder.geocode({'address': address}, function(results, status) {
+              if (status === 'OK') {
+                var pos = results[0].geometry.location;
+                console.log(pos);
+                $(target+'Lat').val(pos.lat);
+                $(target+'Lon').val(pos.lng);
+              } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+              }
+            });
+        }
+
+        $( document ).ready(function() {
+            $('.datetimepicker').datetimepicker({
+                locale: 'de'
+            });
+
+            $('#vehiclelogbundle_vehiclelog_vehicle').val({{ vehicle.id }});
+
+            geocoder = new google.maps.Geocoder;
+
+            if ($('#vehiclelogbundle_vehiclelog_beginPosition').val() == '') {
+                var pos = {
+                    lat: Number($('#vehiclelogbundle_vehiclelog_beginPositionLat').val()),
+                    lng: Number($('#vehiclelogbundle_vehiclelog_beginPositionLon').val()),
+                };
+                geocodeLatLng(pos, '#vehiclelogbundle_vehiclelog_beginPosition');
+            }
+
+            if ($('#vehiclelogbundle_vehiclelog_endPosition').val() == '') {
+                var pos = {
+                    lat: Number($('#vehiclelogbundle_vehiclelog_endPositionLat').val()),
+                    lng: Number($('#vehiclelogbundle_vehiclelog_endPositionLon').val()),
+                };
+                geocodeLatLng(pos, '#vehiclelogbundle_vehiclelog_endPosition');
+            }
+            /*if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                      lat: position.coords.latitude,
+                      lng: position.coords.longitude
+                    };
+
+                }, function() {
+                    handleLocationError(true);
+                }, {
+                    enableHighAccuracy: false,
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false);
+            }*/
+
+            $('#vehiclelogbundle_vehiclelog_beginPosition').on('blur',function(){
+                geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclelog_beginPosition');
+            });
+
+            $('#vehiclelogbundle_vehiclelog_endPosition').on('blur',function(){
+                geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclelog_endPosition');
+            });
+        });
+
+        function handleLocationError(browserHasGeolocation) {
+            $('#coordinates').html(browserHasGeolocation ?
+                '{% trans %}Error: The Geolocation service failed.{% endtrans %}' :
+                '{% trans %}Error: Your browser doesn\'t support geolocation.{% endtrans %}');
+        }
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Arbeitszeit bearbeiten'|trans ~ ': ' ~  workingtime.dayOfWeek %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $('.datetimepicker').datetimepicker({
+                locale: 'de'
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Arbeitszeit bearbeiten' } %}
+          {% block content %}
+          {{ form_start(edit_form) }}
+            {{ form_widget(edit_form) }}
+            <input type="submit" value="{% trans %}Ändern{% endtrans %}" class="btn btn-info pull-right"/>
+          {{ form_end(edit_form) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

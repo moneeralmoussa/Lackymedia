@@ -1,0 +1,21 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Passwort ändern' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Passwort ändern' } %}
+          {% block content %}
+          {{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'class': 'fos_user_resetting_reset' } }) }}
+            {{ form_widget(form) }}
+            <div>
+                <input type="submit" value="Speichern" class="btn btn-info pull-right" />
+            </div>
+        {{ form_end(form) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

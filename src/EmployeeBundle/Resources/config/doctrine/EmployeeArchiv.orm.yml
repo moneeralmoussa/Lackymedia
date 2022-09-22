@@ -1,0 +1,126 @@
+EmployeeBundle\Entity\EmployeeArchiv:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\EmployeeArchivRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        komalogId:
+            type: integer
+            nullable: true
+            column: komalog_id
+        trimbleId:
+            type: string
+            length: 10
+            nullable: true
+            column: trimble_id
+        countryCode:
+            type: string
+            length: 5
+            nullable: true
+            column: country_code
+        name:
+            type: string
+            length: 255
+        prename:
+            type: string
+            length: 255
+            nullable: true
+        salutation:
+            type: string
+            length: 50
+            nullable: true
+        street:
+            type: string
+            length: 255
+            nullable: true
+        zipCode:
+            type: string
+            length: '5'
+            nullable: true
+            column: zip_code
+        town:
+            type: string
+            length: 255
+            nullable: true
+        phone:
+            type: string
+            length: 255
+            nullable: true
+        fax:
+            type: string
+            length: 255
+            nullable: true
+        mobile:
+            type: string
+            length: 255
+            nullable: true
+        birthday:
+            type: date
+            nullable: true
+        vehicleLogBlocked:
+            type: datetime
+            nullable: true
+        entry_date:
+            type: date
+            nullable: true
+        initial:
+            type: string
+            length: '10'
+            nullable: true
+        deleted_at:
+            type: datetime
+            nullable: true
+        lat:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        lon:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        geofenceMeters:
+            type: decimal
+            nullable: true
+        sleepsInCompanyMeansSleepsAtHome:
+            type: boolean
+            default: true
+        salary:
+            type: decimal
+            precision: '10'
+            scale: '2'
+            nullable: true
+        remainingDaysOfVacation:
+            type: decimal
+            precision: 10
+            scale: 1
+            nullable: true
+        usualHomeTravelHours:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: Employee
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        department:
+            targetEntity: Department
+            nullable: true
+            joinColumn:
+                name: department_id
+                referencedColumnName: id
+        contract:
+            targetEntity: Contract
+            joinColumn:
+                name: contract_id
+                referencedColumnName: id

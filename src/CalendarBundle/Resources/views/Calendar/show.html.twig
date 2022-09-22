@@ -1,0 +1,283 @@
+{% extends 'base_new.html.twig' %}
+{% set title = employee.fullname %}
+
+{% block loading %}
+	{% include 'AppBundle:Default:widgets/loading.html.twig' %}
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="grid-item col-xs-12 col-md-3">
+			<div class="row">
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Statistik', 'titleid': 'statistic' } %}
+					{% block content %}
+						<canvas id="pieReasons"></canvas>
+					{% endblock %}
+				{% endembed %}
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Urlaubstage', 'titleid': 'yearly' } %}
+					{% block content %}
+					<div id="remainingData"></div>
+					{% endblock %}
+				{% endembed %}
+				{% if is_granted('ROLE_ADMIN')or is_granted('ROLE_PERSONAL') %}
+					{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Urlaubsänderung', 'titleid': 'Urlaubsänderung' } %}
+						{% block content %}
+							<div>
+								<button type="button" class="btn btn-block btn-primary btn-flat" onclick="Urlaubsabzug(moment().year())"><i class="fa fa-fw fa-minus-square"></i> Abzügl.</button>
+								<button type="button" class="btn btn-block btn-primary btn-flat" onclick="Urlaubszuzug(moment().year())"><i class="fa fa-fw fa-plus-square"></i> Zuzügl.</button>
+							</div>
+						{% endblock %}
+					{% endembed %}
+				{% endif %}
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Urlaubstage', 'titleid': 'monthly'} %}
+					{% block content %}
+						<div class='input-group date' id='datetimepicker1'>
+							<input type='text' class="form-control"/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+								<span id="monthly-days"></span>
+							</span>
+						</div>
+					{% endblock %}
+				{% endembed %}
+			</div>
+		</div>
+		{% embed "partials/box.html.twig" with {'class': 'col-xs-12 col-md-9', 'title': 'Kalender'} %}
+			{% block content %}
+				<div id="calendar"></div>
+			{% endblock %}
+			{% block footer %}
+				<span class="" style="margin-right:15px;margin-bottom:20px;">
+					<label>Team</label>
+					<input type="checkbox" name="team" id="team">
+				</span>
+				<a href="{{ path('absence_new_employee', { 'id': employee.id }) }}" class="btn btn-info pull-right" style="margin-bottom:20px;">{% trans %}Neue Abwesenheit anlegen{% endtrans %}</a>
+				{% if is_granted('ROLE_ADMIN')or is_granted('ROLE_PERSONAL') %}
+					<a href="{{ path('employee_show', { 'id': employee.id }) }}" class="btn btn-info pull-right" style="margin-right:15px;margin-bottom:20px;">{% trans %}Mitarbeiter bearbeiten{% endtrans %}</a>
+				{% endif %}
+			{% endblock %}
+		{% endembed %}
+	</div>
+
+	<div class="row">
+		<div class="grid-item col-xs-12">
+			<div class="nav-tabs-custom">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#tab_1" data-toggle="tab">Offene Anfragen
+							<span class="badge">{{absencesPending|length}}</span></a>
+					</li>
+					<li>
+						<a href="#tab_2" data-toggle="tab">genehmigte Anfragen
+							<span class="badge">{{absencesApproved|length}}</span></a>
+					</li>
+					<li>
+						<a href="#tab_3" data-toggle="tab">abgelehnte Anfragen
+							<span class="badge">{{absencesDeclined|length}}</span>
+						</a>
+					</li>
+					{% if is_granted('ROLE_ADMIN')or is_granted('ROLE_PERSONAL') %}
+					<li>
+						<a href="#tab_6" data-toggle="tab">Urlaubsänderung</a>
+					</li>
+					{% endif %}
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="tab_1">
+						{% include 'CalendarBundle:Calendar:partials/tabs.html.twig' with {
+							'absences' : absencesPending
+						} %}
+					</div>
+					<div class="tab-pane" id="tab_2">
+						{% include 'CalendarBundle:Calendar:partials/tabs.html.twig' with {
+							'absences' : absencesApproved
+						} %}
+					</div>
+					<div class="tab-pane" id="tab_3">
+						{% include 'CalendarBundle:Calendar:partials/tabs.html.twig' with {
+							'absences' : absencesDeclined
+						} %}
+					</div>
+				{% if is_granted('ROLE_ADMIN')or is_granted('ROLE_PERSONAL') %}
+					<div class="tab-pane" id="tab_6">
+						{% include 'CalendarBundle:Calendar:partials/tabsArchive.html.twig' with {
+							'absenceClearingRecords' : absenceClearingRecords
+						} %}
+					</div>
+				{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block stylesheet %}
+	<link href="/assets/bootstrap-year-calendar/css/bootstrap-year-calendar.min.css" rel="stylesheet">
+	<link href="/assets/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+	<link href="/assets/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+	<style media="screen">
+		.calendar {
+			overflow: visible;
+		}
+		.panel-default {
+			border: none;
+			box-shadow: none;
+		}
+	</style>
+{% endblock %}
+{% block javascripts %}
+	<script>
+		var current_view_year = (new moment()).year();
+		var initial_loading = true;
+		var employee_id = {{ employee.id }};
+		var chart_statistic = {{ statistic|json_encode|raw }};
+		var vacationlocks_json = {{ vacationlocks|json_encode|raw }};
+		var remainin_mtl_json = {{ remainingmtl|json_encode|raw }};
+		var public_holidays_json = {{ publicHolidays|json_encode|raw }};
+		var absences_json = {{absencesJson|json_encode|raw }};
+		var holiday_statistic = {{ holidayStatistic|json_encode|raw }};
+		var route_remainingmtl = "{{ path('employee_remainingmtl') }}";
+		var route_absence_json = "{{ path('absence_json',{id:employee.id}) }}";
+		var route_statistics = "{{ path('calendar_statistics_json')}}";
+		var route_team_json = "{{ path('absence_team_json',{id:employee.id})}}";
+	</script>
+	{% include 'CalendarBundle:Calendar:partials/bootstrap-calendar-js.html.twig' with { 'employee_id': employee.id } %}
+	<script src="/assets/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+	<script src="/assets/chart.js/dist/Chart.min.js"></script>
+	<script src="/assets/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="/bundles/calendar/js/calendar_show.js"></script>
+	{% if is_granted('ROLE_ADMIN')or is_granted('ROLE_PERSONAL') %}
+	<script>
+	function Urlaubszuzug(year)
+	{
+		swal({
+												text: "Urlaubszuzug anpassen",
+												type: 'warning',
+												html:'<div class="swal2-contentwrapper"><h2 class="swal2-title" id="swal2-title"></h2><div id="swal2-content" class="swal2-content" style="display: block;">Urlaubsabzug anpassen</div></div>' +
+												'<b>Yahr</b><div class="input-group date" id="datetimepickerYear"><input id="input_id" type="text" class="form-control" value="{{'now'|date('Y')}}" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div>'+
+												'<label>Tage: </label><br/><input type="number" id="swal-input1" class="swal2-input"><br/>' +
+												'<label>Kommentar: </label><input id="swal-input2" class="swal2-input">',
+												focusConfirm: false,
+												showCancelButton: true,
+												confirmButtonText: 'Übernehmen',
+												cancelButtonText: 'Ignorieren',
+												onOpen: function() {
+													$('#datetimepickerYear').datetimepicker({
+																	 locale: 'de',
+																	 format: 'Y',
+													});
+													//  $('#swal-input1').val(parseInt($('#SDOV_'+year).text()));
+													//	$('#swal-input2').val($('#SDOVC_'+year).text());
+													},
+												preConfirm: function () {
+														return new Promise(function (resolve) {
+														resolve([
+																	$('#swal-input1').val(),
+																	$('#swal-input2').val(),
+														])
+														})
+												}
+										}).then(function (result) {
+											var value = parseFloat(result.value[0].replace(',','.'));
+											var datetimepickerYear= moment($('#datetimepickerYear').data('DateTimePicker').date()).format("Y");
+									  $.ajax({
+									    type: "GET",
+									    url: "{{ path('employee_daysofvacation_update')}}",
+									    data: {
+									      employee: employee_id,
+									      year:     datetimepickerYear,
+									      additinal:value,
+									      comment:  result.value[1],
+									    },
+									    success: function(r){
+												swal({
+														type: 'success',
+														html: 'Eingabe : <strong>' + 'bestätigt' + '</strong>'
+														});
+									     location.reload();
+									    }
+									  });
+									}).catch(swal.noop);
+								}
+
+function Urlaubsabzug(year)
+{
+	swal({
+											text: "Urlaubsabzug anpassen",
+											type: 'warning',
+											html:'<div class="swal2-contentwrapper"><h2 class="swal2-title" id="swal2-title"></h2><div id="swal2-content" class="swal2-content" style="display: block;">Urlaubsabzug anpassen</div></div>' +
+											'<b>Yahr</b><div class="input-group date" id="datetimepickerYear"><input id="input_id" type="text" class="form-control" value="{{'now'|date('Y')}}" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div>'+
+											'<label>Tage: </label><br/><input type="number" id="swal-input1" class="swal2-input"><br/>' +
+											'<label>Kommentar: </label><input id="swal-input2" class="swal2-input">',
+											focusConfirm: false,
+											showCancelButton: true,
+											confirmButtonText: 'Übernehmen',
+											cancelButtonText: 'Ignorieren',
+											onOpen: function() {
+												$('#datetimepickerYear').datetimepicker({
+																 locale: 'de',
+																 format: 'Y',
+												});
+												//  $('#swal-input1').val(parseInt($('#SDOV_'+year).text()));
+												//	$('#swal-input2').val($('#SDOVC_'+year).text());
+											},
+											preConfirm: function () {
+													return new Promise(function (resolve) {
+													resolve([
+																$('#swal-input1').val(),
+																$('#swal-input2').val(),
+													])
+													})
+											}
+									}).then(function (result) {
+													var value = parseFloat(result.value[0].replace(',','.'));
+													var datetimepickerYear= moment($('#datetimepickerYear').data('DateTimePicker').date()).format("Y");
+					// el.find('.fc-cell-text').text(parseFloat(value[0]).toFixed(1));
+					$.ajax({
+						type: "GET",
+						url: "{{ path('employee_daysofvacation_update')}}",
+						data: {
+							employee: employee_id,
+							year:     datetimepickerYear,
+							substract:value,
+							comment2:  result.value[1],
+						},
+						success: function(r){
+							swal({
+									type: 'success',
+									html: 'Eingabe : <strong>' + 'bestätigt' + '</strong>'
+									});
+							location.reload();
+						}
+					});
+				}).catch(swal.noop);
+				}
+
+				function delAbsenceclearingrecord(id)
+				{
+							swal({
+												text: "Urlaubszuzug anpassen",
+												type: 'warning',
+												focusConfirm: false,
+												showCancelButton: true,
+												confirmButtonText: 'Übernehmen',
+												cancelButtonText: 'Ignorieren',
+										}).then(function (result) {
+								$.ajax({
+									type: "GET",
+									url: "{{ path('delAbsenceclearingrecord')}}",
+									data: {
+										id: id,
+									},
+									success: function(r){
+										swal({
+												type: 'success',
+												html: 'Eingabe : <strong>' + 'bestätigt' + '</strong>'
+												});
+										location.reload();
+									}
+								});
+				}).catch(swal.noop);
+				}
+	</script>
+	{% endif %}
+{% endblock %}

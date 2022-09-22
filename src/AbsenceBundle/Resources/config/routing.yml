@@ -1,0 +1,22 @@
+absence_absence:
+    resource: "@AbsenceBundle/Resources/config/routing/absence.yml"
+    prefix:   /absence
+
+absence_show:
+    path:     /absence/employee/{id}/show
+    defaults: { _controller: "AbsenceBundle:Absence:show" }
+    methods:  GET
+
+absence_new_employee:
+    path:     /absence/employee/{id}/new
+    defaults: { _controller: "AbsenceBundle:Absence:new" }
+    methods:  [GET, POST]
+
+delAbsenceclearingrecord:
+    path:     /absence/employee/delAbsenceclearingrecord
+    defaults: { _controller: "AbsenceBundle:Absence:delAbsenceclearingrecord"}
+    methods:  [GET, POST]
+
+absence_reason:
+        resource: "@AbsenceBundle/Resources/config/routing/reason.yml"
+        prefix:   /reason

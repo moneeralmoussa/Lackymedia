@@ -1,0 +1,52 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'qr' %}
+{% block javascripts %}
+<script src="/bundles/newApp/jquery.qrcode.js"></script>
+<script src="/bundles/newApp/qrcode.js"></script>
+   
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'QR ' } %}
+            {% block content %}
+       <div class="table-responsive">
+      <table class="table ">
+        <thead>
+            <tr>
+                <th>{% trans %}Name{% endtrans %}</th>
+                <th>{% trans %}trimbleId{% endtrans %}</th>
+                 <th>{% trans %}QR {% endtrans %}</th>
+            </tr>
+        </thead>
+        <tbody>
+         
+             {% for employee in employees %}
+             <tr>
+             <td> {{ employee.Fname }}</td>
+             <td> {{ employee.trimbleId }} </td>
+             <td>  <div id="{{ employee.trimbleId }}"></div>  </td>
+             </tr>
+              
+              {% endfor %} 
+             </tbody>
+
+          </table>
+        </div> 
+
+             {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+  <script>
+  {% for employee in employees %}
+   $('#{{ employee.trimbleId }}').qrcode({
+            render: "table", text	:'EM_'+{{ employee.trimbleId }}, width: 75, height: 75
+            });	
+  {% endfor %}          
+  </script>
+
+{% endblock %}
+

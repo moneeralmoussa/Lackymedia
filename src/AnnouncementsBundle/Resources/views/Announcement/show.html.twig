@@ -1,0 +1,41 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Ankündigung' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': announcement.title } %}
+          {% block content %}
+          <div class="box-body chat" id="chat-box">
+          <div class="item">
+            <img src="/bundles/app/img/g&l_icon.png" alt="user image" style="border: 2px solid #dd4b39;">
+
+            <p class="message">
+              <a href="{{ path('announcement_show', { 'id': announcement.id }) }}" class="name">
+                <small class="text-muted pull-right">
+                  <i class="fa fa-clock-o"></i>
+                  {{ announcement.createdAt|date('d.m.Y H:i') }}</small>
+                {{ announcement.title }}
+              </a>
+              {{ announcement.text|nl2br }}
+            </p>
+          </div>
+        </div>
+          {% endblock %}
+          {% block footer %}
+          {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+          <div class="text-right">
+          <a href="{{ path('announcement_edit', { 'id': announcement.id }) }}" class="btn btn-info">Bearbeiten</a>
+          {{ form_start(delete_form, {'attr': {'style': 'display:inline-block;'} }) }}
+          <input type="submit" value="Löschen" class="btn btn-danger">
+          {{ form_end(delete_form) }}
+            <a href="{{ path('announcement_index') }}" class="btn btn-default">Zur Übersicht</a>
+          </div>
+          {% endif %}
+          {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

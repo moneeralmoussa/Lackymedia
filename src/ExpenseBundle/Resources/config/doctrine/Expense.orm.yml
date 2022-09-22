@@ -1,0 +1,19 @@
+ExpenseBundle\Entity\Expense:
+    type: entity
+    table: null
+    repositoryClass: ExpenseBundle\Repository\ExpenseRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+        amount:
+            type: decimal
+            precision: '10'
+            scale: '2'
+    lifecycleCallbacks: {  }

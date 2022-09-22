@@ -1,0 +1,36 @@
+{
+  "name": "management",
+  "authors": [
+    "Agababjanc <agababjanc@361gradmedien.de>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fullcalendar": "^3.7.0",
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
+    "fullcalendar-scheduler": "^1.9.0",
+    "chart.js": "^2.7.1",
+    "lodash": "^4.17.4",
+    "chartjs-plugin-datalabels": "^0.1.0",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
+    "datatables.net": "^1.10.16",
+    "datatables.net-bs": "^2.1.1",
+    "moment": "^2.20.1",
+    "bootstrap-year-calendar": "^1.1.0",
+    "sweetalert2": "^7.3.4",
+    "bootstrap-switch": "^3.3.4",
+	"masonry-layout": "^4.2.2",
+	"datatables-datetime-moment": "1.10.13",
+	"swiper": "4.5.0",
+  }
+}

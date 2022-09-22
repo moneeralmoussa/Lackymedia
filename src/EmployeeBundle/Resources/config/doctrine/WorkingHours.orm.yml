@@ -1,0 +1,56 @@
+EmployeeBundle\Entity\WorkingHours:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\WorkingHoursRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        dayOfWeek:
+            type: smallint
+        employeeId:
+            type: integer
+            nullable: false
+        workBegin:
+            type: time
+            nullable: true
+        workEnd:
+            type: time
+            nullable: true
+        autoBreak:
+            type: smallint
+        school:
+            type: smallint
+        allowOvertime:
+            type: smallint
+        overtimeHourlyRate:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+        overtime:
+            type: decimal
+            precision: 10
+            scale: 1
+            nullable: true
+        hourlyRate:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+        breakBegin:
+            type: time
+            nullable: true
+        breakEnd:
+            type: time
+            nullable: true
+        createAt:
+            type: datetime
+            nullable: true
+        deletedAt:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }

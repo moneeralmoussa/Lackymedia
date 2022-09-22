@@ -1,0 +1,74 @@
+VehicleBundle\Entity\Tourdetail:
+    type: entity
+    table: null
+    repositoryClass: VehicleBundle\Repository\TourdetailRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    gedmo:
+        soft_deleteable:
+            field_name: deleted_at
+            time_aware: false
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        deleted_at:
+            type: datetime
+            nullable: true
+        beginn:
+            type: datetime
+        ende:
+            type: datetime
+        leerkm:
+            type: decimal
+            precision: 10
+            scale: '3'
+        lastkm:
+            type: decimal
+            precision: 10
+            scale: '3'
+        gesamtkm:
+            type: decimal
+            precision: 10
+            scale: '3'
+        leerzeit:
+            type: decimal
+            precision: 10
+            scale: '2'
+        lastzeit:
+            type: decimal
+            precision: 10
+            scale: '2'
+        gesamtzeit:
+            type: decimal
+            precision: 10
+            scale: '2'
+        leerkosten:
+            type: decimal
+            precision: 10
+            scale: '2'
+        lastkosten:
+            type: decimal
+            precision: 10
+            scale: '2'
+        gesamtkosten:
+            type: decimal
+            precision: 10
+            scale: '2'
+        erloes:
+            type: decimal
+            precision: 10
+            scale: '2'
+            nullable: true
+    lifecycleCallbacks: {  }

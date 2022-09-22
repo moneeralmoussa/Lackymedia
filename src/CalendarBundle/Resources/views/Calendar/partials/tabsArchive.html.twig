@@ -1,0 +1,26 @@
+<div class="table-responsive">
+<table class="table table-datatable table-condensed table-striped table-hover">
+  <thead>
+      <tr>
+          <th>{% trans %}Jahr{% endtrans %}</th>
+          <th>{% trans %}Art{% endtrans %}</th>
+          <th>{% trans %}Anzahl{% endtrans %}</th>
+          <th>{% trans %}Kommentar{% endtrans %}</th>
+          <th></th>
+      </tr>
+  </thead>
+  <tbody>
+  {% for absenceClearingRecord in absenceClearingRecords %}
+      <tr style="{% if absenceClearingRecord.type == 'AdditionalDaysOfVacation' %}color: green;{% else %}color: red;{% endif %}" >
+          <td>{{ absenceClearingRecord.absenceClearing.year }} </td>
+          <td>{% if absenceClearingRecord.type == 'AdditionalDaysOfVacation' %}Zuzügl.{% else %}Abzügl.{% endif %}</td>
+          <td>{{ absenceClearingRecord.value }} </td>
+          <td>{{ absenceClearingRecord.comment }} </td>
+          <td>
+            <span class="label label-danger badge" onclick="delAbsenceclearingrecord({{ absenceClearingRecord.id }})"><font color="black"><i class="fa fa-trash"> </i> Löschen</font></span>
+          </td>
+      </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>

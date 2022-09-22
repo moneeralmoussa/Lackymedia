@@ -1,0 +1,69 @@
+# absence_index:
+#     path:     /
+#     defaults: { _controller: "AbsenceBundle:Absence:index" }
+#     methods:  GET
+
+absence_new:
+    path:     /new
+    defaults: { _controller: "AbsenceBundle:Absence:new", formOnly: false }
+    methods:  [GET, POST]
+
+absence_new_form_only:
+    path:     /new/formOnly
+    defaults: { _controller: "AbsenceBundle:Absence:new", formOnly: true }
+    methods:  [GET, POST]
+
+absence_team_json:
+  path:     /{id}/team/json
+  defaults: { _controller: "AbsenceBundle:Absence:teamAbsence"}
+  methods:  GET
+
+absence_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AbsenceBundle:Absence:edit" }
+    methods:  [GET, POST]
+
+absence_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AbsenceBundle:Absence:delete" }
+    methods:  DELETE
+
+absence_json_calendar:
+  path:     /calendar/json
+  defaults: { _controller: "AbsenceBundle:Absence:jsonAbsenceCalendar" }
+  methods:  GET
+
+absence_json:
+    path:     /{id}/json
+    defaults: { _controller: "AbsenceBundle:Absence:jsonAbsence", id: 0, background: false }
+    methods:  GET
+
+absence_json_background:
+    path:     /{id}/json/background
+    defaults: { _controller: "AbsenceBundle:Absence:jsonAbsence", id: 0, background: true }
+    methods:  GET
+
+absence_json_days:
+    path:     /days/{date}/json
+    defaults: { _controller: "AbsenceBundle:Absence:jsonAbsenceDays" }
+    methods:  GET
+
+absence_calendar:
+  path:     /calendar
+  defaults: { _controller: "AbsenceBundle:Absence:calendar" }
+  methods:  GET
+
+absence_json:
+    path:     /{id}/json
+    defaults: { _controller: "AbsenceBundle:Absence:jsonAbsence", id: 0 }
+    methods:  GET
+
+absence_newabsencemail:
+    path:     /newabsencemail
+    defaults: { _controller: "AbsenceBundle:Absence:newabsencemail" }
+    methods:  GET
+
+absence_details_clearing_json:
+    path:     /absencedetailsclearing
+    defaults: { _controller: "AbsenceBundle:Absence:jsonAbsenceDetailsClearing"}
+    methods:  [POST]

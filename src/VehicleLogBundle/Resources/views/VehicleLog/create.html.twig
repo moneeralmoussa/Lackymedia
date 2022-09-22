@@ -1,0 +1,120 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrt beginnen'|trans ~ ': ' ~  vehicle.name %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+ <script type="text/javascript">
+$('form').submit(function() {
+    // when form is submitted for the first time
+    // change button text
+    // and prevent further form submissions
+    if ($('form input[type="submit"]').data('submitted') == '1') {
+        return false;
+    } else {
+        // I've also added a class and 
+        // changed the value to make it obvious to the 
+        // user that the form is submitting
+        // but this is entirely optional
+        // and you can customise this as you wish
+        $('form input[type="submit"]')
+          .attr('data-submitted', '1')
+          .addClass('submitting')
+          .val('Submitting...');
+    }
+  return false; // for demo purposes only
+});
+
+    </script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Fahrt beginnen'|trans ~ ': ' ~  vehicle.name } %}
+          {% block content %}
+            <div id="coordinates"></div>
+            	{% if vehicle.pin != 0 %}
+							{% if (not vehicle.vehicleVehicleLogs is empty) and (vehicle.vehicleVehicleLogs.last.vehicleLogEndPosition is empty)%}
+								<div class="alert" role="alert" style="color:#fff;background-color:#cd0001;">
+									<strong>PIN</strong>
+									{% if not vehicle.pin is empty %}
+										{{ vehicle.pin }}
+									{% endif %}
+								</div>
+							{% else %}
+								<div class="alert" role="alert" style="color:#fff;background-color:#cd0001;">
+									Bitte auf <strong>Anlegen</strong> klicken um den PIN anzuzeigen.
+								</div>
+							{% endif %}
+						{% endif %}
+            <div>
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <!--<a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':vehicle.id}) }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>-->
+                    <input type="submit" value="{% trans %}Anlegen{% endtrans %}" class="btn btn-info pull-right" name ="resetbutton" onclick='checkForm(this.form);'/>
+                {{ form_end(form) }}
+            </div>
+           
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+
+     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+    <script type="text/javascript">
+        var geocoder = false;
+
+        function geocodeLatLng(latlng,target) {
+            geocoder.geocode({'location': latlng}, function(results, status) {
+              if (status === 'OK') {
+                if (results[1]) {
+                  $(target).val(results[1].formatted_address);
+                } else {
+                  console.log('No results found');
+                }
+              } else {
+                console.log('Geocoder failed due to: ' + status);
+              }
+            });
+        }
+
+        function geocodeAddress(address,target) {
+            geocoder.geocode({'address': address}, function(results, status) {
+              if (status === 'OK') {
+                var pos = results[0].geometry.location;
+                console.log(pos);
+                $(target+'Lat').val(pos.lat);
+                $(target+'Lon').val(pos.lng);
+              } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+              }
+            });
+        }
+
+        $( document ).ready(function() {
+            $('.datetimepicker').datetimepicker({
+                locale: 'de'
+            });
+
+            $('#vehiclelogbundle_vehiclelog_vehicle').val({{ vehicle.id }});
+
+            geocoder = new google.maps.Geocoder;
+
+
+            $('#vehiclelogbundle_vehiclelog_endPosition').on('blur',function(){
+                geocodeAddress($(this).val(),'#vehiclelogbundle_vehiclelog_endPosition');
+            });
+        });
+
+        function handleLocationError(browserHasGeolocation) {
+            $('#coordinates').html(browserHasGeolocation ?
+                '{% trans %}Error: The Geolocation service failed.{% endtrans %}' :
+                '{% trans %}Error: Your browser doesn\'t support geolocation.{% endtrans %}');
+        }
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,158 @@
+expense_expenses_countryspecificexpenses:
+    resource: "@ExpenseBundle/Resources/config/routing/countryspecificexpenses.yml"
+    prefix:   /expenses/countryspecificexpenses
+
+expenseNewRoute:
+    resource: "@ExpenseBundle/Resources/config/routing/expensenew.yml"
+    prefix:   /expenses/expensenew
+
+expense_finanzamt_Route:
+    resource: "@ExpenseBundle/Resources/config/routing/expensefinanzamt.yml"
+    prefix:   /finanzamt    
+
+expenses_index:
+    path:     /expenses
+    defaults: { _controller: ExpenseBundle:Expense:index }
+
+expenses_create:
+    path:   /expenses/new
+    defaults: { _controller: ExpenseBundle:Expense:create }
+    methods: [GET]
+
+expenses_submit_create:
+    path:   /expenses/new
+    defaults: { _controller: ExpenseBundle:Expense:createSubmit }
+    methods: [POST]
+
+expenses_edit:
+    path:   /expenses/edit/{id}
+    defaults: { _controller: ExpenseBundle:Expense:edit }
+    methods: [GET]
+    requirements:
+        id: '\d+'
+
+expenses_submit_edit:
+    path:   /expenses/edit/{id}
+    defaults: { _controller: ExpenseBundle:Expense:editSubmit }
+    methods: [POST]
+    requirements:
+        id: '\d+'
+
+expenses_delete:
+    path:   /expenses/remove/{id}
+    defaults: { _controller: ExpenseBundle:Expense:delete }
+    requirements:
+        id: '\d+'
+
+expenses_employee_index:
+    path:   /expenses/employee
+    defaults: { _controller: ExpenseBundle:Expense:indexEmployee }
+    methods: [GET]
+
+expenses_employee_view:
+    path:   /expenses/employee/{employee_id}
+    defaults: { _controller: ExpenseBundle:Expense:showEmployee, date:false }
+    methods: [GET]
+    requirements:
+        employee_id: '\d+'
+
+expenses_employee_view_month:
+    path:   /expenses/employee/{employee_id}/{date}
+    defaults: { _controller: ExpenseBundle:Expense:showEmployee }
+    methods: [GET]
+    requirements:
+        employee_id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+
+expenses_editedexpensesmail:
+    path:     /expenses/editedexpensesmail
+    defaults: { _controller: ExpenseBundle:Expense:editedexpensesmail }
+
+expenses_workday_submit_create:
+    path:   /expenses/workday/new
+    defaults: { _controller: ExpenseBundle:Workday:createSubmit }
+    methods: [POST]
+
+expenses_workday_submit:
+    path:   /expenses/employee/{id}/submit
+    defaults: { _controller: ExpenseBundle:Workday:submitExpense }
+    methods: [POST]
+    requirements:
+        id: '\d+'
+
+expenses_check_submit:
+    path:   /expenses/employee/{id}/check
+    defaults: { _controller: ExpenseBundle:Workday:checkExpense }
+    methods: [POST]
+    requirements:
+        id: '\d+'
+
+expenses_workday_loadWorkday:
+    path:     /expenses/loadWorkday/{employee_id}/{date}
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkday }
+    requirements:
+        employee_id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+
+expenses_workday_loadWorkdaysByMonth:
+    path:     /expenses/loadWorkdaysByMonth/{employee_id}/{date}
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkdaysByMonth }
+    requirements:
+        employee_id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+
+expenses_workday_loadWorkdaysByMonth_short:
+    path:     /expenses/loadWorkdaysByMonth/{employee_id}/
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkdaysByMonth }
+    requirements:
+        employee_id: '\d+'
+
+expenses_workday_loadWorkdaysByMonth_get:
+    path:     /expenses/loadWorkdaysByMonthGet/{employee_id}/
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkdaysByMonthGet }
+    requirements:
+        employee_id: '\d+'
+
+expenses_workday_loadWorkdaysByMonthCsv_group:
+    path:     /expenses/loadWorkdaysByMonthCsv/{date}/{group}
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkdaysByMonthCsv }
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+        group: 'active|archived|all'
+
+expenses_workday_loadWorkdaysByMonthCsv:
+    path:     /expenses/loadWorkdaysByMonthCsv/{date}
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkdaysByMonthCsv, group:'all' }
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+
+expenses_workday_loadWorkdaysByMonthCsv_short:
+    path:     /expenses/loadWorkdaysByMonthCsv/
+    defaults: { _controller: ExpenseBundle:Workday:loadWorkdaysByMonthCsv }
+
+expenses_workday_loadExpensesByMonth:
+    path:     /expenses/loadExpensesByMonth/{id}/{date}
+    defaults: { _controller: ExpenseBundle:Workday:loadExpensesByMonth }
+    requirements:
+        id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+
+expenses_workday_loadValiddaysByDay_group:
+    path:     /expenses/loadValiddaysByDay/{date}/{group}
+    defaults: { _controller: ExpenseBundle:Workdayday:loadValiddaysByDay }
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+        group: 'active|archived|all'
+
+expenses_workday_loadValiddaysByDay:
+    path:     /expenses/loadValiddaysByDay
+    defaults: { _controller: ExpenseBundle:Workdayday:loadValiddaysByDay }
+
+expenses_workday_loadDayValid:
+    path:     /expenses/loadDayValid/{id}/{date}
+    defaults: { _controller: ExpenseBundle:Workdayday:loadDayValid }
+    requirements:
+        id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+
+

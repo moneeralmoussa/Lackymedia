@@ -1,0 +1,9 @@
+<h3>{{ non_finished_logs|length }} nicht abgeschlossene PKW-Fahrten</h3>
+
+<p>Guten Morgen,</p>
+<p>Folgende PKW sind schon seit mehr als 8 Stunden unterwegs:</p>
+<ul>
+{% for item in non_finished_logs %}
+    <li><a href="https://management.giesker-laakmann.de{{ path('vehicle_log_showVehicle', {'vehicle_id':item.vehicle.id}) }}">{{ item.vehicle }}</a> vom {{ item.vehicleLogBeginTime|date('d.m.Y H:i') }}</li>
+{% endfor %}
+</ul>

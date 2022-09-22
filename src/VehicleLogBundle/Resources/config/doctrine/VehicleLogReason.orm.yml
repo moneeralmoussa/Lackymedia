@@ -1,0 +1,22 @@
+VehicleLogBundle\Entity\VehicleLogReason:
+    type: entity
+    table: null
+    repositoryClass: VehicleLogBundle\Repository\VehicleLogReasonRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }
+    oneToMany:
+        vehicleLogs:
+            targetEntity: VehicleLog
+            mappedBy: reason
+        vehicleReservations:
+            targetEntity: VehicleReservation
+            mappedBy: reason

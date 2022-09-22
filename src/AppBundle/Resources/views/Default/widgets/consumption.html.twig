@@ -1,0 +1,88 @@
+<div class="grid-item col-xs-12 col-md-8">
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title">Verbrauchsstatistik {{ consumptions[0].consumptionBeginTime|date('d.m.Y') }} - {{ consumptions[0].consumptionEndTime|date('d.m.Y') }}</h3>
+    <div class="box-tools pull-right">
+      <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+    </div>
+  </div>
+  <!-- /.box-header -->
+  <div class="box-body">
+          <div class="table-responsive">
+              <table id="consumptiontable" class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}LKW{% endtrans %}<br>&nbsp;</th>
+                          <th class="hidden-xs">{% trans %}Kennz.{% endtrans %}<br>&nbsp;</th>
+                          <th>{% trans %}Fahrer{% endtrans %}<br>&nbsp;</th>
+                          <th>{% trans %}Strecke{% endtrans %}<br>km</th>
+                          <th>{% trans %}Verbrauch{% endtrans %}<br>L/100 km</th>
+                          <th>{% trans %}Tempomat{% endtrans %}</th>
+                          <th>{% trans %}Leerlauf{% endtrans %}</th>
+                          <th>{% trans %}N-Antrieb{% endtrans %}</th>
+                          <!--<th>{% trans %}Bremsen{% endtrans %}<br>1/100 km</th>
+                          <th>{% trans %}Beschleunigen{% endtrans %}<br>1/100 km</th>-->
+                          <th>{% trans %}zu<span class="hidden-xs"> </span>schnell{% endtrans %}<br>km/100<span class="hidden-xs"> </span>km</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for consumption in consumptions %}
+                      <tr{% if consumption.driver and (usr.employee.id == consumption.driver.id) %} style="background-color:#e4dbbf"{% endif %}>
+                          <td>{% if consumption.vehicle %}{{ consumption.vehicle.vehicletype.name|replace({' ': ''})[:6] }}<span class="hidden-xs">{{ consumption.vehicle.vehicletype.name|replace({' ': ''})[6:] }}</span>{% endif %}</td>
+                          <td class="hidden-xs">{% if consumption.vehicle and ((consumption.driver and (usr.employee.id == consumption.driver.id)) or is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION')) %}<a href="{{ path('vehicle_detail', { 'id': consumption.vehicle.id }) }}">L {{ consumption.vehicle.trimbleId }}</a>{% endif %}</td>
+                          <td>{% if (consumption.driver and (usr.employee.id == consumption.driver.id)) %}ich{% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') %}{{ consumption.driver.name }}{% endif %}</td>
+                          <td style="text-align: right;">{% if consumption.detailByLabel('Strecke-KM') %}{{ consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') }}{% elseif consumption.detailByLabel('End-KM') and consumption.detailByLabel('Start-KM') %}{{ (consumption.detailByLabel('End-KM').value - consumption.detailByLabel('Start-KM').value)|number_format(0,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if consumption.detailByLabel('Kraftstoffverbrauch beim Fahren') %}<span style="display:none;">{{ '%06.2f'|format(consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value) }}</span>{{ consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value|number_format(1,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">
+                              {% if consumption.detailByLabel('Tempomat-Zeit') %}<span style="display:none;">{{ '%06.2f'|format(consumption.detailByLabel('Tempomat-Zeit').value) }}</span>{{ consumption.detailByLabel('Tempomat-Zeit').value|number_format(1,',','.') }}%{% endif %}
+                          </td>
+                          <td style="text-align: right;">
+                              {% if consumption.detailByLabel('Zeit Motor im Leerlauf') and consumption.detailByLabel('Stillstandzeit Nebenantrieb') %}
+                                  <span style="display:none;">{{ '%06.1f'|format(consumption.detailByLabel('Zeit Motor im Leerlauf').value * (100 - consumption.detailByLabel('Stillstandzeit Nebenantrieb').value) / 100) }}</span>{{ (consumption.detailByLabel('Zeit Motor im Leerlauf').value * (100 - consumption.detailByLabel('Stillstandzeit Nebenantrieb').value) / 100)|number_format(1,',','.') }}%
+                              {% elseif consumption.detailByLabel('Zeit Motor im Leerlauf') %}
+                                  <span style="display:none;">{{ '%06.1f'|format(consumption.detailByLabel('Zeit Motor im Leerlauf').value) }}</span>{{ consumption.detailByLabel('Zeit Motor im Leerlauf').value|number_format(1,',','.') }}%
+                              {% endif %}
+                          </td>
+                          <td style="text-align: right;">
+                              {% if consumption.detailByLabel('Zeit Motor im Leerlauf') and consumption.detailByLabel('Stillstandzeit Nebenantrieb') %}{{ (consumption.detailByLabel('Zeit Motor im Leerlauf').value * consumption.detailByLabel('Stillstandzeit Nebenantrieb').value / 100)|number_format(1,',','.') }}%{% endif %}
+                          </td>
+                          <!--<td style="text-align: right;">{% if consumption.detailByLabel('starkes Bremsen') %}<span style="display:none;">{{ '%06.2f'|format(consumption.detailByLabel('starkes Bremsen').value) }}</span>{{ consumption.detailByLabel('starkes Bremsen').value|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if consumption.detailByLabel('starkes Beschleunigen') %}<span style="display:none;">{{ '%06.2f'|format(consumption.detailByLabel('starkes Beschleunigen').value) }}</span>{{ consumption.detailByLabel('starkes Beschleunigen').value|number_format(2,',','.') }}{% endif %}</td>-->
+                          <td style="text-align: right;">{% if consumption.detailByLabel('zu schnell km') %}<span style="display:none;">{{ '%06.3f'|format(consumption.detailByLabel('zu schnell km').value) }}</span>{{ consumption.detailByLabel('zu schnell km').value|number_format(3,',','.') }}{% endif %}</td>
+                            <td>{% if consumption.detailByLabel('zu schnell km') %}
+                              <div class="btn-group">
+                                <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                <div style="min-width:250px" class="dropdown-menu dropdown-menu-right">
+                                    {{ consumption.detailByLabel('zu schnell km').comment|nl2br }}
+                                </div>
+                              </div>{% endif %}
+                            </td>
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+                  <tfoot>
+                      <tr>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                          <th>Test</th>
+                      </tr>
+                  </tfoot>
+              </table>
+          </div>
+  </div>
+  <!-- /.box-body -->
+  {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+  <div class="box-footer text-center">
+  </div>
+  {% endif %}
+  <!-- /.box-footer -->
+</div>
+</div>

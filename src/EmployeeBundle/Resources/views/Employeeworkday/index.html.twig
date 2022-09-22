@@ -1,0 +1,758 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Anwesenheits Liste ' %}
+{% block content %}
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs" style="margin-bottom:20px;">
+             <li class="active"><a data-toggle="tab" href="#allm"> <p> Mitarbeiter </p></a></li>
+            <li><a data-toggle="tab" href="#genehmigtdiv"> <p> genehmigt </p></a></li>
+             <li><a data-toggle="tab" href="#bearbeitendiv"> <p> bearbeiten </p></a></li>
+             <li><a data-toggle="tab" href="#abgelehntdiv"> <p>abgelehnt</p> </a></li>
+        </ul>
+
+
+
+
+        <div class="tab-content">
+          <div class="form-group">
+                		<div class="input-group date" id="datetimepicker1" style="width: max-content;">
+                    		<input id="input_id" type="text" class="form-control">
+                    		<span class="input-group-addon">
+                        		<span class="glyphicon glyphicon-calendar"></span>
+                    		</span>
+                		</div>
+             </div>
+            <div id="allm" class="tab-pane fade in active" >
+                <div class="table-responsive" >
+                    <table id='all' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit {% endtrans %}</th>
+                                <th>{% trans %}Angemeldet von{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Abgemeldet von{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workday in workdays %}
+                                <tr id="{{ workday.workingdayId }}">
+                                    <td>
+                                    {% if workday.beginEmployeepositionDate != null %}
+                                    <i class="fa fa-circle text-success"></i>
+                                    {% else %}
+                                    <i class="fa fa-circle-o text-success"></i>
+                                    {% endif %}
+                                    {% if workday.statusBeginId != null and workday.statusBeginId == '1' %}
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    {% else %}
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                    {% endif %}
+                                     {% if workday.endEmployeepositionDate != null %}
+                                     <i class="fa fa-circle text-danger"></i>
+                                     {% else %}
+                                    <i class="fa fa-circle-o text-danger"></i>
+                                    {% endif %}
+                                    {% if workday.statusEndId != null and workday.statusEndId == '1' %}
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    {% else %}
+                                     <i class="fa fa-times" aria-hidden="true"></i>
+                                    {% endif %}
+                                    </td>
+                                    <td><a href=" {{ path('WorkingtimeEmployeeByMonth', { 'id': workday.id , 'date': "now"|date('Y-m-d') }) }}"> {% if ',' in workday.name %}{{ workday.name }} {% else %} {{workday.name}}, {{workday.prename}} {% endif %}</a></td>
+                                    <td>{{ workday.department }}</td>
+                                    <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('d-m-Y') }}{% endif %} </td>
+                                    <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('g:ia') }} {% endif %} </td>
+                                    <td>{% if workday.beginLoginTypeId == '1' %}TAB{% endif %}{% if workday.beginLoginTypeId == '2' %}Ohne QR{% endif %}{% if workday.beginLoginTypeId == '3' %}  Mitarbeiter {%  endif %}</td>
+                                    <td>{% if workday.beginEmployeepositionName %}{{ workday.beginEmployeepositionName }}{% endif %}</td>
+                                    <td>{% if workday.statusBeginId == '1' %} genehmigt {% endif %}{% if workday.statusBeginId == '2' %} abgelehnt {% endif %}{% if workday.statusBeginId == '3' %} in Bearbeitung {%  endif %}</td>
+                                    <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                    <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                    <td>{% if workday.endLoginTypeId != null %}{% if workday.endLoginTypeId == '1' %} tab {% endif %}{% if workday.endLoginTypeId == '2' %}Ohne QR{% endif %}{% if workday.endLoginTypeId == '3' %} Mitarbeiter {%  endif %} {% endif %}</td>
+                                    <td>{% if workday.endEmployeepositionName  %}{{ workday.endEmployeepositionName }}  {% endif %}</td>
+                                    <td>{% if workday.statusEndId != null %} {% if workday.statusEndId == '1' %} genehmigt {% endif %}{% if workday.statusEndId == '2' %}abgelehnt{% endif %}{% if workday.statusEndId == '3' %} in Bearbeitung {%  endif %} {% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                      <tfoot>
+                           <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit {% endtrans %}</th>
+                                <th>{% trans %}Angemeldet von{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Abgemeldet von{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                          </tr>
+                     </tfoot>
+                  </table>
+               </div>
+            </div>
+              <div id="bearbeitendiv" class="tab-pane fade active" >
+                <div class="table-responsive" >
+                    <table id='bearbeiten' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workday in workdays %}
+                             {% if workday.statusBeginId != null and workday.statusBeginId in [3] or workday.statusEndId != null and workday.statusEndId in [3] %}
+                                <tr id="{{ workday.workingdayId }}">
+                                        <td>
+                                        {% if workday.beginEmployeepositionDate != null %}
+                                        <i class="fa fa-circle text-success"></i>
+                                        {% else %}
+                                        <i class="fa fa-circle-o text-success"></i>
+                                        {% endif %}
+                                        {% if workday.statusBeginId != null and workday.statusBeginId == '1' %}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {% else %}
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        {% endif %}
+                                        {% if workday.endEmployeepositionDate != null %}
+                                        <i class="fa fa-circle text-danger"></i>
+                                        {% else %}
+                                        <i class="fa fa-circle-o text-danger"></i>
+                                        {% endif %}
+                                        {% if workday.statusEndId != null and workday.statusEndId == '1' %}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {% else %}
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        {% endif %}
+                                        </td>
+                                               <td><a href=" {{ path('WorkingtimeEmployeeByMonth', { 'id': workday.id , 'date': "now"|date('Y-m-d') }) }}"> {% if ',' in workday.name %}{{ workday.name }} {% else %} {{workday.name}}, {{workday.prename}} {% endif %}</a></td>
+                                        <td>{{ workday.department }}</td>
+                                    <!--   <td>{{ workday.beginEmployeepositionName }}</td>  -->
+                                        <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                        <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                        <td>{% if workday.beginEmployeepositionName  %}{{ workday.beginEmployeepositionName }}{% endif %}</td>
+                                        <td>{% if workday.statusBeginId != null %}{%  if workday.beginLoginTypeId == 1 %}<span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt"></span>{% else %}
+                                        <span class="glyphicon glyphicon-remove-sign" STYLE="color: red; font-size: 25pt" onclick="EditBeginStatus('{{ workday.workingdayId}}'  , 2 );$(this).parent().parent().hide()"></span><span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt" onclick="EditBeginStatus('{{ workday.workingdayId}}'  , 1 );$(this).parent().parent().hide()"></span>{% endif %}{% endif %}</td>
+                                    <!--   <td>{% if workday.endEmployeepositionName != null %}{{ workday.endEmployeepositionName }}  {% endif %} </td> -->
+                                        <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                        <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                        <td>{% if workday.endEmployeepositionName %}{{ workday.endEmployeepositionName }}{% endif %}</td>
+                                        <td>{% if workday.statusEndId != null %}{% if workday.endLoginTypeId == 1 %}<span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt"></span>{% else %}
+                                        <span class="glyphicon glyphicon-remove-sign" STYLE="color: red; font-size: 25pt" onclick="EditEndStatus('{{ workday.workingdayId}}'  , 2 );$(this).parent().parent().hide()"></span><span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt" onclick="EditEndStatus('{{ workday.workingdayId}}'  , 1 );$(this).parent().parent().hide()"></span>{% endif %}{% endif %}</td>
+                                </tr>
+                             {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      <tfoot>
+                       <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                      </tr>
+                     </tfoot>
+                    </table>
+                </div>
+            </div>
+    <div id="genehmigtdiv" class="tab-pane fade active" >
+                <div class="table-responsive" >
+                    <table id='genehmigt' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>,
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workday in workdays %}
+                             {% if workday.statusBeginId != null and workday.statusBeginId in [1] and workday.statusEndId != null and workday.statusEndId in [1] %}
+                                <tr id="{{ workday.workingdayId }}">
+                                        <td>
+                                        {% if workday.beginEmployeepositionDate != null %}
+                                        <i class="fa fa-circle text-success"></i>
+                                        {% else %}
+                                        <i class="fa fa-circle-o text-success"></i>
+                                        {% endif %}
+                                        {% if workday.statusBeginId != null and workday.statusBeginId == '1' %}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {% else %}
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        {% endif %}
+                                        {% if workday.endEmployeepositionDate != null %}
+                                        <i class="fa fa-circle text-danger"></i>
+                                        {% else %}
+                                        <i class="fa fa-circle-o text-danger"></i>
+                                        {% endif %}
+                                        {% if workday.statusEndId != null and workday.statusEndId == '1' %}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {% else %}
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        {% endif %}
+                                        </td>
+                                                                 <td><a href=" {{ path('WorkingtimeEmployeeByMonth', { 'id': workday.id , 'date': "now"|date('Y-m-d') }) }}"> {% if ',' in workday.name %}{{ workday.name }} {% else %} {{workday.name}}, {{workday.prename}} {% endif %}</a></td>
+                                        <td>{{ workday.department }}</td>
+                                    <!-- <td>{{ workday.beginEmployeepositionName }}</td>  -->
+                                        <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                        <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                        <td>{% if workday.beginEmployeepositionName %}{{ workday.beginEmployeepositionName }}{% endif %}</td>
+                                        <td>{% if workday.statusBeginId != null %}{%  if workday.beginLoginTypeId == 1 %}<span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt"></span>{% else %}
+                                        <span class="glyphicon glyphicon-remove-sign" STYLE="color: red; font-size: 25pt" onclick="EditBeginStatus('{{ workday.workingdayId}}'  , 2 );$(this).parent().parent().hide()"></span><span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt" onclick="EditBeginStatus('{{ workday.workingdayId}}'  , 1 );$(this).parent().parent().hide()"></span>{% endif %}{% endif %}</td>
+                                    <!-- <td>{% if workday.endEmployeepositionName  %}{{ workday.endEmployeepositionName }}  {% endif %} </td> -->
+                                        <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                        <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                        <td>{% if workday.endEmployeepositionName %}{{ workday.endEmployeepositionName }}  {% endif %}</td>
+                                        <td>{% if workday.statusEndId != null %}{% if workday.endLoginTypeId == 1 %}<span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt"></span>{% else %}
+                                        <span class="glyphicon glyphicon-remove-sign" STYLE="color: red; font-size: 25pt" onclick="EditEndStatus('{{ workday.workingdayId}}'  , 2 );$(this).parent().parent().hide()"></span><span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt" onclick="EditEndStatus('{{ workday.workingdayId}}'  , 1 );$(this).parent().parent().hide()"></span>{% endif %}{% endif %}</td>
+                                </tr>
+                             {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      <tfoot>
+                       <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                      </tr>
+                     </tfoot>
+                    </table>
+                </div>
+            </div>
+    <div id="abgelehntdiv" class="tab-pane fade active" >
+                <div class="table-responsive" >
+                    <table id='abgelehnt' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workday in workdays %}
+                             {% if workday.statusBeginId != null and workday.statusBeginId in [2] or workday.statusEndId != null and workday.statusEndId in [2] %}
+                                <tr id="{{ workday.workingdayId }}">                                >
+                                        <td>
+                                        {% if workday.beginEmployeepositionDate != null %}
+                                        <i class="fa fa-circle text-success"></i>
+                                        {% else %}
+                                        <i class="fa fa-circle-o text-success"></i>
+                                        {% endif %}
+                                        {% if workday.statusBeginId != null and workday.statusBeginId == '1' %}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {% else %}
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        {% endif %}
+                                        {% if workday.endEmployeepositionDate != null %}
+                                        <i class="fa fa-circle text-danger"></i>
+                                        {% else %}
+                                        <i class="fa fa-circle-o text-danger"></i>
+                                        {% endif %}
+                                        {% if workday.statusEndId != null and workday.statusEndId == '1' %}
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                        {% else %}
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                        {% endif %}
+                                        </td>
+                                                               <td><a href=" {{ path('WorkingtimeEmployeeByMonth', { 'id': workday.id , 'date': "now"|date('Y-m-d') }) }}"> {% if ',' in workday.name %}{{ workday.name }} {% else %} {{workday.name}}, {{workday.prename}} {% endif %}</a></td>
+                                        <td>{{ workday.department }}</td>
+                                    <!--   <td>{{ workday.beginEmployeepositionName }}</td>  -->
+                                        <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                        <td>{% if workday.beginEmployeepositionDate != null %}{{ workday.beginEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                        <td>{% if workday.beginEmployeepositionName %}{{ workday.beginEmployeepositionName }}{% endif %}</td>
+                                        <td>{% if workday.statusBeginId != null %}{%  if workday.beginLoginTypeId == 1 %}<span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt"></span>{% else %}
+                                        <span class="glyphicon glyphicon-remove-sign" STYLE="color: red; font-size: 25pt" onclick="EditBeginStatus('{{ workday.workingdayId}}'  , 2 );$(this).parent().parent().hide()"></span><span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt" onclick="EditBeginStatus('{{ workday.workingdayId}}'  , 1 );$(this).parent().parent().hide()"></span>{% endif %}{% endif %}</td>
+                                    <!--   <td>{% if workday.endEmployeepositionName != null %}{{ workday.endEmployeepositionName }}  {% endif %} </td> -->
+                                        <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('d-m-Y') }}{% endif %}</td>
+                                        <td>{% if workday.endEmployeepositionDate != null %}{{ workday.endEmployeepositionDate|date('g:ia') }}{% endif %}</td>
+                                        <td>{% if workday.endEmployeepositionName %}{{ workday.endEmployeepositionName }}  {% endif %}</td>
+                                        <td>{% if workday.statusEndId != null %}{% if workday.endLoginTypeId == 1 %}<span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt"></span>{% else %}
+                                        <span class="glyphicon glyphicon-remove-sign" STYLE="color: red; font-size: 25pt" onclick="EditEndStatus('{{ workday.workingdayId}}'  , 2 );$(this).parent().parent().hide()"></span><span class="glyphicon glyphicon-ok-sign" STYLE="color: green; font-size: 25pt" onclick="EditEndStatus('{{ workday.workingdayId}}'  , 1 );$(this).parent().parent().hide()"></span>{% endif %}{% endif %}</td>
+                                </tr>
+                             {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      <tfoot>
+                       <tr>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Beginndatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                                <th>{% trans %}Arbeitszeit Enddatum{% endtrans %}</th>
+                                <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                                <th>{% trans %}Kommentar{% endtrans %}</th>
+                                <th>{% trans %}Status{% endtrans %}</th>
+                      </tr>
+                     </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/fixedcolumns/3.2.6/css/fixedColumns.dataTables.min.css" />
+    <style>
+    th input {
+              width: 90%;
+             }
+    </style>
+{% endblock %}
+{% block javascripts %}
+        <script>
+        function EditBeginStatus($id,$status) {
+
+                $.ajax({
+                        method: "GET",
+                        url: "/employee/EditBeginStatus/"+$id+"/"+$status ,
+                        })
+                    .done(function( msg ) {
+                        $('#'+$id).hide();
+                    });
+                }
+
+       function EditEndStatus($id,$status) {
+                $.ajax({
+                        method: "GET",
+                        url: "/employee/EditEndStatus/"+$id+"/"+$status ,
+                        })
+                    .done(function( msg ) {
+                        $('#'+$id).hide();
+                    });
+                }
+        </script>
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.19/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript">
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#bearbeiten tfoot th').each( function (i) {
+        var title = $('#bearbeiten thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#bearbeiten').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table.column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+} );
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#all tfoot th').each( function (i) {
+        var title = $('#all thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#all').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+        fixedColumns:   true,
+
+         fixedColumns: {
+            leftColumns: 2
+        },
+
+
+
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    });
+	});
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#abgelehnt tfoot th').each( function (i) {
+        var title = $('#abgelehnt thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    });
+    // DataTable
+    var table = $('#abgelehnt').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+} );
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#genehmigt tfoot th').each( function (i) {
+        var title = $('#genehmigt thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    });
+    // DataTable
+    var table = $('#genehmigt').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+});
+$( document ).ready(function() {
+    setTimeout(function() {
+        $("#hidenelement").find("li").show();
+    }, 3000);
+});
+
+    $( document ).ready(function() {
+            $('#datetimepicker1').datetimepicker({
+                locale: 'de',
+                format: 'DD-MM-YYYY',
+                defaultDate: moment(new Date('{{ Date|date('Y-m-d') }}')),
+                date: moment(new Date('{{ Date|date('Y-m-d') }}')),
+            });
+            $('#datetimepicker1').on('dp.change', function(e){
+             window.location.replace(e.date.format('YYYY-MM-DD'));
+            });
+        });
+</script>
+{% endblock %}

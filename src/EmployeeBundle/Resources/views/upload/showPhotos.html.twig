@@ -1,0 +1,46 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Alle Dateien ansehen' %}
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Alle Dateien' } %}
+          {% block content %}
+            <div class="table-responsive">
+                <table class="table table-datatable table-striped table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th>{% trans %}Titel{% endtrans %}</th>
+                            <th>{% trans %}Von{% endtrans %}</th>
+                            <th>{% trans %}Abteilung{% endtrans %}</th>
+                            <th>{% trans %}Informationen{% endtrans %}</th>
+                            <th>{% trans %}Typ{% endtrans %}</th>
+                            <th>{% trans %}Datum{% endtrans %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td>{{ file.title }}</td>
+                            <td>{{ file.employee.FName }}</td>
+                            <td>{{ file.employee.department }}</td>
+                            <td>{{ file.info }}</td>
+                            <td>{{ file.type }}</td>
+                            <td>{{ file.createAt|date("d.m.Y H:i") }}</td>
+                            <td>
+                              <a href="{{ asset( file.name ) }}"><i class="fa fa-download" style="font-size: 18px;"></i>&nbsp&nbsp&nbsp&nbsp
+                              <a href="/upload/{{ file.name  }}/{{file.id}}/del"><i class="fa fa-trash" style="color:red; font-size: 18px;"></i>
+                            </td>
+                        </tr>
+                    {% endfor  %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ path('app') }}" class="btn btn-info pull-right">{% trans %}zurück{% endtrans %}</a>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

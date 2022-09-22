@@ -1,0 +1,59 @@
+<div class="box box-danger">
+  <div class="box-header">
+    <i class="fa fa-internet-explorer"></i>
+
+    <h3 class="box-title">Linkliste</h3>
+
+  </div>
+{% set foo = ['bg-teal','bg-green', 'bg-olive' , 'bg-lime' , 'bg-yellow' ,'bg-orange' , 'bg-fuchsia' ,'bg-purple','bg-teal'] %}
+ {% for linkListgroup in linkListgroups   %}
+  {% if linkListgroup.groupname is not null and linkListgroup.groupname != ""  %}
+ <center> <h3><span class="label {{ random(['label-default','label-primary', 'label-success' , 'label-info' , 'label-warning' ,'label-danger' ]) }}  {{ random(['bg-teal','bg-green', 'bg-olive' , 'bg-lime' , 'bg-yellow' ,'bg-orange' , 'bg-fuchsia' ,'bg-purple','bg-teal' ]) }}" ><i class="fa fa-users"></i> {{ linkListgroup.groupname }} </h3> 
+ <table class="table table-hover">
+  <tbody>
+ {% for link in linkList   %}
+  {% if linkListgroup.groupname == link.Groupname %}
+                  <tr>
+                    <td><i class="fa fa-user"></i> {{ link.name }}</td>
+                    <td align='right'><a href="{{link.link}}" style="color:black"><i class="fa fa-firefox"></i>
+                    <span class="label label-danger badge" >{{link.link}}<font color="white"></font> </span></a></td>
+                  </tr>
+  {% endif %}
+{% endfor %}
+</tbody></table>
+</center>
+{% endif %}
+{% endfor %}
+ <center> <h1> <span class="label label-danger " > <i class="fa fa-medkit" aria-hidden="true"></i> </h1> 
+   <table class="table table-hover">
+                   <tbody>
+        {% for link in linkList   %}
+          {% if  link.Groupname is null  or link.Groupname == "" %}   
+                <tr>
+                  <center> 
+                    <td align='left'>
+                    {% if  link.symbol == '1' %}<a href="{{link.link}}" style="color:black"><i class="fa fa-ambulance" aria-hidden="true" ></i> <span class="label label-danger badge" ><font color="white">{{ link.name }}</font></span></a>{% endif %}
+                    {% if  link.symbol == '2' %}<a href="{{link.link}}" style="color:black"><i class="fa fa-ambulance" aria-hidden="true" ></i> <span class="label label-danger badge" ><font color="white">{{ link.name }}</font></span></a>{% endif %}
+                    </td>
+                  </center> 
+                   <td align='right'>
+                  {% if  link.symbol == '1' %}<i class="fa fa-firefox"></i><a href="{{link.link}}" style="color:white"> {% endif %}
+                  {% if  link.symbol == '2' %}<i class="fa fa-mobile"></i><a href="{{link.link}}"> {% endif %}
+                  {% if  link.symbol == '3' %}<i class="fa fa-whatsapp"></i><a href="{{link.link}}" style="color:black"> {% endif %}
+                   <span class="label label-danger badge" ><font color="white">{{ link.link }}</font></span></a></td>
+                </tr>
+          {% endif %}
+        {% endfor %}
+              </tbody></table>
+            </center> 
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+            <div class="box-footer text-center">
+              <a href="/linkList/ShowlinkList" class="uppercase">Bearbeiten</a>
+              <a href="/linkListe/NewlinkListe/" class="btn btn-info pull-right"><i class="fa fa-plus"></i></a>
+            </div>
+	         {% endif %}
+      <!-- /.item -->
+    <div class="slimScrollBar" style="background: rgb(0, 0, 0) none repeat scroll 0% 0%; width: 7px; position: absolute; top: 63px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 187.126px;"></div>
+    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div>
+  
+</div>

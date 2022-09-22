@@ -1,0 +1,22 @@
+<div class="table-responsive">
+<table class="table table-datatable table-condensed table-striped table-hover">
+  <thead>
+      <tr>
+          <th>{% trans %}Year{% endtrans %}</th>
+          <th>{% trans %}Urlaub{% endtrans %}</th>
+          <th>{% trans %}Zuzügl.{% endtrans %}</th>
+        <!--   <th>{% trans %}Zuzügl. Kommentar{% endtrans %}</th> --> 
+      </tr>
+  </thead>
+  <tbody>
+  {% for absence in absenceDetailClearing %}
+      <tr>
+          <td>{{ absence.year }} </td>
+          <td>{% if holidays[absence.year] is defined %}{{holidays[absence.year]['value']}}{% endif %}</td>
+          <td id="ADOV_{{ absence.year }}">{{ absence.additionalDaysOfVacation }} <i class="fa fa-edit textaction" style="color: cornflowerblue;" onclick="Urlaubszuzug('{{ absence.year }}')"></i></td>
+        <!--   <td id="ADOVC_{{ absence.year }}">{{ absence.comment2 }} <i class="fa fa-edit textaction" style="color: cornflowerblue;" onclick="Urlaubszuzug('{{ absence.year }}')"></i></td> -->
+      </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>

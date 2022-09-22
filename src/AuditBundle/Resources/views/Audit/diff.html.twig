@@ -1,0 +1,51 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Aktivität' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': audit_assoc(log.source) } %}
+          {% block content %}
+                  {% if log.action == 'insert' %}
+                    <ul class="list-group list-group-hover">
+                      {% for field, change in log.diff %}
+                        <li class="list-group-item">
+                          <span class="pull-right">{{ audit_value(change.new) }}</span>
+                          {{ field }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <div class="table-responsive">
+                      <table class="table table-datatable table-striped table-hover table-condensed">
+                        <tr>
+                          <th>Feld</th>
+                          <th>Alt</th>
+                          <th>Neu</th>
+                        </tr>
+                        {% for field, change in log.diff %}
+                          <tr>
+                            <td>{{ field }}</td>
+                            <td>{{ audit_value(change.old) }}</td>
+                            <td>{{ audit_value(change.new) }}</td>
+                          </tr>
+                        {% endfor %}
+                      </table>
+                    </div>
+                  {% endif %}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+<style media="screen">
+.list-group-hover .list-group-item:hover {
+  background-color: #f5f5f5;
+}
+</style>
+{% endblock %}

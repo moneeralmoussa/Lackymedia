@@ -1,0 +1,42 @@
+<div class="table-responsive">
+<table class="table table-datatable table-condensed table-striped table-hover">
+  <thead>
+      <tr>
+          <th>{% trans %}Eingereicht{% endtrans %}</th>
+          <th>{% trans %}Mitarbeiter{% endtrans %}</th>
+          <th class="hidden-xs">{% trans %}Grund{% endtrans %}</th>
+          <th>{% trans %}Von{% endtrans %}</th>
+          <th>{% trans %}Bis{% endtrans %}</th>
+          <th>{% trans %}Tage{% endtrans %}</th>
+          <th class="hidden-xs">{% trans %}Bearbeitet von{% endtrans %}</th>
+          <th class="hidden-xs">{% trans %}Status{% endtrans %}</th>
+          <th class="hidden-xs">{% trans %}Bemerkung{% endtrans %}</th>
+          <th></th>
+      </tr>
+  </thead>
+  <tbody>
+  {% for absence in absences %}
+      <tr class="{% if absence.status.id == 1 %}success{% elseif absence.status.id == 2 %}danger{% endif %}">
+          <td>{% if absence.createdat %}<span style="display:none;">{{ absence.createdat|date('Ymd') }}</span>{{ absence.createdat|date('d.m.Y') }}{% endif %}</td>
+          <td title="{{ absence.employee.fullname }}"><a href="{{ path('calendar_show', { id: absence.employee.id})}}">{{ absence.employee.fullname }}</a></td>
+          <td class="hidden-xs" title="{{ absence.reason }}">{{ absence.reason }}</td>
+          <td>{% if absence.fromDate %}<span style="display:none;">{{ absence.fromDate|date('Ymd') }}</span>{{ absence.fromDate|date('d.m.Y') }}{% endif %}</td>
+          <td>{% if absence.toDate %}<span style="display:none;">{{ absence.toDate|date('Ymd') }}</span>{{ absence.toDate|date('d.m.Y') }}{% endif %}</td>
+          <td title="Gesamte Tage: {{ absence.calculatedDay }} davon {{ absence.day}} Tage als {{ absence.reason }} berechnet">{{ absence.calculatedDay }} ({{ absence.day}})</td>
+          <td class="hidden-xs" title="{{ absence.approvedBy }}">{{ absence.approvedBy }}</td>
+          <td class="hidden-xs" title="{{ absence.status.name }}">{{ absence.status.name }}</td>
+          <td class="hidden-xs" title="{{ absence.note }}">{{ absence.note|slice(0, 20) ~ '..' }}</td>
+          <td>
+              <ul class="list-inline">
+                  <li>
+                    {% if absence.status.name != 'genehmigt' or is_granted('ROLE_ADMIN')%}
+                      <a href="{{ path('absence_edit', { 'id': absence.id }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    {% endif %}
+                  </li>
+              </ul>
+          </td>
+      </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>

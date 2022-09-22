@@ -1,0 +1,31 @@
+contract_workingtime_index:
+    path:     /
+    defaults: { _controller: "EmployeeBundle:Workingtime:index" }
+    methods:  GET
+
+contract_workingtime_show:
+    path:     /{id}/show
+    defaults: { _controller: "EmployeeBundle:Workingtime:show" }
+    methods:  GET
+
+contract_workingtime_new:
+    path:     /new
+    defaults: { _controller: "EmployeeBundle:Workingtime:new", contract_id:false }
+    methods:  [GET, POST]
+
+contract_workingtime_new_contractid:
+    path:     /new/{contract_id}
+    defaults: { _controller: "EmployeeBundle:Workingtime:new" }
+    methods:  [GET, POST]
+    requirements:
+        contract_id: '\d+'
+
+contract_workingtime_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "EmployeeBundle:Workingtime:edit" }
+    methods:  [GET, POST]
+
+contract_workingtime_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "EmployeeBundle:Workingtime:delete" }
+    methods:  DELETE

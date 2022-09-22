@@ -1,0 +1,23 @@
+AbsenceBundle\Entity\Reason:
+    type: entity
+    table: null
+    repositoryClass: AbsenceBundle\Repository\ReasonRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+        abbr:
+            type: string
+            length: 255
+        color:
+            type: string
+            length: 7
+        use_as_holidays:
+            type: boolean
+    lifecycleCallbacks: {  }

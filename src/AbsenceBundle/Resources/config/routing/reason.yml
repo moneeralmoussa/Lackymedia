@@ -1,0 +1,24 @@
+reason_index:
+    path:     /
+    defaults: { _controller: "AbsenceBundle:Reason:index" }
+    methods:  GET
+
+# reason_show:
+#     path:     /{id}/show
+#     defaults: { _controller: "AbsenceBundle:Reason:show" }
+#     methods:  GET
+
+reason_new:
+    path:     /new
+    defaults: { _controller: "AbsenceBundle:Reason:new" }
+    methods:  [GET, POST]
+
+reason_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AbsenceBundle:Reason:edit" }
+    methods:  [GET, POST]
+
+reason_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AbsenceBundle:Reason:delete" }
+    methods:  DELETE

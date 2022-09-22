@@ -1,0 +1,37 @@
+AnnouncementsBundle\Entity\Announcement:
+    type:                                entity
+    table:                               null
+    repositoryClass:                     AnnouncementsBundle\Repository\AnnouncementRepository
+    id:
+        id:
+            type:                        integer
+            id:                          true
+            generator:
+                strategy:                AUTO
+    fields:
+        title:
+            type:                        string
+            length:                      255
+            nullable:                    false
+        text:
+            type:                        string
+            nullable:                    false
+        expireAt:
+            type:                        datetime
+            column:                      to_date
+        authorID:
+            type:                        integer
+            column:                      employee_id
+        createdAt:
+          type:                          datetime
+          nullable:                      true
+          gedmo:
+            timestampable:
+              on:                        create
+        updatedAt:
+          type:                          datetime
+          nullable:                      true
+          gedmo:
+            timestampable:
+              on:                        update
+    lifecycleCallbacks:                  {  }

@@ -1,0 +1,15 @@
+trimble_soap_homepage:
+    path:     /trimble
+    defaults: { _controller: TrimbleSoapBundle:Default:index }
+
+trimble_soap_polltraces:
+    path:     /trimble/polltraces
+    defaults: { _controller: TrimbleSoapBundle:Default:polltraces }
+
+trimble_soap_notloggedoutmail:
+    path:     /trimble/notloggedoutmail
+    defaults: { _controller: TrimbleSoapBundle:Default:notloggedoutmail }
+
+trimble_soap_extractconsumption:
+    path:     /trimble/extractconsumption
+    defaults: { _controller: TrimbleSoapBundle:Default:extractconsumption }

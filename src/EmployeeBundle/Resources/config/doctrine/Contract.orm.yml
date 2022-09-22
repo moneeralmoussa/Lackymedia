@@ -1,0 +1,60 @@
+EmployeeBundle\Entity\Contract:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\ContractRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+        holidays:
+            type: integer
+            nullable: true
+        weeklyHoursOfWork:
+            type: decimal
+            scale: '2'
+            nullable: true
+        standby:
+            type: boolean
+            nullable: true
+        additionalExpenses8h:
+            type: decimal
+            scale: '2'
+            nullable: true
+        additionalExpenses24h:
+            type: decimal
+            scale: '2'
+            nullable: true
+        trainingOvertimePremium:
+            type: decimal
+            scale: '2'
+            nullable: true
+        vacationalBenefit:
+            type: decimal
+            scale: '2'
+            nullable: true
+    lifecycleCallbacks: {  }
+    oneToMany:
+        children:
+            targetEntity: Contract
+            mappedBy: parent
+        workingtimes:
+            targetEntity: Workingtime
+            mappedBy: contract
+    manyToOne:
+        parent:
+            targetEntity: Contract
+            inversedBy: children
+
+    # oneToOne:
+    #     employee:
+    #         targetEntity: EmployeeBundle\Entity\Employee
+    #         inversedBy: contract
+    #         joinColumn:
+    #             name: employee_id
+    #             referencedColumnName: id

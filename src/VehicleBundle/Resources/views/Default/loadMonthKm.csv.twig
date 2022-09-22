@@ -1,0 +1,7 @@
+"Fahrzeugkm für {{ base_date|date('M Y') }}"
+"Name";"Datum";"Start KM";"End KM";"Diff KM";"Startzeit";"Endzeit";"Diff Zeit"
+{% for skey, source in activity_days %}
+{% for day in source %}
+"{{ skey }}";"{{ day.date }}";{{ day.startkm|number_format(3,',','.') }};{{ day.endkm|number_format(3,',','.') }};{{ day.diffkm|number_format(3,',','.') }};{{ day.starttime }};{{ day.endtime }};{{ day.difftime }}
+{% endfor %}
+{% endfor %}

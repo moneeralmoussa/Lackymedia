@@ -1,0 +1,37 @@
+expensescountryspecificexpensesindex:
+    path:     /
+    defaults: { _controller: "ExpenseBundle:ExpenseNew:tracedataCopyByTypeLogout" }
+    methods:  GET    
+expenses_workday_loadWorkdaysByMonth_get_new:
+    path:     /loadWorkdaysByMonthGetNew/{employee_id}/
+    defaults: { _controller: ExpenseBundle:ExpenseNew:loadWorkdaysByMonthGetNew }
+    requirements:
+        employee_id: '\d+'   
+delete_workday_id:
+    path:     /deleteworkday/{id}
+    defaults: { _controller: ExpenseBundle:ExpenseNew:deleteWorkday }
+    requirements:
+        id: '\d+'
+edit_car_reason:
+    path:     /editcarreason/{id}/{reason}
+    defaults: { _controller: ExpenseBundle:ExpenseNew:editcarreason }
+    requirements:
+        id: '\d+'
+        reason: '\d+'
+expenses_employee_view_new:
+    path:   /employee/{employee_id}
+    defaults: { _controller: ExpenseBundle:ExpenseNew:showEmployee, date:false }
+    methods: [GET]
+    requirements:
+        employee_id: '\d+' 
+expenses_employee_index_new:
+    path:   /employee
+    defaults: { _controller: ExpenseBundle:ExpenseNew:indexEmployee }
+    methods: [GET]        
+expenses_employee_view_month_new:
+    path:   /employee/{employee_id}/{date}
+    defaults: { _controller: ExpenseBundle:ExpenseNew:showEmployee }
+    methods: [GET]
+    requirements:
+        employee_id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'    

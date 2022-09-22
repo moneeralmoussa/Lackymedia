@@ -1,0 +1,80 @@
+{
+    "name": "ssh-w01701bb/management",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/AppCache.php"
+        ]
+    },
+    "autoload-dev": {
+        "files": [
+            "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
+        ]
+    },
+    "require": {
+        "php": ">=5.3.9",
+        "async-request/async-request": "^1.0",
+        "beberlei/DoctrineExtensions": "^1.1",
+        "components/bootstrap": "^3.3",
+        "components/font-awesome": "^4.7",
+        "data-dog/audit-bundle": "^0.1.10",
+        "data-dog/pager-bundle": "^0.2.8",
+        "datatables/datatables": "^1.10",
+        "doctrine/doctrine-bundle": "~1.4",
+        "doctrine/orm": "^2.4.8",
+        "eonasdan/bootstrap-datetimepicker": "^4.17",
+        "friendsofsymfony/user-bundle": "~2.0",
+        "incenteev/composer-parameter-handler": "~2.0",
+        "knplabs/doctrine-behaviors": "^1.4",
+        "mgilet/notification-bundle": "^3.0",
+        "nesbot/carbon": "^1.36.2",
+        "phpoffice/phpexcel": "^1.8",
+        "sensio/distribution-bundle": "~4.0",
+        "sensio/framework-extra-bundle": "^3.0.2",
+        "simplethings/entity-audit-bundle": "^1.0",
+        "stof/doctrine-extensions-bundle": "^1.2",
+        "symfony/monolog-bundle": "^3.0.2",
+        "symfony/swiftmailer-bundle": "~2.3,>=2.3.10",
+        "symfony/symfony": "2.8.*",
+        "twig/extensions": "^1.5",
+        "twig/twig": "^1.0||^2.0"
+    },
+    "require-dev": {
+        "sensio/generator-bundle": "~3.0",
+        "symfony/phpunit-bridge": "~2.7"
+    },
+    "scripts": {
+        "symfony-scripts": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-install-cmd": [
+            "@symfony-scripts"
+        ],
+        "post-update-cmd": [
+            "@symfony-scripts"
+        ]
+    },
+    "config": {
+        "bin-dir": "bin",
+        "sort-packages": true
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-web-dir": "web",
+        "symfony-assets-install": "relative",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
+        "branch-alias": null
+    }
+}

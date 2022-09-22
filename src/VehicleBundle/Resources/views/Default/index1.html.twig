@@ -1,0 +1,72 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrzeuge' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Download' } %}
+          {% block content %}
+            <div class='input-group date' id='datetimepicker1'>
+              <input type='text' class="form-control" />
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <span class="input-group-btn">
+                 <a class="btn btn-success" href="{{ path('vehicle_loadMonthKmCsv_short') }}" onclick="this.href='{{ path('vehicle_loadMonthKmCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD');" target="_blank" role="button">{% trans %}Download{% endtrans %}</a>
+              </span>
+            </div>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="nav-tabs-custom">
+      <ul class="nav nav-tabs" style="margin-bottom:20px;">
+          <li class="active"><a data-toggle="tab" href="#home">Fahrzeugliste</a></li>
+          <li><a data-toggle="tab" href="#menu1">verkaufte Fahrzeuge</a></li>
+      </ul>
+      <div class="tab-content">
+          <div id="home" class="tab-pane active">
+            {% include 'VehicleBundle:Default:partials/table.html.twig' with {'vehicles': vehicles} %}
+          </div>
+          <div id="menu1" class="tab-pane">
+            {% include 'VehicleBundle:Default:partials/table.html.twig' with {'vehicles': deletedVehicles} %}
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+  $( document ).ready(function() {
+    $('#datetimepicker1').datetimepicker({
+      locale: 'de',
+      format: 'MMM YYYY',
+      defaultDate: '{{ base_date|date('n') }}/1/{{ base_date|date('Y') }}',
+      date: '{{ base_date|date('n') }}/1/{{ base_date|date('Y') }}',
+    });
+
+    $(document).on('click', '.delete', function (e) {
+      var vehicleID = $(this).parent().parent().parent().parent().parent().data('key');
+      ajaxdelete(vehicleID,'{{path('vehicle_delete') }}',e);
+    });
+
+    $(document).on('click', '.restore', function (e) {
+      var vehicleID = $(this).parent().parent().parent().parent().parent().data('key');
+      ajaxrestore(vehicleID,'{{path('vehicle_restore') }}',e);
+    });
+
+  });
+</script>
+{% endblock %}

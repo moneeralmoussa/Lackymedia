@@ -1,0 +1,19 @@
+LocationBundle\Entity\Locationtype:
+    type: entity
+    table: null
+    repositoryClass: LocationBundle\Repository\LocationtypeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }
+    oneToMany:
+        locations:
+            targetEntity: Location
+            mappedBy: locationtype

@@ -1,0 +1,80 @@
+EmployeeBundle\Entity\EmployeeImport:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\EmployeeImportRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        komalogId:
+            type: integer
+            nullable: true
+            column: komalog_id
+        trimbleId:
+            type: string
+            length: 10
+            nullable: true
+            #unique: true
+            column: trimble_id
+        countryCode:
+            type: string
+            length: 5
+            nullable: true
+            column: country_code
+        name:
+            type: string
+            length: 255
+        prename:
+            type: string
+            length: 255
+            nullable: true
+        salutation:
+            type: string
+            length: 50
+            nullable: true
+        street:
+            type: string
+            length: 255
+            nullable: true
+        zipCode:
+            type: string
+            length: '5'
+            nullable: true
+            column: zip_code
+        town:
+            type: string
+            length: 255
+            nullable: true
+        phone:
+            type: string
+            length: 255
+            nullable: true
+        fax:
+            type: string
+            length: 255
+            nullable: true
+        mobile:
+            type: string
+            length: 255
+            nullable: true
+        birthday:
+            type: date
+            nullable: true
+        entry_date:
+            type: date
+            nullable: true
+        initial:
+            type: string
+            length: '10'
+            nullable: true
+        email:
+            type: string
+            length: 255
+            nullable: true
+        deleted_at:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }

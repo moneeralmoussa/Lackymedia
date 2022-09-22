@@ -1,0 +1,73 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Arbeitszeit'|trans ~ ': ' ~  workingtime.dayOfWeek %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Neue Arbeitszeit' } %}
+          {% block content %}
+          <table class="table">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr>
+                      <th>{% trans %}Wochentag{% endtrans %}</th>
+                      <td>{{ workingtime.dayOfWeekText }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Arbeitsbeginn{% endtrans %}</th>
+                      <td>{% if workingtime.workBegin %}{{ workingtime.workBegin|date('H:i:s') }}{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Arbeitsende{% endtrans %}</th>
+                      <td>{% if workingtime.workEnd %}{{ workingtime.workEnd|date('H:i:s') }}{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Pausenbeginn{% endtrans %}</th>
+                      <td>{% if workingtime.breakBegin %}{{ workingtime.breakBegin|date('H:i:s') }}{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Pausenende{% endtrans %}</th>
+                      <td>{% if workingtime.breakEnd %}{{ workingtime.breakEnd|date('H:i:s') }}{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Überstundensatz{% endtrans %}</th>
+                      <td>{{ workingtime.overtimePremium }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Überstundensatz Beifahrer{% endtrans %}</th>
+                      <td>{{ workingtime.overtimePremiumPassenger }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Überstundensatz ist brutto{% endtrans %}</th>
+                      <td>{% if workingtime.overtimePremiumIsBrutto %}Ja{% else %}Nein{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Sonderregelungen{% endtrans %}</th>
+                      <td>{{ workingtime.specialProvision }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Schule{% endtrans %}</th>
+                      <td>{% if workingtime.school %}Ja{% else %}Nein{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Schulbeginn{% endtrans %}</th>
+                      <td>{% if workingtime.schoolBegin %}{{ workingtime.schoolBegin|date('H:i:s') }}{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Schulende{% endtrans %}</th>
+                      <td>{% if workingtime.schoolEnd %}{{ workingtime.schoolEnd|date('H:i:s') }}{% endif %}</td>
+                  </tr>
+              </tbody>
+          </table>
+          <a href="{{ path('contract_workingtime_edit', { 'id': workingtime.id }) }}" class="btn btn-info pull-right">{% trans %}Speichern{% endtrans %}</a>
+          {{ form_start(delete_form) }}
+              <input class="btn btn-danger" type="submit" value="Löschen">
+          {{ form_end(delete_form) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

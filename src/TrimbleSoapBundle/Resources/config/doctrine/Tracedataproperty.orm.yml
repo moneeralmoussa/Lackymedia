@@ -1,0 +1,30 @@
+TrimbleSoapBundle\Entity\Tracedataproperty:
+    type: entity
+    table: null
+    repositoryClass: TrimbleSoapBundle\Repository\TracedatapropertyRepository
+    indexes:
+        property_key:
+            columns: [ property_key ]
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        propertyKey:
+            type: string
+            length: '10'
+            column: property_key
+        propertyValue:
+            type: text
+            column: property_value
+    lifecycleCallbacks: {  }
+    manyToOne:
+        tracedata:
+            targetEntity: Tracedata
+            inversedBy: tracedataproperties
+            joinColumn:
+                name: tracedata_id
+                referencedColumnName: id
+            

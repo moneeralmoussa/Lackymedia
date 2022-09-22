@@ -1,0 +1,197 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Mitarbeiterspesen' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $('#datetimepicker1').datetimepicker({
+                locale: 'de',
+                format: 'MMM YYYY',
+                defaultDate: '{{ base_date|date('n') }}/1/{{ base_date|date('Y') }}',
+                date: '{{ base_date|date('n') }}/1/{{ base_date|date('Y') }}',
+            });
+        });
+
+        function deleteFunction (id)
+        {
+          swal({
+                title: 'Bist du sicher?',
+                text: "",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ja, Spesenabrechnung zurück setzen!',
+                cancelButtonText: 'Nein'
+                  //	inputValue: el.find('.fc-cell-text').text(),
+              }).then(function(result) {
+                if (result.value) {
+                  $.ajax({
+                    type: "GET",
+                    url: "/finanzamt/del/"+id,
+                    success: function(r) {
+                    if(r == true){ 
+                          swal({
+                                type: 'info',
+                                html: 'Spesenabrechnung zurück gesetzt',
+                            })
+                            $('#'+id).hide();
+                    }
+                      if(r == false){ 
+                          swal({
+                                type: 'info',
+                                html: 'Du hast keine Berechtigung die Sepesenabrechnung zurück zu setzen! Bitte wende dich an einen Admin',
+                            })
+                        
+                    }
+                    }
+              });
+            }
+          });
+
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Download' } %}
+          {% block content %}
+            <div class='input-group date' id='datetimepicker1'>
+              <input type='text' class="form-control" />
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <span class="input-group-btn">
+                <div class="dropdown">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {% trans %}Download{% endtrans %}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}" onclick="this.href='{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD')+'/active';" target="_blank">{% trans %}Aktive{% endtrans %}</a></li>
+                        <li><a href="{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}" onclick="this.href='{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD')+'/archived';" target="_blank">{% trans %}Ehemalige{% endtrans %}</a></li>
+                        <li><a href="{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}" onclick="this.href='{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD');" target="_blank">{% trans %}Alle{% endtrans %}</a></li>
+                    </ul>
+                </div>
+              </span>
+            </div>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="nav-tabs-custom">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_1" data-toggle="tab">Mitarbeiter</a></li>
+        <li><a href="#tab_2" data-toggle="tab">Ehemalige Mitarbeiter</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab_1">
+          <div class="table-responsive">
+              <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}Name{% endtrans %}</th>
+                          <th>{% trans %}Vorname{% endtrans %}</th>
+                          <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                          <th>{% trans %}Abteilung{% endtrans %}</th>
+                          <th>{% trans %}Spesenzettel eingereicht{% endtrans %}</th>
+                          <th>{% trans %}Spesenabrechnung freigegeben{% endtrans %}</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for employee in employees %}
+                      <tr>
+                          <td><a href="{{ path('expenses_employee_view_new', { 'employee_id': employee.id }) }}">{{ employee.name }}</a></td>
+                          <td>{{ employee.prename }}</td>
+                          <td>{{ employee.trimbleId }}</td>
+                          <td>
+                            {% if employee.department.id in [3,4,12,13,14,15,17,18,19,10]  %}
+                            <span class="label label-success">{{ employee.department.description }}</span>
+                            {% else %}
+                            <span class="label label-danger">{{ employee.department.description }}</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if employee.provenexpense(base_date,provenexpense) == true %}
+                            <span class="label label-success">{{base_date|date('M Y')}}</span>
+                            {% else %}
+                            <span class="label label-danger">{{base_date|date('M Y')}}</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% for speseneingereicht in employee.spesens %}
+                            <span id="{{speseneingereicht.id}}" class="label label-success" title="{{speseneingereicht.byemployee.name}} {{speseneingereicht.byemployee.prename}}">{{speseneingereicht.date|date('M')}} {{ (speseneingereicht.expenses1)*(14)+(speseneingereicht.expenses2)*(28) }}€ 
+                             {{ (speseneingereicht.expenses2)*4 }}€ {{ (speseneingereicht.expenses3)*8 }}€  <a><i class="fa fa-trash" style="color: orangered;" onclick="deleteFunction({{speseneingereicht.id}})" > </i></a>
+                             <a href="{{ path('expenses_employee_view_month_new', { 'employee_id': speseneingereicht.employee.id ,'date': speseneingereicht.date|date('Y-m-d')} ) }}"><i class="fa fa-eye" style="color: black;"></i></a>  <a href="{{ path('ExpenseFinanzamtprintmonth', { 'employee_id': speseneingereicht.employee.id ,'date': speseneingereicht.date|date('Y-m-d')} ) }}" ><i class="fa fa-print " style="color: black;"></i></a></span>
+                            {% endfor %}
+                          </td>
+                        
+                          <td>
+                              <ul class="list-inline">
+                                  <li>
+                                      <a href="{{ path('expenses_employee_view_new', { 'employee_id': employee.id }) }}"><i class="fa fa-eye" aria-hidden="true" title="Show {{ employee.fullname }}"></i></a>
+                                      {% if "now"|date('Y') == '2020' %}
+                                      <a href="{{ path('ExpenseFinanzamtprint', { 'employee_id': employee.id,'date': '2020'  }) }}"><i class="fa fa-print" aria-hidden="true" title="Print {{ employee.fullname }}"></i></a>
+                                      {% else %}
+                                      <a href="{{ path('ExpenseFinanzamtprint', { 'employee_id': employee.id,'date': "now"|date_modify("-1 year")|date('Y')  }) }}"><i class="fa fa-print" aria-hidden="true" title="Print {{ employee.fullname }}"></i></a>
+                                      <a href="{{ path('ExpenseFinanzamtprint', { 'employee_id': employee.id,'date': "now"|date('Y')  }) }}"><i class="fa fa-print" aria-hidden="true" title="Print {{ employee.fullname }}"></i></a>
+                                      {% endif %}
+                                  </li>
+                              </ul>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+        </div>
+        <div class="tab-pane" id="tab_2">
+          <div class="table-responsive">
+              <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}Name{% endtrans %}</th>
+                          <th>{% trans %}Vorname{% endtrans %}</th>
+                          <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for employee in employees_deleted %}
+                      <tr>
+                          <td><a href="{{ path('expenses_employee_view_new', { 'employee_id': employee.id }) }}">{{ employee.name }}</a></td>
+                          <td>{{ employee.prename }}</td>
+                          <td>{{ employee.trimbleId }}</td>
+                          <td>
+                              <ul class="list-inline">
+                                  <li>
+                                     <a href="{{ path('expenses_employee_view_new', {'employee_id': employee.id }) }}"><i class="fa fa-eye" aria-hidden="true" title="Show {{ employee.fullname }}"></i></a>
+                                  </li>
+                              </ul>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

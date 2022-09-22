@@ -1,0 +1,129 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Mitarbeiter bearbeiten' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Mitarbeiter bearbeiten ' } %}
+          {% block content %}
+            {{ form_start(edit_form) }}
+            {{ form_row(edit_form.trimbleId) }}
+            {{ form_row(edit_form.name) }}
+            {{ form_row(edit_form.prename) }}
+            {{ form_row(edit_form.salutation) }}
+            {{ form_row(edit_form.street) }}
+            {{ form_row(edit_form.zipCode) }}
+            {{ form_row(edit_form.town) }}
+            {{ form_row(edit_form.countryCode) }}
+            {{ form_row(edit_form.mobile) }}
+            {{ form_row(edit_form.birthday) }}
+            {{ form_row(edit_form.entryDate) }}
+            {{ form_row(edit_form.initial) }}
+            {{ form_row(edit_form.department) }}
+            {{ form_row(edit_form.department) }}
+            {{ form_row(edit_form.department) }}
+            {{ form_row(edit_form.contract) }}
+            {% if is_granted('ROLE_ADMIN') %}
+        <div class="panel-group">
+             <div class="panel panel-default">
+               <div class="panel-heading">
+                 <h4 class="panel-title">
+                   <a data-toggle="collapse" href="#collapse2">
+                    {% trans %}Gehalt zuordnen:{% endtrans %} {{ edit_form.vars.value.prename}} {{ edit_form.vars.value.name}} als {{ edit_form.vars.value.username}}
+                    </a>
+                 </h4>
+               </div>
+               <div id="collapse2" class="panel-collapse collapse">
+                 <div class="panel-body">
+                     {{ form_row(edit_form.salary) }}
+                     {{ form_row(edit_form.commentsalary) }}
+                     {{ form_row(edit_form.fromdate) }}
+                     {{ form_row(edit_form.todate) }}
+                 </div>
+               </div>
+             </div>
+            </div>
+
+            {% endif %}
+            <div class="panel-group">
+             <div class="panel panel-default">
+               <div class="panel-heading">
+                 <h4 class="panel-title">
+                   <a data-toggle="collapse" href="#collapse1">
+                    {% if edit_form.vars.value.user is not null and edit_form.vars.value.user.enabled == 1 %}
+                    {% trans %}Benutzer zugeordnet:{% endtrans %} {{ edit_form.vars.value.prename}} {{ edit_form.vars.value.name}} als {{ edit_form.vars.value.username}}
+                    {% else %}
+                    {% trans %}Kein Benutzer zugeordnet{% endtrans %}
+                    {% endif %}
+                 </a>
+                 </h4>
+               </div>
+               {% if is_granted('ROLE_ADMIN') %}
+               <div id="collapse1" class="panel-collapse collapse">
+                 <div class="panel-body">
+                   {{ form_row(edit_form.isUser) }}
+                   {{ form_row(edit_form.username) }}
+                   {{ form_row(edit_form.email) }}
+                   {{ form_row(edit_form.username) }}
+                   {{ form_row(edit_form.password) }}
+                   {{ form_row(edit_form.roles) }}
+                 </div>
+               </div>
+               {% endif %}
+             </div>
+            </div>
+            {{ form_errors(edit_form) }}
+                   <input id="submitinput" type="submit" value="Speichern" class="btn btn-info pull-right"/>
+                   <a href="{{ path('employee_index') }}" class="btn btn-info pull-right"  style="background-color:green">{% trans %}Zurück{% endtrans %}</a>
+            {{ form_end(edit_form) }}
+            {#
+            <ul class="list-inline">
+                <li>
+            {{ form_start(delete_form) }}
+                    <input type="submit" value="{% trans %}Archivieren{% endtrans %}" class="btn btn-danger">
+            {{ form_end(delete_form) }}
+                </li>
+            </ul>
+            #}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+          $('.datetimepicker').datetimepicker({
+            locale: 'de'
+          });
+        var salary= $('#employeebundle_employee_salary').val();
+
+            $('#employeebundle_employee_todate').on('blur',function() {
+                var fromdate = new Date($('#employeebundle_employee_fromdate').val().replace( /(\d{2}).(\d{2}).(\d{4})/, "$2/$1/$3"));
+                var todate = new Date($('#employeebundle_employee_todate').val().replace( /(\d{2}).(\d{2}).(\d{4})/, "$2/$1/$3"));
+                if(fromdate > todate){
+                $('#employeebundle_employee_todate').val('');
+                }
+                if(fromdate == todate){
+                $('#employeebundle_employee_todate').val('');
+                }
+            });
+            $('#employeebundle_employee_fromdate').on('blur',function() {
+                    var fromdate = new Date($('#employeebundle_employee_fromdate').val().replace( /(\d{2}).(\d{2}).(\d{4})/, "$2/$1/$3"));
+                    var todate = new Date($('#employeebundle_employee_todate').val().replace( /(\d{2}).(\d{2}).(\d{4})/, "$2/$1/$3"));
+                    if(fromdate > todate){
+                    $('#employeebundle_employee_todate').val('');
+                    }
+                    if(fromdate == todate){
+                    $('#employeebundle_employee_todate').val('');
+                    }
+            });
+        });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+'Fahrt beginnen': 'Fahrt beginnen'
+Zurück: Zurück
+Anlegen: Anlegen
+'Error: The Geolocation service failed.': 'Error: The Geolocation service failed.'
+'Error: Your browser doesn\''t support geolocation.': 'Error: Your browser doesn\''t support geolocation.'
+'Fahrt bearbeiten': 'Fahrt bearbeiten'
+Ändern: Ändern
+'Fahrt abschließen': 'Fahrt abschließen'
+Abschließen: Abschließen
+Fahrtenbuch: Fahrtenbuch
+'QR Scannen': 'QR Scannen'
+Reservierungen: Reservierungen
+'Neue Reservierung': 'Neue Reservierung'
+'PKW Standorte': 'PKW Standorte'
+Name: Name
+Typ: Typ
+Standort: Standort
+Kilometer: Kilometer
+Kommentar: Kommentar
+Unterwegs: Unterwegs
+Anzeigen: Anzeigen
+Reservieren: Reservieren
+'Reservierung für': 'Reservierung für'
+Beginn: Beginn
+Ende: Ende
+Fahrer: Fahrer
+Status: Status
+Verfügbar: Verfügbar
+Bearbeiten: Bearbeiten
+Ankommen: Ankommen
+'Status für': 'Status für'
+'Reservierung anlegen': 'Reservierung anlegen'
+'Reservierung bearbeiten': 'Reservierung bearbeiten'
+Löschen: Löschen
+Abfahrt: Abfahrt
+Startort: Startort
+Start-km: Start-km
+Ankunft: Ankunft
+Zielort: Zielort
+Ziel-km: Ziel-km
+Diff-km: Diff-km
+Sauber: Sauber
+Ja: Ja
+Nein: Nein
+Kilometerstand: Kilometerstand
+Losfahren: Losfahren
+Beenden: Beenden
+Vehicle: Fahrzeug
+'Vehicle log begin time': Abfahrt
+'Begin position': Startort
+'Begin position mileage': Start-km
+'Vehicle log end time': Ankunft
+'End position': Zielort
+'End position mileage': Ziel-km
+Employee: Mitarbeiter
+Reason: Verwendung
+'Send info': 'mit Nachricht'
+Symbol : Typ
+createAt : Datum
+'Vehicle clean': Sauber
+Comment: Kommentar
+'Vehicle reservation begin time': 'Reservierungsbeginn'
+'Vehicle reservation end time': 'Reservierungsende'

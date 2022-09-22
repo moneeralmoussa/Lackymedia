@@ -1,0 +1,9 @@
+<h3>{{ drivers|length }} Mitarbeiter haben am {{ date }} keinen Kalender- und keinen Trimbleeintrag</h3>
+
+<p>Guten Morgen,</p>
+<p>Folgende Mitarbeiter haben keinen Kalender- und keinen Trimbleeintrag:</p>
+<ul>
+{% for item in drivers %}
+    <li><a href="https://management.giesker-laakmann.de{{ path('expenses_employee_view', { 'employee_id': item.id }) }}/{{ date }}">{{ item }}</a></li>
+{% endfor %}
+</ul>

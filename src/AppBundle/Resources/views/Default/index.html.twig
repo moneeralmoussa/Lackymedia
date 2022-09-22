@@ -1,0 +1,106 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Dashboard' %}
+
+{% block content %}
+{% if is_granted('ROLE_ROBOT') %}
+<div class="row grid">
+<div class="grid-sizer"></div>
+   <div class="grid-item" >
+        {% include 'AppBundle:Default:widgets/mycode.html.twig' %}
+    </div>
+  </div>  
+ {% else %}
+<div class="row grid">
+  <div class="grid-sizer col-xs-12 col-sm-6 col-md-4"></div>
+        <div class="grid-item col-xs-12 col-sm-6 col-md-4">
+          {% include 'AppBundle:Default:widgets/workdaycode.html.twig' %}
+        </div>
+    {% if app.user.employee.vehicleLogs.last == false  or  app.user.employee.vehicleLogs.last.vehicleLogEndTime != NULL %}
+        {% if is_granted('ROLE_ADMIN') %}
+          <div class="grid-item col-xs-12 col-sm-6 col-md-4">
+            {% include 'AppBundle:Default:widgets/restgehaltsanspruch.html.twig' %}
+          </div>
+        {% endif %}
+        <div class="grid-item col-xs-12 col-sm-6 col-md-4">
+            {% include 'AppBundle:Default:widgets/announcements.html.twig' %}
+        </div>
+        <div class="grid-item col-xs-12 col-sm-6 col-md-4">
+          {% include 'AppBundle:Default:widgets/birthday.html.twig' %}
+        </div>
+        <div class="grid-item col-xs-12 col-sm-6 col-md-4">
+          {% include 'AppBundle:Default:widgets/telephonenumbers.html.twig' %}
+        </div>
+        <div class="grid-item col-xs-12 col-sm-6 col-md-4">
+          {% include 'AppBundle:Default:widgets/links.html.twig' %}
+        </div>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+
+<script src="/bundles/newApp/jquery.qrcode.js"></script>
+<script src="/bundles/newApp/qrcode.js"></script>
+
+<script src="/bundles/newApp/list.min.js"></script>
+<script>
+$(function() {
+  var options = {
+        valueNames: ['name', 'date', 'difficulty' ]
+  };
+  var userList = new List('search-results', options);
+  //sort
+    userList.on("updated", function () {
+        $('.sort').each(function () {
+            if ($(this).hasClass("asc")) {
+                $(this).find(".fa").addClass("fa-sort-asc").removeClass("fa-sort-desc").show();
+            } else if ($(this).hasClass("desc")) {
+                $(this).find(".fa").addClass("fa-sort-desc").removeClass("fa-sort-asc").show();
+            } else {
+                $(this).find(".fa").hide();
+            }
+        })
+    })
+
+    //filter
+    $('.filter').change(function() {
+        var bool = this.checked;
+        var value = $(this).data("value");
+
+        userList.filter(function (item) {
+            if (item.values().difficulty == value && bool == true) {
+                return true;
+            } else if (userList.filtered && bool == false) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        return false;
+     });
+});
+</script>
+<script src="/assets/masonry-layout/dist/masonry.pkgd.min2.js"></script>
+<script>
+$( document ).ready(function() {
+    $('.grid').masonry({
+      itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
+      columnWidth: '.grid-sizer',
+      percentPosition: true
+    });
+  });
+
+   function masonryRe()
+  { $('.grid').masonry({
+  itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
+      columnWidth: '.grid-sizer',
+      percentPosition: true
+       });
+  }
+</script>
+{% endblock %}
+
+{% block stylesheet %}
+
+{% endblock %}

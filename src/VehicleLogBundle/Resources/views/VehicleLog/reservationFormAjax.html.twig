@@ -1,0 +1,12 @@
+<form onsubmit="saveReservation(this);return false;">
+{{ form_widget(form) }}
+<a href="" onclick="return hs.close(this);" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+<input id="reservationFormAction" type="hidden" name="action" value="{% if action == 'create' %}create{% else %}edit{% endif %}">
+<input type="hidden" name="itemid" value="{% if action == 'create' %}{% else %}{{ itemid }}{% endif %}">
+{% if action == 'create' %}
+    <input type="submit" value="{% trans %}Anlegen{% endtrans %}" class="btn btn-primary"/>
+{% else %}
+    <input type="submit" value="{% trans %}Ändern{% endtrans %}" class="btn btn-primary"/>
+    <input type="submit" onclick="$('#reservationFormAction').val('delete')" value="{% trans %}Löschen{% endtrans %}" class="btn btn-danger"/>
+{% endif %}
+</form>

@@ -1,0 +1,98 @@
+{% for consumption in consumptions %}
+  {% if consumption.detailByLabel('Strecke-KM').value > 5 %}
+    <tr{% if consumption.driver and (usr.employee.id == consumption.driver.id) %} style="background-color:#e4dbbf"{% endif %}>
+        <td>{% if consumption.vehicle %}{{ consumption.vehicle.manufactur }}{% endif %}</td>
+        <td>{% if consumption.vehicle %}{{ consumption.vehicle.vehicletype.name|replace({' ': ''})[:6] }}<span class="hidden-xs">{{ consumption.vehicle.vehicletype.name|replace({' ': ''})[6:] }}</span>{% endif %}</td>
+        <td class="hidden-xs">{% if consumption.vehicle and ((consumption.driver) or is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_DISPOSITION')) %}<a href="{{ path('vehicle_detail', { 'id': consumption.vehicle.id }) }}">L {{ consumption.vehicle.trimbleId }}</a>{% endif %}</td> {# and (usr.employee.id == consumption.driver.id) #}
+        <td>{% if (consumption.driver and (usr.employee.id == consumption.driver.id)) %}ich{% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') %}{{ consumption.driver.name }}{% endif %}</td>
+        <td style="text-align: right;">
+          {% if consumption.detailByLabel('Strecke-KM') %}
+            <span style="display:none;" class="no-print">
+              {{ '%06d'|format(consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.')|replace({'.': ''})) }}
+            </span>
+            {{ consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') }}
+          {% elseif consumption.detailByLabel('End-KM') and consumption.detailByLabel('Start-KM') %}
+            {{ (consumption.detailByLabel('End-KM').value - consumption.detailByLabel('Start-KM').value)|number_format(0,',','.') }}
+          {% else %}
+            <span style="display:none;" class="no-print">
+              0
+            </span>
+            0
+          {% endif %}
+        </td>
+        <td style="text-align: right;">
+          {% if consumption.detailByLabel('Kraftstoffverbrauch beim Fahren') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+            <span style="display:none;" class="no-print">
+              {{ '%06.2f'|format(consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value) }}
+            </span>
+          {{ consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value|number_format(1,',','.') }}
+        {% else %}
+          <span style="display:none;" class="no-print">
+            000.00
+          </span>
+          00,0
+        {% endif %}
+        </td>
+        <td style="text-align: right;">
+          {% if consumption.detailByLabel('Kraftstoffverbrauch beim Fahren') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+            <span style="display:none;" class="no-print">
+              {{ '%06.2f'|format(((consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value/100)*(consumption.detailByLabel('Strecke-KM').value))) }}
+            </span>
+          {{ ((consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value/100)*(consumption.detailByLabel('Strecke-KM').value))|number_format(1,',','.') }}
+        {% else %}
+          <span style="display:none;" class="no-print">
+            000.00
+          </span>
+          00,0
+        {% endif %}
+        </td>
+        <td style="text-align: right;">
+          {% if consumption.detailByLabel('Tempomat-Zeit') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+            <span style="display:none;" class="no-print">
+              {{ '%06.2f'|format(consumption.detailByLabel('Tempomat-Zeit').value) }}
+            </span>
+            {{ consumption.detailByLabel('Tempomat-Zeit').value|number_format(1,',','.') }}%
+          {% else %}
+            <span style="display:none;" class="no-print">
+              000.00
+            </span>
+            00,0%
+          {% endif %}
+        </td>
+        <td style="text-align: right;">
+            {% if consumption.detailByLabel('Zeit Motor im Leerlauf') and consumption.detailByLabel('Stillstandzeit Nebenantrieb') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0))%}
+                <span style="display:none;" class="no-print">{{ '%06.1f'|format(consumption.detailByLabel('Zeit Motor im Leerlauf').value * (100 - consumption.detailByLabel('Stillstandzeit Nebenantrieb').value) / 100) }}</span>{{ (consumption.detailByLabel('Zeit Motor im Leerlauf').value * (100 - consumption.detailByLabel('Stillstandzeit Nebenantrieb').value) / 100)|number_format(1,',','.') }}%
+            {% elseif consumption.detailByLabel('Zeit Motor im Leerlauf') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0))%}
+                <span style="display:none;" class="no-print">{{ '%06.1f'|format(consumption.detailByLabel('Zeit Motor im Leerlauf').value) }}</span>{{ consumption.detailByLabel('Zeit Motor im Leerlauf').value|number_format(1,',','.') }}%
+            {% else %}
+              <span style="display:none;" class="no-print">
+                000.00
+              </span>
+              00,0%
+            {% endif %}
+        </td>
+        <td style="text-align: right;">
+            {% if consumption.detailByLabel('Zeit Motor im Leerlauf') and consumption.detailByLabel('Stillstandzeit Nebenantrieb') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0))%}
+              <span style="display:none;" class="no-print">{{ '%06.1f'|format(consumption.detailByLabel('Zeit Motor im Leerlauf').value * consumption.detailByLabel('Stillstandzeit Nebenantrieb').value / 100) }}</span>
+              {{ (consumption.detailByLabel('Zeit Motor im Leerlauf').value * consumption.detailByLabel('Stillstandzeit Nebenantrieb').value / 100)|number_format(1,',','.') }}%
+            {% else %}
+              <span style="display:none;" class="no-print">
+                000.00
+              </span>
+              00,0%
+            {% endif %}
+        </td>
+        <!--<td style="text-align: right;">{% if consumption.detailByLabel('starkes Bremsen') %}<span style="display:none;">{{ '%06.2f'|format(consumption.detailByLabel('starkes Bremsen').value) }}</span>{{ consumption.detailByLabel('starkes Bremsen').value|number_format(2,',','.') }}{% endif %}</td>
+        <td style="text-align: right;">{% if consumption.detailByLabel('starkes Beschleunigen') %}<span style="display:none;">{{ '%06.2f'|format(consumption.detailByLabel('starkes Beschleunigen').value) }}</span>{{ consumption.detailByLabel('starkes Beschleunigen').value|number_format(2,',','.') }}{% endif %}</td>-->
+        <td style="text-align: right;">{% if consumption.detailByLabel('zu schnell km') %}<span style="display:none;" class="no-print">{{ '%06.3f'|format(consumption.detailByLabel('zu schnell km').value) }}</span>{{ consumption.detailByLabel('zu schnell km').value|number_format(3,',','.') }}{% endif %}</td>
+          <td>{% if consumption.detailByLabel('zu schnell km') %}
+            <div class="btn-group">
+              <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+              <div style="min-width:250px" class="dropdown-menu dropdown-menu-right">
+                  {{ consumption.detailByLabel('zu schnell km').comment|nl2br }}
+              </div>
+            </div>{% endif %}
+          </td>
+    </tr>
+    {% endif %}
+{% endfor %}

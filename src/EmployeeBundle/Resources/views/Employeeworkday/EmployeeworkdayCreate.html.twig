@@ -1,0 +1,58 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Arbeitszeiterfassung' %}
+{% block javascripts %}
+     
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+   
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Auswahl Mitarbeiter ' } %}
+            {% block content %}
+              {{ form_start(form) }}
+                 <label class="control-label" for="vehiclelogbundle_vehiclelog_Schnelle_AddresseEingeben">Mitarbeiter</label>
+                <select id="vehiclelogbundle_vehiclelog_Schnelle_AddresseEingeben" onchange="EmployeeListe()" class="form-control">
+                </select>
+                {{ form_widget(form) }}
+                  <input type="submit" value="{% trans %}Arbeit{% endtrans %}" class="btn btn-info pull-right" style="background-color:red"/>
+                {{ form_end(form) }}
+			     <a href="../../../../"><input type="button" href="../../../" value="{% trans %}Zurück{% endtrans %}" class="btn btn-info pull-right" style="background-color:green"/></a>
+            {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    
+            $('.datetimepicker').datetimepicker({
+               format: 'HH:mm',
+                locale: 'de',
+            });
+    populateSelect();
+
+  
+    function populateSelect() {
+    $.getJSON( "{{ path ('managers')}}", function( data ) {
+      var items = [];
+        var ele = document.getElementById('vehiclelogbundle_vehiclelog_Schnelle_AddresseEingeben');
+        ele.innerHTML = null;
+        ele.innerHTML = ele.innerHTML 
+               +'<option value="Other">Auswahl Mitarbeiter</option>' ;
+          for (var i = 0; i < data.managers.length; i++) {
+              ele.innerHTML = ele.innerHTML +
+                '<option value="' + i + '" onclick="EmployeeListe('+data.managers[i]['id']+')">' + data.managers[i]['name'] + '</option>';
+        }
+    });
+    }
+    function EmployeeListe(id){
+        $('#employeebundle_employeeworkday_tempemployeeId').val(id);
+    }
+    </script>
+{% endblock %}
+

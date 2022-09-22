@@ -1,0 +1,120 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}VehicleLogBundle:VehicleLog:index{% endblock %}
+
+{% block jumbotron %}
+    {% include 'partials/jumbotron.html.twig' with { 'title': 'Fahrtenbuch'|trans ~ ': ' ~ vehicle_log.vehicle.name } %}
+{% endblock %}
+
+{% block content %}
+
+    <div id="coordinates" class="col-xs-12"></div>
+
+    <div class="col-xs-12">
+        <table class="table">
+            <thead>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>{% trans %}Abfahrt{% endtrans %}</th>
+                    <td>{{ vehicle_log.vehicleLogBeginTime|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Startort{% endtrans %}</th>
+                    <td{% if vehicle_log.vehicleLogBeginPosition is empty %}>
+                    {% elseif not vehicle_log.vehicleLogBeginPosition.name is empty %}>
+                        {{ vehicle_log.vehicleLogBeginPosition.name }}
+                    {% else %} class="lastposition">
+                        {"lat":{{ vehicle_log.vehicleLogBeginPosition.lat }}, "lng":{{ vehicle_log.vehicleLogBeginPosition.lon }}}
+                    {% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Start-km{% endtrans %}</th>
+                    <td>{{ vehicle_log.vehicleLogBeginPosition.mileage }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Ankunft{% endtrans %}</th>
+                    <td>{% if not vehicle_log.vehicleLogEndPosition is empty %}{{ vehicle_log.vehicleLogEndTime|date('Y-m-d H:i:s') }}{% else %}{% trans %}Unterwegs{% endtrans %}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Zielort{% endtrans %}</th>
+                    <td{% if vehicle_log.vehicleLogEndPosition is empty %}>
+                    {% elseif not vehicle_log.vehicleLogEndPosition.name is empty %}>
+                        {{ vehicle_log.vehicleLogEndPosition.name }}
+                    {% else %} class="lastposition">
+                        {"lat":{{ vehicle_log.vehicleLogEndPosition.lat }}, "lng":{{ vehicle_log.vehicleLogEndPosition.lon }}}
+                    {% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Ziel-km{% endtrans %}</th>
+                    <td>{% if not vehicle_log.vehicleLogEndPosition is empty %}{{ vehicle_log.vehicleLogEndPosition.mileage }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Diff-km{% endtrans %}</th>
+                    <td>{% if (not vehicle_log.vehicleLogBeginPosition is empty) and (not vehicle_log.vehicleLogEndPosition is empty) %}{{ (vehicle_log.vehicleLogEndPosition.mileage-vehicle_log.vehicleLogBeginPosition.mileage) }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Fahrer{% endtrans %}</th>
+                    <td><a href="{{ path('employee_show', {'id':vehicle_log.employee.id}) }}">{{ vehicle_log.employee }}</a></td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Typ{% endtrans %}</th>
+                    <td>{% if not vehicle_log.reason is empty %}{{ vehicle_log.reason.name }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Sauber{% endtrans %}</th>
+                    <td>{% if vehicle_log.vehicleClean %}{% trans %}Ja{% endtrans %}{% else %}{% trans %}Nein{% endtrans %}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>{% trans %}Kommentar{% endtrans %}</th>
+                    <td>{{ vehicle_log.comment }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-xs-12">
+        <a href="{{ path('vehicle_log_showVehicle', {'vehicle_id':vehicle_log.vehicle.id}) }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+        {% if not vehicle_log.vehicleLogEndPosition is empty %}
+            <a href="{{ path('vehicle_log_edit', {'id':vehicle_log.id}) }}" class="btn btn-primary">{% trans %}Bearbeiten{% endtrans %}</a>
+        {% else %}
+            <a href="{{ path('vehicle_log_finalize', {'id':vehicle_log.id}) }}" class="btn btn-primary">{% trans %}Ankommen{% endtrans %}</a>
+        {% endif %}
+        <a href="{{ path('vehicle_log_delete', {'id':vehicle_log.id}) }}" class="btn btn-danger">{% trans %}Löschen{% endtrans %}</a>
+    </div>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+    <script type="text/javascript">
+        var geocoder = false;
+
+        function geocodeLatLng(latlng,target) {
+            geocoder.geocode({'location': latlng}, function(results, status) {
+              if (status === 'OK') {
+                if (results[1]) {
+                  $(target).html(results[1].formatted_address);
+                  $(target).show();
+                } else {
+                  console.log('No results found');
+                }
+              } else {
+                console.log('Geocoder failed due to: ' + status);
+              }
+            });
+        }
+
+        $( document ).ready(function() {
+            geocoder = new google.maps.Geocoder;
+            $(".lastposition").each(function(){
+                console.log($.parseJSON($(this).html().trim()));
+                $(this).html(geocodeLatLng($.parseJSON($(this).html().trim()), this));
+            });
+        });
+
+        function handleLocationError(browserHasGeolocation) {
+            $('#coordinates').html(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+        }
+    </script>
+
+{% endblock %}

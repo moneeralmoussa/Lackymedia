@@ -1,0 +1,1058 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Mitarbeiter Liste' %}
+{% block content %}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs" style="margin-bottom:20px;">
+
+             <li class="active"><a data-toggle="tab" href="#allm"> <p> Mitarbeiter </p></a></li>
+            <li ><a data-toggle="tab" href="#menu1">Ehemalige Mitarbeiter</a></li>
+              <li><a data-toggle="tab" href="#allandoldmenu">   Mitarbeiter und ehemalige Mitarbeiter  </a></li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li><a data-toggle="tab" href="#salaryRemainingDaysOfVacation">{% trans %}Restgehaltsanspruch{% endtrans %}</a></li>
+            {% endif %}
+        </ul>
+        <div class="tab-content">
+  <div id="allm" class="tab-pane fade in active" >
+                <div class="table-responsive" >
+                    <table id='all' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Vorname{% endtrans %}</th>
+                                <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Vertrag zugeordnet{% endtrans %}</th>
+                                <th>{% trans %}Geburtstag{% endtrans %}</th>
+                                <th>{% trans %}Alter{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigt ab{% endtrans %}</th>
+                                <th>{% trans %}Probezeit Ablaufdatum {% endtrans %}</th>
+                                <th>{% trans %}Betriebszugehörigkeit{% endtrans %}</th>
+                                <th>{% trans %}Mobil{% endtrans %}</th>
+                                <th>{% trans %}E-Mail{% endtrans %}</th>
+                                <th>{% trans %}Benutzername{% endtrans %}</th>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                <th>{% trans %}Gehalt{% endtrans %}</th>
+                                {% endif %}
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                              {% if employee.department !=  'Auszubildende/r' %}
+                               <tr>
+                                    <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                    <td>{{ employee.prename }}</td>
+                                    <td>{{ employee.trimbleId }}</td>
+                                    <td>{{ employee.department }}</td>
+                                    {% if employee.contract is not null %}
+                                        <td><i class="fa fa-check-circle-o" aria-hidden="true"></i></td>
+                                    {% else %}
+                                        <td><span class="text-red">Vertrag nicht zugeordnet</span></td>
+                                    {% endif %}
+                                    <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : '' }}</td>
+                                    {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : '' %}
+                                    <td>{{ leftDays }}</td>
+                                    <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                    <td>{{ employee.probezeitablaufdatum }}</td>
+                                     <td><span class='hide'>{{ employee.workdaysnumberstring }}</span> {{ employee.workdaysnumber }} </td>
+                                    <td>{{ employee.mobile }}</td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            {{ employee.user.username }}
+                                        {% endif %}
+                                    </td>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                    <td style="text-align:right;">{{ employee.salary }}</td>
+                                    {% endif %}
+                                    <td>
+                                      <div class="btn-group">
+                                        <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                          <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                          <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                          <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                          {% if employee.contract is not null %}
+                                              <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                          {% endif %}
+                                          <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                          <li><a href="{{ path('user_edit', { 'id': employee.user.id }) }}">{% trans %}Password bearbeiten{% endtrans %}</a></li>
+                                        {% if is_granted('ROLE_ADMIN') %}  <li><a href="#" onclick="delEmp({{employee.id}})">{% trans %}Mitarbeiter löschen{% endtrans %}</a></li> {% endif %}
+                                        </ul>
+                                      </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                  {% if employee.department ==  'Auszubildende/r' %}
+                               <tr>
+                                    <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                    <td>{% if ',' in employee.name %} {{ employee.name | split(',', 2)[1] }} {% else %} {{ employee.name }} {% endif %}</td>
+                                    <td>{{ employee.trimbleId }}</td>
+                                    <td>{{ employee.department }} - {{ employee.prename }}</td>
+                                    {% if employee.contract is not null %}
+                                        <td><i class="fa fa-check-circle-o" aria-hidden="true"></i></td>
+                                    {% else %}
+                                        <td><span class="text-red">Vertrag nicht zugeordnet</span></td>
+                                    {% endif %}
+                                    <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : ''  }}</td>
+                                    {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : ''  %}
+                                    <td>{{ leftDays }}</td>
+                                    <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                    <td>{{ employee.probezeitablaufdatum }}</td>
+                                     <td> <span class='hide'>{{ employee.workdaysnumberstring }}</span> </td>
+                                    <td>{{ employee.mobile }}</td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            {{ employee.user.username }}
+                                        {% endif %}
+                                    </td>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                    <td style="text-align:right;">{{ employee.salary }}</td>
+                                    {% endif %}
+                                    <td>
+                                      <div class="btn-group">
+                                        <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                          <ul class="dropdown-menu dropdown-menu-right">
+                                                <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                                <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                                <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                            {% if employee.contract is not null %}
+                                                <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                            {% endif %}
+                                          </ul>
+                                      </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                      <tfoot>
+
+                         <tr>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Vorname{% endtrans %}</th>
+                                <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Vertrag zugeordnet{% endtrans %}</th>
+                                <th>{% trans %}Geburtstag{% endtrans %}</th>
+                                <th>{% trans %}Alter{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigt ab{% endtrans %}</th>
+                                <th>{% trans %}Probezeit Ablaufdatum {% endtrans %}</th>
+                                <th>{% trans %}Betriebszugehörigkeit{% endtrans %}</th>
+                                <th>{% trans %}Mobil{% endtrans %}</th>
+                                <th>{% trans %}E-Mail{% endtrans %}</th>
+                                <th>{% trans %}Benutzername{% endtrans %}</th>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                <th>{% trans %}Gehalt{% endtrans %}</th>
+                                {% endif %}
+                                <th></th>
+                            </tr>
+
+
+                     </tfoot>
+                    </table>
+                </div>
+            </div>
+
+
+              <div id="menu1" class="tab-pane fade active" >
+                <div class="table-responsive" >
+                    <table id='ehemaligemitarbeiter' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+
+                            <tr>
+                              <th>{% trans %}Name{% endtrans %}</th>
+                              <th>{% trans %}Vorname{% endtrans %}</th>
+                              <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                              <th>{% trans %}Abteilung{% endtrans %}</th>
+                              <th>{% trans %}Geburtstag{% endtrans %}</th>
+                              <th>{% trans %}Alter{% endtrans %}</th>
+                              <th>{% trans %}Beschäftigt ab{% endtrans %}</th>
+                              <th>{% trans %}Beschäftigt bis{% endtrans %}</th>
+                              <th>{% trans %}Betriebszugehörigkeit{% endtrans %}</th>
+                              <th>{% trans %}Beschäftigungsszeit{% endtrans %}</th>
+                              <th>{% trans %}Mobil{% endtrans %}</th>
+                              <th>{% trans %}E-Mail{% endtrans %}</th>
+                              <th>{% trans %}Benutzername{% endtrans %}</th>
+                              {% if is_granted('ROLE_ADMIN') %}
+                              <th>{% trans %}Gehalt{% endtrans %}</th>
+                              {% endif %}
+                              <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees_deleted %}
+                              {% if employee.department !=  'Auszubildende/r' %}
+                                <tr>
+                                  <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                  <td>{{ employee.prename }}</td>
+                                  <td>{{ employee.trimbleId }}</td>
+                                  <td>{{ employee.department }}</td>
+                                  <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : '' }}</td>
+                                  {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') %}
+                                  <td>{{ leftDays }}</td>
+                                  <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                  <td>{{ employee.entryDate ? employee.deletedAt|date('d.m.Y') : '' }}</td>
+                                  <td><span class='hide'>{{ employee.entryDate ? employee.ausgeschiedenstring }}</span>{{ employee.entryDate ? employee.ausgeschieden }}</td>
+                                   <td><span class='hide'>{{ employee.entryDate ? employee.totalworkingdaysstring }}</span>{{ employee.entryDate ? employee.totalworkingdays }}</td>
+                                  <td>{{ employee.mobile }}</td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                      {% endif %}
+                                  </td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          {{ employee.user.username }}
+                                      {% endif %}
+                                  </td>
+                                  {% if is_granted('ROLE_ADMIN') %}
+                                  <td style="text-align:right;">{{ employee.salary }}</td>
+                                  {% endif %}
+                                  <td>
+                                    <div class="btn-group">
+                                      <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                      <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                        <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                        <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                        {% if employee.contract is not null %}
+                                            <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                        {% endif %}
+                                        <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                      </ul>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {% endif %}
+
+
+                                     {% if employee.department ==  'Auszubildende/r' %}
+                                <tr>
+                                  <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                  <td>{% if ',' in employee.name %} {{ employee.name | split(',', 2)[1] }} {% else %} {{ employee.name }} {% endif %}</td>
+                                  <td>{{ employee.trimbleId }}</td>
+                                  <td>{{ employee.department }} - {{ employee.prename }}</td>
+                                  <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : '' }}</td>
+                                  {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : '' %}
+                                  <td>{{ leftDays }}</td>
+                                  <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                  <td>{{ employee.entryDate ? employee.deletedAt|date('d.m.Y') : '' }}</td>
+                                  <td><span class='hide'>{{ employee.entryDate ? employee.ausgeschiedenstring }}</span>{{ employee.entryDate ? employee.ausgeschieden }}</td>
+                                  <td><span class='hide'>{{ employee.entryDate ? employee.totalworkingdaysstring }}</span>{{ employee.entryDate ? employee.totalworkingdays }}</td>
+                                  <td>{{ employee.mobile }}</td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                      {% endif %}
+                                  </td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          {{ employee.user.username }}
+                                      {% endif %}
+                                  </td>
+                                  {% if is_granted('ROLE_ADMIN') %}
+                                  <td style="text-align:right;">{{ employee.salary }}</td>
+                                  {% endif %}
+                                  <td>
+                                    <div class="btn-group">
+                                      <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                      <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                        <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                        <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                        {% if employee.contract is not null %}
+                                            <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                        {% endif %}
+                                        <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                      </ul>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {% endif %}
+
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                              <th>{% trans %}Name{% endtrans %}</th>
+                              <th>{% trans %}Vorname{% endtrans %}</th>
+                              <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                              <th>{% trans %}Abteilung{% endtrans %}</th>
+                              <th>{% trans %}Geburtstag{% endtrans %}</th>
+                              <th>{% trans %}Alter{% endtrans %}</th>
+                              <th>{% trans %}Beschäftigt ab{% endtrans %}</th>
+                              <th>{% trans %}Beschäftigt bis{% endtrans %}</th>
+                              <th>{% trans %}Betriebszugehörigkeit{% endtrans %}</th>
+                              <th>{% trans %}Beschäftigungsszeit{% endtrans %}</th>
+                              <th>{% trans %}Mobil{% endtrans %}</th>
+                              <th>{% trans %}E-Mail{% endtrans %}</th>
+                              <th>{% trans %}Benutzername{% endtrans %}</th>
+                              {% if is_granted('ROLE_ADMIN') %}
+                              <th>{% trans %}Gehalt{% endtrans %}</th>
+                              {% endif %}
+                              <th></th>
+                            </tr>
+                            </tfoot>
+                    </table>
+                </div>
+            </div>
+
+
+
+
+
+
+           <div id="allandoldmenu" class="tab-pane fade active" >
+                <div class="table-responsive" >
+                    <table id='allandold' class="stripe row-border order-column cell-border display table table-stripe">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Vorname{% endtrans %}</th>
+                                <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Vertrag zugeordnet{% endtrans %}</th>
+                                <th>{% trans %}Geburtstag{% endtrans %}</th>
+                                <th>{% trans %}Alter{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigt ab{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigt bis{% endtrans %}</th>
+                                <th>{% trans %}Probezeit Ablaufdatum{% endtrans %}</th>
+                                <th>{% trans %}Betriebszugehörigkeit{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigungsszeit{% endtrans %}</th>
+                                <th>{% trans %}Mobil{% endtrans %}</th>
+                                <th>{% trans %}E-Mail{% endtrans %}</th>
+                                <th>{% trans %}Benutzername{% endtrans %}</th>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                <th>{% trans %}Gehalt{% endtrans %}</th>
+                                {% endif %}
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for employee in employees %}
+                              {% if employee.department !=  'Auszubildende/r' %}
+                               <tr>
+                                    <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                    <td>{{ employee.prename }} </td>
+                                    <td>{{ employee.trimbleId }}</td>
+                                    <td>{{ employee.department }}</td>
+                                    {% if employee.contract is not null %}
+                                        <td><i class="fa fa-check-circle-o" aria-hidden="true"></i></td>
+                                    {% else %}
+                                        <td><span class="text-red">Vertrag nicht zugeordnet</span></td>
+                                    {% endif %}
+                                    <td>{{ employee.birthday ? employee.birthday|date('d.m.Y')  : '' }}</td>
+                                    {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : '' %}
+                                    <td>{{ leftDays }}</td>
+
+                                    <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+
+                                    <td></td>
+                                    <td>    {{ employee.probezeitablaufdatum }}</td>
+                                     <td><span class='hide'>{{ employee.workdaysnumberstring }}</span> </td>
+                                     <td></td>
+                                    <td>{{ employee.mobile }}</td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            {{ employee.user.username }}
+                                        {% endif %}
+                                    </td>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                    <td style="text-align:right;">{{ employee.salary }}</td>
+                                    {% endif %}
+                                    <td>
+                                      <div class="btn-group">
+                                        <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                          <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                          <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                          <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                          {% if employee.contract is not null %}
+                                              <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                          {% endif %}
+                                          <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                        </ul>
+                                      </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                  {% if employee.department ==  'Auszubildende/r' %}
+                               <tr>
+                                    <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+
+                                    <td>{% if ',' in employee.name %} {{ employee.name | split(',', 2)[1] }} {% else %} {{ employee.name }} {% endif %}</td>
+
+                                    <td>{{ employee.trimbleId }}</td>
+                                    <td>{{ employee.department }} - {{ employee.prename }}</td>
+                                    {% if employee.contract is not null %}
+                                        <td><i class="fa fa-check-circle-o" aria-hidden="true"></i></td>
+                                    {% else %}
+                                        <td><span class="text-red">Vertrag nicht zugeordnet</span></td>
+                                    {% endif %}
+                                    <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : '' }}</td>
+                                    {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : '' %}
+                                    <td>{{ leftDays }}</td>
+                                    <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                    <td></td>
+                                    <td>{{ employee.probezeitablaufdatum }}</td>
+                                     <td> <span class='hide'>{{ employee.workdaysnumberstring }}</span> </td>
+                                     <td></td>
+                                    <td>{{ employee.mobile }}</td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if employee.user is not null %}
+                                            {{ employee.user.username }}
+                                        {% endif %}
+                                    </td>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                    <td style="text-align:right;">{{ employee.salary }}</td>
+                                    {% endif %}
+                                    <td>
+                                      <div class="btn-group">
+                                        <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                          <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                          <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                          <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                          {% if employee.contract is not null %}
+                                              <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                          {% endif %}
+                                          <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                        </ul>
+                                      </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+
+
+
+                             {% for employee in employees_deleted %}
+                              {% if employee.department !=  'Auszubildende/r' %}
+                                <tr>
+                                  <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                  <td>{{ employee.prename }}</td>
+                                  <td>{{ employee.trimbleId }}</td>
+                                   <td>{{ employee.department }}</td>
+                                  <td>Ehemalige Mitarbeiter</td>
+                                  <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : ''  }}</td>
+
+                                  {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : '' %}
+
+                                  <td>{{ leftDays }}</td>
+                                  <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                  <td>{{ employee.entryDate ? employee.deletedAt|date('d.m.Y') : '' }}</td>
+                                  <td>{{ employee.probezeitablaufdatum }}</td>
+                                  <td> <span class='hide'>{{ employee.entryDate ? employee.ausgeschiedenstring }}</span>{{ employee.entryDate ? employee.ausgeschieden }}</td>
+                                  <td><span class='hide'>{{ employee.entryDate ? employee.totalworkingdaysstring }}</span>{{ employee.entryDate ? employee.totalworkingdays }}</td>
+
+                                  <td>{{ employee.mobile }}</td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                      {% endif %}
+                                  </td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          {{ employee.user.username }}
+                                      {% endif %}
+                                  </td>
+                                  {% if is_granted('ROLE_ADMIN') %}
+                                  <td style="text-align:right;">{{ employee.salary }}</td>
+                                  {% endif %}
+                                  <td>
+                                    <div class="btn-group">
+                                      <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                      <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                        <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                        <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                        {% if employee.contract is not null %}
+                                            <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                        {% endif %}
+                                        <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                      </ul>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {% endif %}
+                                {% if employee.department ==  'Auszubildende/r' %}
+                                <tr>
+                                  <td><a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.name }}</a></td>
+                                  <td>{% if ',' in employee.name %} {{ employee.name | split(',', 2)[1] }} {% else %} {{ employee.name }} {% endif %}</td>
+                                  <td>{{ employee.trimbleId }}</td>
+                                  <td>{{ employee.department }} -  {{ employee.prename }}</td>
+                                  <td>ehemalige Mitarbeiter</td>
+                                  <td>{{ employee.birthday ? employee.birthday|date('d.m.Y') : ''  }}</td>
+                                  {% set leftDays = employee.birthday ? employee.birthday.diff( date("now") ).format('%y') : ''  %}
+                                  <td>{{ leftDays }}</td>
+                                  <td>{{ employee.entryDate ? employee.entryDate|date('d.m.Y') : '' }}</td>
+                                  <td>{{ employee.entryDate ? employee.deletedAt|date('d.m.Y') : '' }}</td>
+                                    <td>{{ employee.probezeitablaufdatum }}</td>
+                                  <td><span class='hide'>{{ employee.entryDate ? employee.ausgeschiedenstring }}</span>{{ employee.entryDate ? employee.ausgeschieden }}</td>
+                                  <td><span class='hide'>{{ employee.entryDate ? employee.totalworkingdaysstring }}</span>{{ employee.entryDate ? employee.totalworkingdays }}</td>
+                                  <td>{{ employee.mobile }}</td>
+
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                                      {% endif %}
+                                  </td>
+                                  <td>
+                                      {% if employee.user is not null %}
+                                          {{ employee.user.username }}
+                                      {% endif %}
+                                  </td>
+                                  {% if is_granted('ROLE_ADMIN') %}
+                                  <td style="text-align:right;">{{ employee.salary }}</td>
+                                  {% endif %}
+                                  <td>
+                                    <div class="btn-group">
+                                      <a href="#!" class="menu" data-toggle="dropdown"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                                      <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="{{ path('employee_show', { 'id': employee.id }) }}">Mitarbeiter ansehen</a></li>
+                                        <li><a href="{{ path('employee_edit', { 'id': employee.id }) }}">Mitarbeiter bearbeiten</a></li>
+                                        <li><a href="{{ path('calendar_show', {'id': employee.id}) }}">Urlaub ansehen</a></li>
+                                        {% if employee.contract is not null %}
+                                            <li><a href="{{ path('contract_show', { 'id': employee.contract.id }) }}">Vertrag ansehen</a></li>
+                                        {% endif %}
+                                        <li><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{% trans %}Spesen ansehen{% endtrans %}</a></li>
+                                      </ul>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+
+
+                        </tbody>
+                          <tfoot>
+                               <tr>
+                                <th>{% trans %}Name{% endtrans %}</th>
+                                <th>{% trans %}Vorname{% endtrans %}</th>
+                                <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                                <th>{% trans %}Abteilung{% endtrans %}</th>
+                                <th>{% trans %}Vertrag zugeordnet{% endtrans %}</th>
+                                <th>{% trans %}Geburtstag{% endtrans %}</th>
+                                <th>{% trans %}Alter{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigt ab{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigt bis{% endtrans %}</th>
+                                <th>{% trans %}Probezeit Ablaufdatum{% endtrans %}</th>
+                                <th>{% trans %}Betriebszugehörigkeit{% endtrans %}</th>
+                                <th>{% trans %}Beschäftigungsszeit{% endtrans %}</th>
+                                <th>{% trans %}Mobil{% endtrans %}</th>
+                                <th>{% trans %}E-Mail{% endtrans %}</th>
+                                <th>{% trans %}Benutzername{% endtrans %}</th>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                <th>{% trans %}Gehalt{% endtrans %}</th>
+                                {% endif %}
+                                <th></th>
+                            </tr>
+                     </tfoot>
+                    </table>
+                </div>
+            </div>
+
+
+
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <div id="salaryRemainingDaysOfVacation" class="tab-pane fade">
+                    <img id="draw_workdays_img" src="/bundles/vehicle/css/graphics/loader.white.gif" style="display:none;" />
+                    <div class="form-group">
+                        <div class='input-group date' id='datetimepicker1'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-datatable table-striped table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>{% trans %}Firma{% endtrans %}</th>
+                                    <th>{% trans %}Restgehaltsanspruch{% endtrans %} (<span id="salaryRemainingDaysOfVacationDate">{{salaryRemainingDaysOfVacation.date}}</span>)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Lackymedia</td>
+                                    <td id="salaryRemainingDaysOfVacationGl">{{ salaryRemainingDaysOfVacation.gl|number_format(2, ',', '.') }} € ({{(salaryRemainingDaysOfVacation.gl * 1.2)|number_format(2, ',', '.')}} €)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+     <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/jquery.dataTables.min.css" />
+   <link rel="stylesheet" type="text/css" href="/bundles/newApp/fixedColumns.dataTables.min.css" />
+   <style>
+   th input {
+        width: 90%;
+    }
+     </style>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/bundles/newApp/date-eu.js"></script>
+    <script type="text/javascript" src="/bundles/newApp/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript">
+
+    var editor; // use a global for the submit and return data rendering in the examples
+
+$(document).ready(function() {
+
+  $('tbody').scroll(function(e) { //detect a scroll event on the tbody
+  	/*
+    Setting the thead left value to the negative valule of tbody.scrollLeft will make it track the movement
+    of the tbody element. Setting an elements left value to that of the tbody.scrollLeft left makes it maintain 			it's relative position at the left of the table.
+    */
+    $('thead').css("left", -$("tbody").scrollLeft()); //fix the thead relative to the body scrolling
+    $('thead th:nth-child(1)').css("left", $("tbody").scrollLeft()); //fix the first cell of the header
+    $('tbody td:nth-child(1)').css("left", $("tbody").scrollLeft()); //fix the first column of tdbody
+  });
+});
+
+        function format_salaryRemainingDaysOfVacation(value) {
+            return value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) + " (" + (value*1.2).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) + ")";
+        }
+        function load_salaryRemainingDaysOfVacation(salaryRemainingDaysOfVacation_date) {
+            var load_salaryRemainingDaysOfVacation_url = "{{ path('employee_salaryRemainingDaysOfVacation_short') }}"+salaryRemainingDaysOfVacation_date;
+            $("#draw_workdays_img").show();
+            $.ajax({
+              method: "GET",
+              url: load_salaryRemainingDaysOfVacation_url,
+            })
+            .done(function( msg ) {
+                $("#draw_workdays_img").hide();
+
+                $("#salaryRemainingDaysOfVacationDate").html(msg.date);
+                $("#salaryRemainingDaysOfVacationGl").html(format_salaryRemainingDaysOfVacation(msg.gl));
+                $("#salaryRemainingDaysOfVacationDialog").html(format_salaryRemainingDaysOfVacation(msg.dialog));
+            });
+        }
+        $( document ).ready(function() {
+            $('#datetimepicker1').datetimepicker({
+                locale: 'de',
+                format: 'MMM YYYY',
+                defaultDate: '{{ date()|date('n') }}/1/{{ date()|date('Y') }}',
+                date: '{{ date()|date('n') }}/1/{{ date()|date('Y') }}',
+            });
+            $('#datetimepicker1').on('dp.change', function(e){
+                load_salaryRemainingDaysOfVacation(e.date.format('YYYY-MM-DD'));
+            });
+        });
+
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#allandold tfoot th').each( function (i) {
+        var title = $('#allandold thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#allandold').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+        fixedColumns:   true,
+
+         fixedColumns: {
+            leftColumns: 2
+        },
+
+          columnDefs: [
+
+       { type: 'date-eu', targets: 5 },
+       { type: 'date-eu', targets: 7 },
+       { type: 'date-eu', targets: 8 },
+        { type: 'date-eu', targets: 9 }
+
+     ],
+
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+} );
+
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#ehemaligemitarbeiter tfoot th').each( function (i) {
+        var title = $('#ehemaligemitarbeiter thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#ehemaligemitarbeiter').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+        fixedColumns:   true,
+
+         fixedColumns: {
+            leftColumns: 2
+        },
+
+          columnDefs: [
+
+    { type: 'date-eu', targets: 4 },
+       { type: 'date-eu', targets: 5 },
+       { type: 'date-eu', targets: 7 }
+
+     ],
+
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+} );
+
+
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#all tfoot th').each( function (i) {
+        var title = $('#all thead th').eq( $(this).index() ).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+    } );
+
+    // DataTable
+    var table = $('#all').DataTable( {
+        scrollY:        "700px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         true,
+        fixedColumns:   true,
+
+         fixedColumns: {
+            leftColumns: 2
+        },
+
+          columnDefs: [
+
+          { type: 'date-eu', targets: 5 },
+       { type: 'date-eu', targets: 7 },
+       { type: 'date-eu', targets: 8 }
+
+     ],
+
+        dom: 'Bfrtip',
+        select: true,
+          lengthMenu: [
+            [ -1, 10, 25, 50 ],
+            [ 'Zeige alle Zeilen', '10 Zeilen', '25 Zeilen', '50 Zeilen']
+        ],
+         buttons: [
+            { extend: 'pageLength', text:     'Zeige <i class="fa fa-cog fa-spin fa-1x fa-fw" aria-hidden="true"></i>'},
+          { extend: 'print',text:      'Drucken <i class="fa fa-print"></i>' },
+
+            {
+                extend:    'copyHtml5',
+                text:      'Kopieren <i class="fa fa-files-o"></i>',
+                titleAttr: 'Copy'
+            },
+            {
+                extend:    'excelHtml5',
+                text:      'Excel Exportieren <i class="fa fa-file-excel-o"></i>',
+                titleAttr: 'Excel'
+            },
+            {
+                extend:    'csvHtml5',
+                text:      'CSV Exportieren <i class="fa fa-file-text-o"></i>',
+                titleAttr: 'CSV'
+            },
+            {
+                extend:    'pdfHtml5',
+                text:      'PDF Exportieren <i class="fa fa-file-pdf-o"></i>',
+                titleAttr: 'PDF'
+            }
+
+
+        ],
+          language: {
+           buttons: {
+            pageLength: {
+                _: "Zeige %d Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>",
+                '-1': "Zeige alle Zeilen <i class='fa fa-cog fa-spin fa-1x fa-fw' aria-hidden='true'></i>"
+                    }
+            },
+            sEmptyTable:   	"Keine Daten in der Tabelle vorhanden",
+            sInfo:         	"_START_ bis _END_ von _TOTAL_ Einträgen",
+            sInfoEmpty:    	"0 bis 0 von 0 Einträgen",
+            sInfoFiltered: 	"(gefiltert von _MAX_ Einträgen)",
+            sInfoPostFix:  	"",
+            sInfoThousands:  	".",
+            sLengthMenu:   	"_MENU_ Einträge anzeigen",
+            sLoadingRecords: 	"Wird geladen...",
+            sProcessing:   	"Bitte warten...",
+            sSearch:       	"Suchen",
+            sZeroRecords:  	"Keine Einträge vorhanden.",
+            oPaginate: {
+             sFirst:    	"Erste",
+             sPrevious: 	"Zurück",
+             sNext:     	"Nächste",
+             sLast:     	"Letzte"
+            },
+            oAria: {
+              sSortAscending:  ": aktivieren, um Spalte aufsteigend zu sortieren",
+              sSortDescending: ": aktivieren, um Spalte absteigend zu sortieren"
+            }
+        }
+    } );
+    // Filter event handler
+    $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        table
+            .column( $(this).data('index') )
+            .search( this.value )
+            .draw();
+    } );
+	});
+
+$( document ).ready(function() {
+    setTimeout(function() {
+        $("#hidenelement").find("li").show();
+    }, 3000);
+    });
+
+
+
+{% if is_granted('ROLE_ADMIN') %}
+  function delEmp(id)
+  {
+    swal({
+      title: 'Bist du sicher?',
+         text: "",
+   type: 'warning',
+   showCancelButton: true,
+   confirmButtonColor: '#3085d6',
+   cancelButtonColor: '#d33',
+   confirmButtonText: 'Ja, annehmen!',
+   cancelButtonText: 'Nein'
+     //	inputValue: el.find('.fc-cell-text').text(),
+ }).then(function(result) {
+   if (result.value) {
+     swal({
+     title: '<i class="fa fa-clock-o"></i> Austritt',
+     html: '</br></br><b>Datum des Austrittes</b>'+
+     '<div class="input-group date" id="deletetime">'+
+     '<input id="input_id" type="text" class="form-control" />'+
+    '<span class="input-group-addon">'+
+        '<span class="glyphicon glyphicon-calendar">'+
+        '</span>'+
+      '</span>'+
+      '</div><br><br><br><br><br><br><br><br><br><br><br><br>',
+   showCancelButton: true,
+   cancelButtonText: 'Nein',
+    onOpen: function() {
+      $('#deletetime').datetimepicker({
+               locale: 'de',
+               format: 'YYYY-MM-DD',
+           });
+      },
+    }).then(function(result2) {
+         if (result2.value) {
+       deletetime= moment($('#deletetime').data('DateTimePicker').date()).format("YYYY-MM-DD");
+         $.ajax({
+       type: "GET",
+       data: {"employee":id, "date":deletetime},
+       url: "/employee/delEmployee",
+       success: function(r) {
+         if(r.status == 'true')
+           {
+         swal({
+             type: 'success',
+             html: 'Eingabe : <strong>' + 'bestätigt' + '</strong>'
+             });
+            //location.reload();
+         }
+         else{
+         swal({
+           type: 'error',
+           html: 'Eingabe <strong>' + 'falsch' + '</strong>'
+           });
+           }
+         }
+       });
+     }
+ });
+   }
+  });
+}
+
+{% endif %}
+</script>
+{% endblock %}

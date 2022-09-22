@@ -1,0 +1,14 @@
+WorkingHours_edit:
+    path:     /edit
+    defaults: { _controller: "EmployeeBundle:WorkingHours:edit" }
+    methods:  [GET, POST]
+
+workingHours_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "EmployeeBundle:WorkingHours:delete" }
+    methods:  [GET, POST]
+
+WorkingHours_get_all_by_employee_id:
+    path:     /getByEmployee/{id}
+    defaults: { _controller: "EmployeeBundle:WorkingHours:getByEmployee" }
+    methods:  [GET, POST]

@@ -1,0 +1,10 @@
+<ul class="nav navbar-nav">
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+  <li><a href="{{ path('expenses_employee_index') }}">{% trans %}Mitarbeiterspesen{% endtrans %}</a></li>
+  <li><a href="{{ path('expenses_countryspecificexpenses_index') }}">{% trans %}Spesensätze{% endtrans %}</a></li>
+{% endif %}
+  <li><a href="{{ path('expenses_employee_view', {'employee_id': user}) }}">{% trans %}Meine Spesen{% endtrans %}</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+  <li><a href="{{path('app')}}">Zurück zum Menü</a></li>
+</ul>

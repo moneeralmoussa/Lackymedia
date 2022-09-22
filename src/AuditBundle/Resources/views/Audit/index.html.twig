@@ -1,0 +1,44 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Aktivitäten' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Aktivität' } %}
+          {% block content %}
+            <div class="table-responsive">
+                <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th></th>
+                          <th>{% trans %}Aktivität{% endtrans %}</th>
+                          <th>{% trans %}Uhrzeit{% endtrans %}</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% for log in logs %}
+                      {{ audit(log) }}
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+            {{ pagination(logs) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+<style media="screen">
+  #DataTables_Table_0_paginate{
+    display:none;
+  }
+  .pagination{
+    float: right;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'master.html.twig' %}
+
+{% block navigationlist_items %}
+	{% include 'CalendarBundle:Calendar:partials/navigation.html.twig' %}
+{% endblock %}
+
+{% block pagetitle %}
+<div class="col-xs-12">
+	<h1>Kapazitäten - [in Entwicklung]</h1>
+	<hr>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12">
+	<form class="form-inline" id="report">
+    <div class="form-group">
+				<label for="start">Start:</label>
+        <div class="input-group date datetimepicker" id="start">
+            <input type="text" class="form-control" name="start"/>
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+		<div class="form-group">
+				<label for="end">Ende:</label>
+				<div class="input-group date datetimepicker" id="end">
+						<input type="text" class="form-control" name="end"/>
+						<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+						</span>
+				</div>
+		</div>
+		<div class="form-group">
+			<div class="radio-inline">
+			  <label><input type="radio" name="filter">Mitarbeiter</label>
+			</div>
+			<div class="radio-inline">
+			  <label><input type="radio" name="filter">Teams</label>
+			</div>
+		</div>
+		<div class="form-group">
+			<a href="#" class="btn btn-primary" id="submit">{% trans %}überprüfen{% endtrans %}</a>
+		</div>
+		<hr>
+	</form>
+	<canvas id="capacity"></canvas>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/assets/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<link href="/assets/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+<script src="/assets/chart.js/dist/Chart.min.js"></script>
+<script src="/assets/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="/assets/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script>
+$(document).ready(function() {
+
+	swal({
+		type: 'warning',
+		title: 'Dieser bereich wird zurzeit bearbeitet!',
+		showConfirmButton: false,
+		timer: 1500
+	});
+
+
+	$('.datetimepicker').datetimepicker({
+		locale: 'de',
+		format: 'DD.MM.YYYY'
+	});
+  $('#end').datetimepicker({
+      useCurrent: false //Important! See issue #1075
+  });
+  $("#start").on("dp.change", function (e) {
+      $('#end').data("DateTimePicker").minDate(e.date);
+  });
+  $("#end").on("dp.change", function (e) {
+      $('#start').data("DateTimePicker").maxDate(e.date);
+  });
+  var data = {
+        labels: ["User1", "User2", "User3", "User4", "User5"],
+
+        datasets: [{
+						label: 'Urlaub',
+            data: [25, 24, 11, 5, 10],
+            backgroundColor: "rgba(63,103,126,0.6)",
+            hoverBackgroundColor: "rgba(50,90,100,1)"
+        },{
+						label: 'Krankenschein',
+            data: [0, 7, 10, 2, 14],
+            backgroundColor: "rgba(163,103,126,0.6)",
+            hoverBackgroundColor: "rgba(140,85,100,1)"
+        },{
+						label: 'Stempel',
+            data: [10, 10, 10, 10, 10],
+            backgroundColor: "rgba(63,203,226,0.6)",
+            hoverBackgroundColor: "rgba(46,185,235,1)"
+        },{
+						label: 'Urlaub übrig',
+            data: [5, 6, 19, 25, 20],
+            backgroundColor: "rgba(255,255,255,0)",
+        }]
+    };
+
+		var newData = {
+					labels: ["User1"],
+
+					datasets: [{
+							label: 'Urlaub',
+	            data: [5],
+	            backgroundColor: "rgba(63,103,126,0.6)",
+	            hoverBackgroundColor: "rgba(50,90,100,1)"
+	        },{
+							label: 'Krankenschein',
+	            data: [8],
+	            backgroundColor: "rgba(163,103,126,0.6)",
+	            hoverBackgroundColor: "rgba(140,85,100,1)"
+	        },{
+							label: 'Stempel',
+	            data: [10],
+	            backgroundColor: "rgba(63,203,226,0.6)",
+	            hoverBackgroundColor: "rgba(46,185,235,1)"
+	        }]
+			};
+
+	var ctx = $("#capacity");
+  var barChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: data,
+		options: {
+			scales: {
+	     xAxes: [{ stacked: true }],
+	     yAxes: [{ stacked: true }]
+		 }
+		}
+	});
+
+	$( "#submit" ).on('click', function( e ) {
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: '{{path('calendar_json_absencesbetweenbyemployee')}}',
+			data: $('#report').serialize(),
+			success: function(result){
+				var labels = [];
+				var datasets = [];
+				console.log(newData);
+				_.forEach(result, function(value,key) {
+					labels.push(key);
+					// datasets = {data: _.get(key, 'day')};
+				});
+				var data = {
+					labels,
+					datasets
+				}
+				console.log(data);
+				barChart.data.datasets = newData.datasets;
+				barChart.data.labels = newData.labels;
+				barChart.update();
+			}
+		});
+	});
+
+});
+</script>
+{% endblock %}

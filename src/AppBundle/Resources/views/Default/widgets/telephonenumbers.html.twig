@@ -1,0 +1,66 @@
+<div class="box box-danger">
+  <div class="box-header">
+    <i class="fa fa-phone-square"></i>
+
+    <h3 class="box-title">Telefonliste</h3>
+
+  </div>
+{% set foo = ['bg-teal','bg-green', 'bg-olive' , 'bg-lime' , 'bg-yellow' ,'bg-orange' , 'bg-fuchsia' ,'bg-purple','bg-teal'] %}
+ {% for telephoneListgroup in telephoneListgroups   %}
+  {% if telephoneListgroup.groupname is not null and telephoneListgroup.groupname != ""  %}
+ <center> <h3><span class="label {{ random(['label-default','label-primary', 'label-success' , 'label-info' , 'label-warning' ,'label-danger' ]) }}  {{ random(['bg-teal','bg-green', 'bg-olive' , 'bg-lime' , 'bg-yellow' ,'bg-orange' , 'bg-fuchsia' ,'bg-purple','bg-teal' ]) }}" ><i class="fa fa-users"></i> {{ telephoneListgroup.groupname }} </h3> 
+ <table class="table table-hover">
+  <tbody>
+ {% for Telephone in TelephoneList   %}
+  {% if telephoneListgroup.groupname == Telephone.Groupname %}
+                <tr>
+                  <td><i class="fa fa-user"></i> {{ Telephone.name }}</td>
+                    <td align='right'><a href="tel:{{Telephone.telephone|replace({'-': ''})}}" style="color:black"><i class="fa fa-phone"></i>
+                    <span class="label label-danger badge" >{{Telephone.telephone|slice(0, 11)}}<font color="white">{{Telephone.telephone|slice(11)}}</font> </span></a></td>
+                  </tr>
+  {% endif %}
+{% endfor %}
+</tbody></table>
+</center>
+{% endif %}
+{% endfor %}
+
+
+ <center> <h1> <span class="label label-danger " > <i class="fa fa-medkit" aria-hidden="true"></i> </h1> 
+   <table class="table table-hover">
+                   <tbody>
+        {% for Telephone in TelephoneList   %}
+          {% if  Telephone.Groupname is null  or Telephone.Groupname == "" %}   
+                <tr>
+                  <center> 
+                    <td align='left'>
+                    {% if  Telephone.symbol == '1' %}<a href="tel:{{Telephone.telephone|replace({'-': ''})}}" style="color:black"><i class="fa fa-ambulance" aria-hidden="true" ></i> <span class="label label-danger badge" ><font color="white">{{ Telephone.name }}</font></span></a>{% endif %}
+                    {% if  Telephone.symbol == '2' %}<a href="tel:{{Telephone.telephone|replace({'-': ''})}}" style="color:black"><i class="fa fa-ambulance" aria-hidden="true" ></i> <span class="label label-danger badge" ><font color="white">{{ Telephone.name }}</font></span></a>{% endif %}
+                    {% if  Telephone.symbol == '3' %}<a href="https://api.whatsapp.com/send?phone=+49{{Telephone.telephone|slice(1, 19)|replace({'-': ''})}}" style="color:black"><i class="fa fa-ambulance" aria-hidden="true" ></i> <span class="label label-danger badge" ><font color="white">{{ Telephone.name }}</font></span></a>{% endif %}
+                    </td>
+                  </center> 
+                  {% if  Telephone.symbol == '1' %}  <td align='right'><a href="tel:{{Telephone.telephone|replace({'-': ''})}}" style="color:white"> {% endif %}
+                  {% if  Telephone.symbol == '2' %}  <td align='right'><a href="tel:{{Telephone.telephone|replace({'-': ''})}}" style="color:white"> {% endif %}
+                  {% if  Telephone.symbol == '3' %}  <td align='right'><a href="https://api.whatsapp.com/send?phone=+49{{Telephone.telephone|slice(1, 19)|replace({'-': ''})}}" style="color:black"> {% endif %}
+                  {% if  Telephone.symbol == '1' %}   <i class="fa fa-phone" style="color:black">  </i>{% endif %}
+                  {% if  Telephone.symbol == '2' %}   <font size="+1"><i class="fa fa-mobile" style="color:black">  </i></font>{% endif %}
+                  {% if  Telephone.symbol == '3' %}   <i class="fa fa-whatsapp" style="color:black">  </i>{% endif %}
+                   <span class="label label-danger badge" ><font color="white">{{ Telephone.telephone }}</font></span></a></td>
+                </tr>
+          {% endif %}
+        {% endfor %}
+              </tbody></table>
+            </center> 
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+            <div class="box-footer text-center">
+              <a href="/TelephoneList/ShowTelephoneList" class="uppercase">Bearbeiten</a>
+              <a href="/TelephoneListe/NewTelephoneListe/" class="btn btn-info pull-right"><i class="fa fa-plus"></i></a>
+            </div>
+	         {% endif %}
+      <!-- /.item -->
+ 
+   
+    <div class="slimScrollBar" style="background: rgb(0, 0, 0) none repeat scroll 0% 0%; width: 7px; position: absolute; top: 63px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 187.126px;"></div>
+    <div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div>
+  
+</div>

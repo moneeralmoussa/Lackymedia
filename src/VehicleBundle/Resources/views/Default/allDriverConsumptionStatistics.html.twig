@@ -1,0 +1,126 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Meine Verbrauchsstatistik' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box box-danger" id="consumption">
+				<div class="box-body">
+					{% if consumptions %}
+						<div class="table-responsive">
+							<table id="all-driver-consumptions" class="table table-striped table-hover nowrap">
+								<thead>
+									<tr>
+										<th>Zeitraum</th>
+										<th>Gefahrene Kilometer</th>
+										<th>Verbrauch L/100 km</th>
+										<th>Verbrauch in L</th>
+										<th>Tempomat-Zeit</th>
+										<th>zu schnelle km/100 km</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for consumption in consumptions %}
+										<tr>
+											<td>{{ consumption.consumptionBeginTime|date('d.m.Y') }} - {{ consumption.consumptionEndTime|date('d.m.Y') }}</td>
+											<td>
+												{% if consumption.detailByLabel('Strecke-KM') %}
+													{{ consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') }}
+												{% elseif consumption.detailByLabel('End-KM') and consumption.detailByLabel('Start-KM') %}
+													{{ (consumption.detailByLabel('End-KM').value - consumption.detailByLabel('Start-KM').value)|number_format(0,',','.') }}
+												{% else %}
+													0
+												{% endif %}
+												km
+											</td>
+											<td>
+												{% if consumption.detailByLabel('Kraftstoffverbrauch beim Fahren') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+													{{ consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value|number_format(1,',','.') }}
+												{% else %}
+													00,0
+												{% endif %}
+												L
+											</td>
+											<td>
+												{% if consumption.detailByLabel('Kraftstoffverbrauch beim Fahren') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+													{{ ((consumption.detailByLabel('Kraftstoffverbrauch beim Fahren').value/100)*(consumption.detailByLabel('Strecke-KM').value))|number_format(1,',','.') }}
+												{% else %}
+													00,0
+												{% endif %}
+												L
+											</td>
+											<td>
+												{% if consumption.detailByLabel('Tempomat-Zeit') and (consumption.detailByLabel('Strecke-KM') and (consumption.detailByLabel('Strecke-KM').value|number_format(0,',','.') > 0)) %}
+													{{ consumption.detailByLabel('Tempomat-Zeit').value|number_format(1,',','.') }}%
+												{% else %}
+													00,0%
+												{% endif %}
+											</td>
+											<td>
+												{% if consumption.detailByLabel('zu schnell km') %}
+													{{ consumption.detailByLabel('zu schnell km').value|number_format(3,',','.') }}
+												{% endif %}
+											</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+								<tfoot>
+									<tr>
+										<th>Zeitraum</th>
+										<th>&Oslash; {{ avgConsumptions.avgDistance }} km</th>
+										<th>&Oslash; {{ avgConsumptions.avgConsumptionOn100km }} L</th>
+										<th>&Oslash; {{ avgConsumptions.avgConsumption }} L</th>
+										<th>&Oslash; {{ avgConsumptions.avgCruiseControl }}%</th>
+										<th>&Oslash; {{ avgConsumptions.avgDrivenToFast }}</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					{% else %}
+						<strong>Trotz Adminrechten f&auml;hrst du leider keinen LKW!</strong>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block stylesheet %}
+	<style>
+		@media only screen and (min-width: 992px) {
+			#all-driver-consumptions_wrapper div.dataTables_scrollBody {
+				max-height: calc(100vh - 235px) !important;
+			}
+		}
+		#consumption {
+			margin-bottom: 0;
+		}
+
+		{# table.dataTable {
+    		width: 100%;
+		} #}
+	</style>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		$(document).ready(function() {
+			$.fn.dataTable.moment('DD.MM.YYYY - DD.MM.YYYY');
+			var table = $('#all-driver-consumptions').DataTable({
+				scrollY: 'calc(100vh - 290px)',
+				scrollX: true,
+				scrollXInner: "100%",
+				scrollCollapse: true,
+				paging: false,
+				order: [
+					[0, 'desc']
+				],
+				searching: false,
+				info: false,
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+				}
+			});
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+employee_employee:
+    resource: "@EmployeeBundle/Resources/config/routing/employee.yml"
+    prefix:   /employee
+
+employee_user:
+     resource: "@EmployeeBundle/Resources/config/routing/user.yml"
+     prefix:   /user
+
+employee_contract:
+    resource: "@EmployeeBundle/Resources/config/routing/contract.yml"
+    prefix:   /contract
+
+employee_contract_workingtime:
+    resource: "@EmployeeBundle/Resources/config/routing/workingtime.yml"
+    prefix:   /contract/workingtime
+salary:
+    resource: "@EmployeeBundle/Resources/config/routing/salary.yml"
+    prefix:   /salary/
+salary:
+    resource: "@EmployeeBundle/Resources/config/routing/employeeworkday.yml"
+    prefix:   /
+upload:
+    resource: "@EmployeeBundle/Resources/config/routing/upload.yml"
+    prefix:   /upload
+employee_WorkingHours:
+    resource: "@EmployeeBundle/Resources/config/routing/WorkingHours.yml"
+    prefix:   /WorkingHours

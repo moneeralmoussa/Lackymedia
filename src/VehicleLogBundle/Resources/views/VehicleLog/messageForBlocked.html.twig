@@ -1,0 +1,16 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrtenbuch' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="row">
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Du bist gesperrt!' } %}
+					{% block content %}
+						<p>Du bist zurzeit gesperrt und kannst deshalb nicht auf das Fahrtenbuch zugreifen.</p>
+					{% endblock %}
+				{% endembed %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

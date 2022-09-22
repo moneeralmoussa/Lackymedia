@@ -1,0 +1,42 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Arbeitszeitgesetz Pausen' %}
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Arbeitszeit' } %}
+          {% block content %}
+          <div class="table-responsive">
+              <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}Die Anzahl der Arbeitsstunden ist mehr als{% endtrans %}</th>
+                          <th>{% trans %}Die Anzahl der Arbeitsstunden ist winger als{% endtrans %}</th>
+                          <th>{% trans %}Die Menge an Pausen{% endtrans %}</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for item in WorkingHoursPause%}
+                      <tr>
+                          <td>{{item.fromTime}}</td>
+                          <td>{{item.toTime}}</td>
+                          <td>{{item.rate}}</td>
+                          <td>
+                            <a href="/arbeitszeitgesetz/{{ item.id}}" style="color:black"><span class="label label-success badge"><font color="black"> <i class="fa fa-edit"> </i> Bearbeiten</font></span></a>
+                            <a href="/arbeitszeitgesetz/{{ item.id }}/del" style="color:black"> <span class="label label-danger badge"><font color="black"><i class="fa fa-trash"> </i> Löschen</font></span></a>
+
+                          </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+          <a href="{{ path('WorkingHoursNew') }}" class="btn btn-success pull-right">{% trans %}Neue Arbeitszeit{% endtrans %}</a>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

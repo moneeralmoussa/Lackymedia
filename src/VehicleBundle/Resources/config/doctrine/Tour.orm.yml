@@ -1,0 +1,84 @@
+VehicleBundle\Entity\Tour:
+    type: entity
+    table: null
+    repositoryClass: VehicleBundle\Repository\TourRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    gedmo:
+        soft_deleteable:
+            field_name: deleted_at
+            time_aware: false
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        deleted_at:
+            type: datetime
+            nullable: true
+        tourid:
+            type: integer
+        trimbleTourid:
+            type: integer
+            nullable: true
+        tournummer:
+            type: string
+            length: '15'
+        gewicht:
+            type: decimal
+            precision: 10
+            scale: '3'
+            nullable: true
+        rechnungsempfaenger:
+            type: string
+            length: 255
+            nullable: true
+        beladeort:
+            type: string
+            length: 255
+            nullable: true
+        entladeort:
+            type: string
+            length: 255
+            nullable: true
+        empfangsorte:
+            type: string
+            length: 255
+            nullable: true
+        anzahlauftraege:
+            type: integer
+        geprueft:
+            type: smallint
+        beschreibung:
+            type: string
+            length: 255
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        vehicle:
+            targetEntity: VehicleBundle\Entity\Vehicle
+            inversedBy: tours
+            joinColumn:
+                name: vehicle_id
+                referencedColumnName: id
+    oneToOne:
+        originalDetail:
+            targetEntity: VehicleBundle\Entity\Tourdetail
+            joinColumn:
+                name: original_detail_id
+                referencedColumnName: id
+        currentDetail:
+            targetEntity: VehicleBundle\Entity\Tourdetail
+            joinColumn:
+                name: current_detail_id
+                referencedColumnName: id

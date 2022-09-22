@@ -1,0 +1,43 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Abwesenheitsbericht' %}
+{% block javascripts %}
+   
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Ein Abwesenheitsbericht nach dem Datum : '  ~ "now"|date_modify('-1 week')|date('d-m-Y')  } %}
+            {% block content %}
+       <div class="table-responsive">
+      <table class="table table-datatable table-condensed table-striped table-hover ">
+        <thead>
+            <tr>
+                <th>{% trans %}Name{% endtrans %}</th>
+                <th>{% trans %}Abteilung{% endtrans %}</th>
+                 <th>{% trans %}Datum{% endtrans %}</th>
+            </tr>
+        </thead>
+        <tbody>
+         
+             {% for absences in absencesReport %}
+             <tr>
+             <td> {{ absences.employee }}</td>
+             <td> {{ absences.department }} </td>
+             <td> {{ absences.date|date('d-m-Y') }} </td>
+             </tr>
+              
+              {% endfor %} 
+             </tbody>
+
+          </table>
+        </div> 
+
+             {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+

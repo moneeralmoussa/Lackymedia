@@ -1,0 +1,31 @@
+AbsenceBundle\Entity\Holidayschedule:
+    type: entity
+    table: null
+    repositoryClass: AbsenceBundle\Repository\HolidayscheduleRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        holiday:
+            type: integer
+        year:
+            type: integer
+        createAt:
+          type: datetime
+          nullable: true
+          gedmo:
+            timestampable:
+              on: create
+        deletedAt:
+            type: datetime
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: Holidayschedule
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id

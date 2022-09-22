@@ -1,0 +1,737 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Detailansicht'|trans ~ ': ' ~ vehicle.name %}
+
+{% block javascripts %}
+<script src='/assets/moment/min/moment-with-locales.min.js'></script>
+<script src='/assets/fullcalendar/dist/fullcalendar.js'></script>
+<script src='/assets/fullcalendar-scheduler/dist/scheduler.js'></script>
+<script src='/assets/fullcalendar/dist/locale/de.js'></script>
+<script src="/assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+<script>
+var publicHolidays = [];
+var editnow = null;
+
+function Workdaymerger() {
+    var workingtimes = [];
+
+    function intersects(a,b){
+        if (a.end.isBefore(b.start)) {
+            return -1;
+        }
+        if (a.start.isAfter(b.end)) {
+            return 1;
+        }
+        if (a.start.isSame(b.start) && a.end.isSame(b.end)) {
+            return {
+                start: b.start,
+                end: a.end,
+                both: b.end - a.start,
+                stelle: 1
+            };
+        }
+        if (a.start.isSameOrBefore(b.start) && a.end.isSameOrAfter(b.end)) {
+            return {
+                start: a.start,
+                end: a.end,
+                both: b.end - b.start,
+                stelle: 2
+            };
+        }
+        if (b.start.isSameOrBefore(a.start) && b.end.isSameOrAfter(a.end)) {
+            return {
+                start: b.start,
+                end: b.end,
+                both: a.end - a.start,
+                stelle: 3
+            };
+        }
+        if (a.start.isSameOrBefore(b.start) && a.end.isSameOrBefore(b.end)) {
+            return {
+                start: a.start,
+                end: b.end,
+                both: a.end - b.start,
+                stelle: 4
+            };
+        }
+        if (a.start.isSameOrAfter(b.start) && a.end.isSameOrAfter(b.end)) {
+            return {
+                start: b.start,
+                end: a.end,
+                both: b.end - a.start,
+                stelle: 5
+            };
+        }
+        return false;
+    };
+    this.intersects = intersects;
+
+    function push(n) {
+        if (workingtimes.length == 0) {
+            workingtimes.push(n);
+        } else {
+            var relation = [];
+            workingtimes.forEach(function(v, i, o){
+                relation.push(intersects({start:n.start,end:n.end},{start:v.start,end:v.end}));
+            });
+
+            if(relation[0] == -1) {
+                workingtimes.unshift(n);
+            } else if(relation[relation.length -1] == 1) {
+                workingtimes.push(n);
+            } else {
+                var relation2 = 1;
+                relation.forEach(function(v, i, o){
+                    if (v == 1) {
+                        relation2 = 1;
+                    } else if (v == -1) {
+                        if (relation2 != -1) {
+                            workingtimes.push(n);
+                            workingtimes.copyWithin(i,workingtimes.length-1);
+                        }
+                        relation2 = -1;
+                    } else if (relation2 == 1) {
+                        workingtimes[i].start = v.start;
+                        workingtimes[i].end = v.end;
+                        relation2 = -1;
+                    } else if (v !== false) {
+                        workingtimes[i-1].end = v.end;
+                        workingtimes.splice(i,1);
+                        relation2 = -1;
+                    }
+                });
+            }
+        }
+        return workingtimes;
+    };
+    this.push = push;
+
+    function calcWorkingtime(w){
+        if (workingtimes.length == 0) {
+            return 0;
+        } else {
+            var ret = 0;
+            workingtimes.forEach(function(v, i, o){
+                var relation = intersects({start:w.start,end:w.end},{start:v.start,end:v.end});
+                if(relation && relation != -1 && relation != 1) {
+                    ret += relation.both;
+                }
+            });
+            return ret
+        }
+    }
+    this.calcWorkingtime = calcWorkingtime;
+}
+
+var w = new Workdaymerger();
+
+function isPublicHoliday(start) {
+    if(publicHolidays.indexOf(start.format("YYYY-MM-DD")) > -1) {
+        return true;
+    }
+    if(start.day()==6 || start.day()==0) {
+        return true;
+    }
+    return false;
+}
+function countAbsenceDays(start,end,noPublicHolidays=false) {
+  count = 0;
+  $.ajax({
+      url: "{{ path('calendar_jsonpublicholidays')}}",
+      async: false,
+      success: function(data) {
+        _.forEach(data, function(value) {
+          if(value.publicHoliday == true){
+            vstart = moment(value.start);
+            if(!(vstart.isBefore(end) || vstart.isAfter(start))){
+              count++;
+            }
+          }
+        });
+      }
+  });
+  var ret=0;
+  ret -= count;
+  while(start < end) {
+      if(noPublicHolidays) {
+          ret++;
+      } else if(!isPublicHoliday(start)) {
+          ret++;
+      }
+      start.add(1, 'd');
+  }
+  return ret;
+}
+
+function draw_map(flightPlanCoordinates) {
+    if (flightPlanCoordinates) {
+        $("#map_container").show();
+        var position = flightPlanCoordinates[0];
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: position
+        });
+        end_marker = new google.maps.Marker({
+          position: position,
+          map: map
+        });
+        start_marker = new google.maps.Marker({
+            position: flightPlanCoordinates[flightPlanCoordinates.length-1],
+            map: map
+        });
+
+        start_infowindow = new google.maps.InfoWindow;
+        end_infowindow = new google.maps.InfoWindow;
+
+        flightPath = new google.maps.Polyline({
+          path: flightPlanCoordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+
+        flightPath.setMap(map);
+
+        circle = new google.maps.Circle({
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            map: map,
+            center: {lat: 51.9156915, lng: 7.3843574},
+            radius: 2000,
+            editable: true,
+            draggable: true,
+            geodesic: true,
+        });
+        google.maps.event.addListener(circle, 'radius_changed', function() {
+          console.log(circle.getRadius());
+        });
+        google.maps.event.addListener(circle, 'dragend', function() {
+          console.log(circle.getCenter());
+        });
+
+        var locationOptions = {
+            strokeColor: '#00FF00',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#00FF00',
+            fillOpacity: 0.35,
+            map: map,
+            geodesic: true,
+        };
+
+        var js_locations = [];
+        var js_location = 0;
+        {% for location in locations %}
+        js_locations[js_location] = new google.maps.Circle(locationOptions);
+        js_locations[js_location].setCenter({ lat: {{location.lat}}, lng: {{location.lon}} });
+        js_locations[js_location].setRadius({{location.geofenceMeters}});
+        js_location++;
+        {% endfor %}
+    }
+}
+function updateEvent(item, zeit) {
+    editnow['event'][item] = $.fullCalendar.moment(zeit);
+    $('#calendar').fullCalendar('updateEvent',editnow['event']);
+    return updateEvent2();
+}
+function updateEvent2(){
+    swal({
+        text: "Touranpassung speichern?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ja',
+        cancelButtonText: 'Noch nicht'
+    }).then(function(result){
+        if (result.value) {
+            var formSerialize = [];
+            formSerialize.push({name: 'id', value: editnow['event'].id});
+            formSerialize.push({name: 'beginn', value: editnow['event'].start.format('YYYY-MM-DD HH:mm:ss')});
+            formSerialize.push({name: 'ende', value: editnow['event'].end.format('YYYY-MM-DD HH:mm:ss')});
+            if (editnow['event'].entladezeit) {
+                formSerialize.push({name: 'entladezeit', value: editnow['event'].entladezeit.format('YYYY-MM-DD HH:mm:ss')});
+                formSerialize.push({name: 'lastzeit', value: (w.calcWorkingtime({start:editnow['event'].start,end:editnow['event'].entladezeit}))/3600000});
+                formSerialize.push({name: 'leerzeit', value: (w.calcWorkingtime({start:editnow['event'].entladezeit,end:editnow['event'].end}))/3600000});
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('vehicle_update_tour')}}",
+                    data: formSerialize,
+                    success: function(r){
+                        console.log(r);
+                        $('#modal').modal('hide');
+                        $('#calendar').fullCalendar( 'refetchEvents' );
+                    }
+                });
+            } else {
+                swal({
+                    text: "Bitte bestimmen Sie noch einen  Entladeort",
+                    type: 'warning',
+                })
+            }
+        }
+    });
+    return false;
+}
+$(document).ready(function() {
+    var employeeID;
+    var absenceID;
+    var fromDate;
+    var toDate;
+    var cal = $('#calendar').fullCalendar({
+        defaultDate: moment(new Date('{{ base_date|date('Y-m-d') }}')),
+        resourceOrder: 'education_year',
+        header: {
+            left: 'today prev,next',
+            center: 'title',
+            right: 'timelineDay,timelineWeek,timelineMonth,timelineYear'
+        },
+        height: 'parent',
+        themeSystem: 'bootstrap3',
+        defaultView: 'timelineWeek',
+        schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+        //resourceGroupField: 'department',
+        locale: 'de',
+        displayEventTime: false,
+        nowIndicator: true,
+        eventOverlap:function(stillEvent, movingEvent){
+            return true; //(stillEvent.rendering && stillEvent.rendering == 'background')
+        },
+        businessHours: true,
+        selectable: true,
+        selectHelper: true,
+        resourcesInitiallyExpanded: false,
+        buttonText: {
+          year:    'Jahr',
+        },
+        eventClick:  function(event, jsEvent, view) {
+            if (event.resourceId == 2) {
+                $(".fc-title i.touredit").removeClass('editnow').hide();
+                $(this).find(".fc-title i.touredit").addClass('editnow').show();
+                editnow = {'event':event, 'element':$(this)};
+            }
+
+            $('.modal-title').html(event.title);
+            var content = '<table><tr><td>Beginn:</td><td>' + event.start.format('DD.MM.YYYY HH:mm:ss') + '</td></tr><tr><td>Ende:</td><td>' + (event.originalend?moment(event.originalend).format('DD.MM.YYYY HH:mm:ss'):event.end.format('DD.MM.YYYY HH:mm:ss')) + '</td></tr>';
+            if (event.resourceId == 2) {
+                content += '<tr><td>Leerkm:</td><td>'+event.leerkm+'</td></tr>';
+                content += '<tr><td>Lastkm:</td><td>'+event.lastkm+'</td></tr>';
+                content += '<tr><td>Gesamtkm:</td><td>'+event.gesamtkm+'</td></tr>';
+                content += '<tr><td>Leerzeit:</td><td>'+event.leerzeit+'</td></tr>';
+                content += '<tr><td>Lastzeit:</td><td>'+event.lastzeit+'</td></tr>';
+                content += '<tr><td>Gesamtzeit:</td><td>'+event.gesamtzeit+'</td></tr>';
+                content += '<tr><td>Leerkosten:</td><td>'+event.leerkosten+'</td></tr>';
+                content += '<tr><td>Lastkosten:</td><td>'+event.lastkosten+'</td></tr>';
+                content += '<tr><td>Gesamtkosten:</td><td>'+event.gesamtkosten+'</td></tr>';
+                content += '<tr><th>Erlös:</th><th>'+event.erloes+'</th></tr>';
+            } else if (event.resourceId >= 4) {
+                if (editnow) {
+                    content += '<tr><td colspan="2">&nbsp;</td></tr>';
+                    content += '<tr><th colspan="2">Touranpassung für '+editnow['event'].title+'</th></tr>';
+                    content += '<tr><th>'+event.startPoint.town+'</th><th>'+event.endPoint.town+'</th></tr>';
+                    content += '<tr><td><a href="#" onclick="return updateEvent(\'start\',\''+event.start.toISOString()+'\')">ist Tourstart</a></td><td><a href="#" onclick="return updateEvent(\'start\',\''+event.end.toISOString()+'\')">ist Tourstart</a></td></tr>';
+                    content += '<tr><td><a href="#" onclick="return updateEvent(\'end\',\''+event.start.toISOString()+'\')">ist Tourende</a></td><td><a href="#" onclick="return updateEvent(\'end\',\''+event.end.toISOString()+'\')">ist Tourende</a></td></tr>';
+                    content += '<tr><td><a href="#" onclick="return updateEvent(\'entladezeit\',\''+event.start.toISOString()+'\')">ist Entladeort</a></td><td><a href="#" onclick="return updateEvent(\'entladezeit\',\''+event.end.toISOString()+'\')">ist Entladeort</a></td></tr>';
+                }
+
+                start_marker.setPosition({'lat':event.startPoint.lat,'lng':event.startPoint.lng});
+                start_infowindow.setContent("{% trans %}Start{% endtrans %}: "+event.startPoint.town);
+                start_infowindow.open(map, start_marker);
+
+                end_marker.setPosition({'lat':event.endPoint.lat,'lng':event.endPoint.lng});
+                end_infowindow.setContent("{% trans %}Ziel{% endtrans %}: "+event.endPoint.town);
+                end_infowindow.open(map, end_marker);
+            }
+            content += '</table>';
+            $('#modal-content').html(content);
+            $('#modal').modal();
+        },
+        eventDrop: function(event, delta, revertFunc) {
+            if (event.resourceId == 2) {
+                $(".fc-title i.touredit").removeClass('editnow').hide();
+                $(this).find(".fc-title i.touredit").addClass('editnow').show();
+                editnow = {'event':event, 'element':$(this)};
+            }
+            updateEvent2();
+        },
+        eventResize: function(event, delta, revertFunc) {
+            if (event.resourceId == 2) {
+                $(".fc-title i.touredit").removeClass('editnow').hide();
+                $(this).find(".fc-title i.touredit").addClass('editnow').show();
+                editnow = {'event':event, 'element':$(this)};
+            }
+            updateEvent2();
+        },
+        resourceRender: function(resourceObj, labelTds, bodyTds) {
+            /*labelTds.find('.fc-cell-content').each(function(){
+                if (!$(this).attr('data-listener')) {
+                    $(this).on('click', function(){
+                        window.location.assign('/vehicles/view/'+resourceObj.id);
+                    });
+                }
+            });*/
+        },
+        eventRender: function(event, element, view) {
+            if (event.positions) {
+                draw_map(event.positions);
+                //console.log(event.positions);
+            }
+            if (event.publicHoliday) {
+                publicHolidays.push(event.start.format("YYYY-MM-DD"));
+            }
+            if (event.icon && event.title === 'Urlaub') {
+                element.css('background-color','#2ecc71');
+            }
+            if(event.icon){
+                element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i> ");
+            }
+            if(event.originalend){
+                event.originalend = moment(event.originalend);
+            }
+            if (event.resourceId == 2 && editnow && event.id == editnow['event'].id) {
+                element.find(".fc-title").prepend("<i class='fa fa-edit touredit editnow'></i>");
+            } else if (event.resourceId == 2) {
+                element.find(".fc-title").prepend("<i class='fa fa-edit touredit' style='display:none;'></i>");
+            }
+            if (event.resourceId == 1) {
+                console.log(w.push(event));
+            }
+        },
+        viewRender: function(view,element) {
+            //if (!isLoading) {
+                if ($('.fc-now-indicator').position()) {
+                    $($('.fc-scroller')[1]).scrollLeft($('.fc-now-indicator').position().left-100);
+                }
+                if ($('.fc-today').position()) {
+                    $($('.fc-scroller')[1]).scrollLeft($('.fc-today').position().left-100);
+                }
+
+                $('.fc-expander').parent().on('click', function(e) {
+                  // $(this).find('.fc-expander').click();
+                  if (!$(e.target).is('.fc-expander')) {
+                      $(this).find('.fc-expander').trigger('click');
+                  }
+                });
+
+                $('.fc-day, .fc-day-top').hover(function() {
+                  var myEm = $(this).attr('data-date');
+                  console.log(myEm);
+                      $('.fc-day-top[data-date = '+myEm+'] .fc-day-number').addClass('on-hover');
+                }, function() {
+                      var myEm = $(this).attr('data-date');
+                  $('.fc-day-top[data-date = '+myEm+'] .fc-day-number').removeClass('on-hover');
+                });
+
+        },
+        //resourceAreaWidth: "25%",
+        editable: true,
+        resourceColumns: [
+            {
+                labelText: 'Name',
+                field: 'name'
+            },
+        ],
+        resources: [
+            {
+                id: 1,
+                name: 'Fahrer',
+            },
+            {
+                id: 2,
+                name: 'Tour',
+            },
+            {
+                id: 3,
+                name: 'Trimbleaktivitäten',
+            },
+            {
+                id: 4,
+                name: 'Fahren',
+            },
+            {
+                id: 5,
+                name: 'Tourbeginn',
+            },
+            {
+                id: 6,
+                name: 'Tourende',
+            },
+            {
+                id: 7,
+                name: 'Tourstopp',
+            },
+            {
+                id: 8,
+                name: 'Tourstopp nur Laden',
+            },
+            {
+                id: 9,
+                name: 'keine Tätigkeit',
+            },
+            {
+                id: 10,
+                name: 'Sonstige',
+            },
+        ],
+        eventSources: [
+            {
+                url: "{{ path('vehicle_loadActivities_short', {'id':vehicle.id}) }}",
+            },
+            {
+                url: "{{ path('vehicle_load_tours_vehicle', {'vehicle':vehicle.id}) }}",
+            },
+            {
+                url: "{{ path('calendar_jsonpublicholidays')}}",
+            },
+        ],
+        loading: function(isLoading, view) {
+            if(isLoading) {
+                $('#modal-content').html('<img src="/bundles/vehicle/css/graphics/loader.white.gif" />');
+                $('#modal').modal();
+            } else {
+                $('#modal').modal('hide');
+            }
+        }
+    });
+
+    function modalCountAbsenceDays() {
+        // if($('#calendar_modal_absence_add_reason').val() == 7 || $('#calendar_modal_absence_add_reason').val() == 8 || $('#calendar_modal_absence_add_reason').val() == 9) {
+        //     var days = countAbsenceDays(moment(fromDate),moment(moment(toDate).toISOString()),true);
+        // } else {
+            var days = countAbsenceDays(moment(fromDate),moment(toDate));
+        // }
+        console.log(parseFloat(days).toFixed(1));
+        if($('#edited').html() == '') {
+            $('#calendar_modal_absence_add_day').val(parseFloat(days).toFixed(1));
+        } else if ($('#calendar_modal_absence_add_day').val() == parseFloat(days).toFixed(1)) {
+        } else {
+            swal({
+                text: "Vorschlag für Anzahl Tage: "+parseFloat(days).toFixed(1),
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Übernehmen',
+                cancelButtonText: 'Ignorieren'
+            }).then(function(result){
+                if(result.value) {
+                    $('#calendar_modal_absence_add_day').val(parseFloat(days).toFixed(1));
+                }
+            });
+        }
+    }
+
+    $('#calendar_modal_absence_add_reason').change(function(){
+        modalCountAbsenceDays();
+    });
+
+    $('.absence-add').submit(function(e) {
+        e.preventDefault();
+        var url = "{{ path('calendar_ajax') }}";
+        var day = parseFloat($('#calendar_modal_absence_add_day').val()).toFixed(1);
+
+        if($('#calendar_modal_absence_add_reason').val()){
+            var reason = $('#calendar_modal_absence_add_reason').val();
+        } else {
+            swal({
+                text: "Bitte wählen Sie einen Abwesenheitsgrund!",
+                type: 'warning',
+            });
+            return false;
+        }
+
+        if($('#calendar_modal_absence_add_status').length){
+            if($('#calendar_modal_absence_add_status').val()){
+                var status = $('#calendar_modal_absence_add_status').val();
+            } else {
+                swal({
+                    text: "Bitte wählen Sie einen Status!",
+                    type: 'warning',
+                });
+                return false;
+            }
+        }
+        var note = $('#calendar_modal_absence_add_note').val();
+        var formSerialize = [];
+        formSerialize.push({name: 'reason', value: reason});
+        formSerialize.push({name: 'status', value: status});
+        formSerialize.push({name: 'note', value: note});
+        formSerialize.push({name: 'day', value: day});
+        formSerialize.push({name: 'employee', value: employeeID});
+        formSerialize.push({name: 'absence', value: absenceID});
+        formSerialize.push({name: 'fromDate', value: fromDate});
+        formSerialize.push({name: 'toDate', value: moment(toDate).toISOString()});
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formSerialize,
+            success: function(r){
+                $('#modal').modal('hide');
+                $('#modal').on('hidden.bs.modal', function(){
+                    $(this).find('form')[0].reset();
+                });
+                $('#calendar').fullCalendar( 'refetchEvents' );
+            }
+        });
+    });
+
+    /*var currentMonth = $('.fc-scroller-clip > .fc-following').first().text();
+    var currentIds = [];
+    $(".fc-scroller").scroll(function(){
+      var month = new moment().month($('.fc-scroller-clip > .fc-following').first().text());
+      if(month.format('MMMM') != currentMonth){
+        currentMonth = month.format('MMMM')
+
+        var ids = [];
+        _.each($('.fc-resource-area tr[data-resource-id]'), function(value){
+          ids.push($(value).data('resource-id'));
+          $('.fc-head tbody th:eq(6) .fc-cell-text').html('Rest<br/>'+month.format('MMMM'));
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "{{ path('employee_remainingmtl')}}",
+            data: {
+              date: month.toISOString(),
+              ids:ids
+            },
+            success: function(resources){
+              _.each(resources, function(resource){
+                $('.fc-resource-area tr[data-resource-id='+resource.id+'] td:eq(6) .fc-cell-text').text(resource.remainingmtl);
+              });
+            }
+        });
+
+      }
+    });*/
+
+    $('#modal').on('hidden.bs.modal', function(){
+        $('#modal .delete').addClass('hidden');
+    });
+
+});
+</script>
+{% endblock %}
+
+{% block stylesheet %}
+<link href='/assets/fullcalendar/dist/fullcalendar.css' rel='stylesheet' />
+<link href='/assets/fullcalendar-scheduler/dist/scheduler.css' rel='stylesheet' />
+<link href="/assets/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+<style>
+.fc-view-container .fc-resource-area tr{
+	cursor: pointer;
+}
+.fc-resource-area tr td:nth-child(3):hover,
+.fc-resource-area tr td:nth-child(5):hover,
+.fc-resource-area tr td:nth-child(6):hover {
+    background: #ccc;
+}
+.fc-ltr .fc-resource-area tr[data-resource-id] > td:nth-last-child(2),
+.fc-ltr .fc-resource-area tr[data-resource-id] > td:last-child {
+    text-align: left!important;
+}
+.fc-ltr .fc-resource-area tr[data-resource-id] > *{
+  text-align: right!important;
+}
+.on-hover{
+    background: red;
+    opacity: 0.4;
+}
+.fc-time-area tr:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+.table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    /*border: 1px solid #ccc;*/
+    border: 1px solid #000;
+}
+.fc-highlight{
+  background: green;
+}
+</style>
+{% endblock %}
+
+{% block modalcontent %}
+	{#% include 'CalendarBundle:Calendar:partials/modalabsenceadd.html.twig' %#}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<div class="row">
+			{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Fahrzeugstammdaten' } %}
+				{% block content %}
+				<table class="table">
+					<thead>
+					</thead>
+					<tbody>
+						<tr>
+							<th>{% trans %}Name{% endtrans %}</th>
+							<td>{{ vehicle.name }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Typ{% endtrans %}</th>
+							<td>{{ vehicle.vehicletype.vehicletypetype.name }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Subtyp{% endtrans %}</th>
+							<td>{{ vehicle.vehicletype.name }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Kommentar{% endtrans %}</th>
+							<td>{{ vehicle.comment }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Trimble-Terminal-Id{% endtrans %}</th>
+							<td>{{ vehicle.trimbleId }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Komalog-Id{% endtrans %}</th>
+							<td>{{ vehicle.komalogId }}</td>
+						</tr>
+						<!--<tr>
+							<th>{% trans %}Komalog-Typ-Id{% endtrans %}</th>
+							<td>{{ vehicle.vehicletype.komalogId }}</td>
+						</tr>-->
+					</tbody>
+				</table>
+				{% endblock %}
+			{% endembed %}
+		</div>
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row">
+			{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Aktivitäten' } %}
+				{% block content %}
+					<div style="height: 600px;margin-top:20px;background-color: white">
+						<div id="calendar"></div>
+					</div>
+				{% endblock %}
+			{% endembed %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+  <div id="map_container" class="col-xs-12" style="display:none;">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Fahrzeugposition' } %}
+          {% block content %}
+            <img id="save_drivers_home_img" src="/bundles/vehicle/css/graphics/loader.white.gif" style="display:none;" />
+            <ul id="save_drivers_home_button" style="display:none;" class="list-inline">
+                <li>
+                    <a class="btn btn-lg btn-danger" href="#" onclick="saveDriversHome();return false;" role="button">{% trans %}Geofence{% endtrans %} {% trans %}speichern{% endtrans %}</a>
+                </li>
+            </ul>
+            <div id="map" style="height:400px;width:100%;"></div>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

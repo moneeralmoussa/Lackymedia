@@ -1,0 +1,24 @@
+expenses_countryspecificexpenses_index:
+    path:     /
+    defaults: { _controller: "ExpenseBundle:Countryspecificexpenses:index" }
+    methods:  GET
+
+expenses_countryspecificexpenses_show:
+    path:     /{id}/show
+    defaults: { _controller: "ExpenseBundle:Countryspecificexpenses:show" }
+    methods:  GET
+
+expenses_countryspecificexpenses_new:
+    path:     /new
+    defaults: { _controller: "ExpenseBundle:Countryspecificexpenses:new" }
+    methods:  [GET, POST]
+
+expenses_countryspecificexpenses_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "ExpenseBundle:Countryspecificexpenses:edit" }
+    methods:  [GET, POST]
+
+expenses_countryspecificexpenses_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "ExpenseBundle:Countryspecificexpenses:delete" }
+    methods:  DELETE

@@ -1,0 +1,16 @@
+AbsenceBundle\Entity\Vacationlock:
+    type: entity
+    table: null
+    repositoryClass: AbsenceBundle\Repository\VacationlockRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        year:
+            type: integer
+        days:
+            type: array
+    lifecycleCallbacks: {  }

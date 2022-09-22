@@ -1,0 +1,64 @@
+VehicleLogBundle\Entity\VehicleReservation:
+    type: entity
+    table: null
+    repositoryClass: VehicleLogBundle\Repository\VehicleReservationRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        vehicleReservationBeginTime:
+            type: datetime
+        vehicleReservationEndTime:
+            type: datetime
+            nullable: true
+        comment:
+            type: string
+            length: 255
+            nullable: true
+        deletedAt:
+          type: datetime
+          nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: vehicleReservations
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        vehicle:
+            targetEntity: VehicleBundle\Entity\Vehicle
+            inversedBy: vehicleVehicleReservations
+            joinColumn:
+                name: vehicle_id
+                referencedColumnName: id
+        reason:
+            targetEntity: VehicleLogReason
+            inversedBy: vehicleReservations
+            joinColumn:
+                name: reason_id
+                referencedColumnName: id
+    oneToOne:
+        vehicleReservationBeginPosition:
+            targetEntity: VehicleReservationPosition
+            joinColumn:
+                name: begin_position_id
+                referencedColumnName: id
+        vehicleReservationEndPosition:
+            targetEntity: VehicleReservationPosition
+            joinColumn:
+                name: end_position_id
+                referencedColumnName: id

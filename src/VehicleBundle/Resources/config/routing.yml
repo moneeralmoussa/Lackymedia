@@ -1,0 +1,135 @@
+vehicle_homepage:
+    path:     /vehicles
+    defaults: { _controller: VehicleBundle:Default:index }
+vehicle_delete:
+    path:     /delete
+    defaults: { _controller: VehicleBundle:Default:delete }
+    methods:  DELETE
+vehicle_restore:
+    path:     /restore
+    defaults: { _controller: VehicleBundle:Default:restore }
+    methods:  [POST]
+
+vehicle_index_tours_date:
+    path:   /vehicles/tours/{date}
+    defaults: { _controller: VehicleBundle:Default:indexTours }
+    methods: [GET]
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+
+vehicle_index_tours:
+    path:   /vehicles/tours
+    defaults: { _controller: VehicleBundle:Default:indexTours, date:null }
+    methods: [GET]
+
+vehicle_ajax_consumption_statistics:
+    path:   /vehicles/consumptionstatistics_ajax
+    defaults: { _controller: VehicleBundle:Default:ajaxConsumptionStatistics }
+    methods: [POST]
+
+
+driver_consumption_statistic:
+    path:   /vehicles/consumptionstatistics/{driver}
+    defaults: { _controller: VehicleBundle:Default:driverConsumptionStatistic }
+    methods: [GET]
+    requirements:
+        driver: '\d+'
+
+all_driver_consumption_statistics:
+    path:   /vehicles/allconsumptionstatistics/{driver}
+    defaults: { _controller: VehicleBundle:Default:allDriverConsumptionStatistics }
+    methods: [GET]
+    requirements:
+        driver: '\d+'
+
+vehicle_detail_date:
+    path:     /vehicles/view/{id}/{date}
+    defaults: { _controller: VehicleBundle:Default:view }
+    requirements:
+        id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+vehicle_detail:
+    path:     /vehicles/view/{id}
+    defaults: { _controller: VehicleBundle:Default:view, date:null }
+    requirements:
+        id: '\d+'
+vehicle_detail_short:
+    path:     /vehicles/view/
+    defaults: { _controller: VehicleBundle:Default:view, date:null }
+vehicle_loadActivities:
+    path:     /vehicles/loadActivities/{id}/{date}
+    defaults: { _controller: VehicleBundle:Default:loadActivities }
+    requirements:
+        id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+vehicle_loadActivities_short:
+    path:     /vehicles/loadActivities/{id}/
+    defaults: { _controller: VehicleBundle:Default:loadActivities }
+    requirements:
+        id: '\d+'
+vehicle_loadMonthKm:
+    path:     /vehicles/loadMonthKm/{id}/{date}
+    defaults: { _controller: VehicleBundle:Default:loadMonthKm }
+    requirements:
+        id: '\d+'
+        date: '\d{4}-\d{2}-\d{2}'
+vehicle_loadMonthKmCsv:
+    path:     /vehicles/loadMonthKmCsv/{date}
+    defaults: { _controller: VehicleBundle:Default:loadMonthKmCsv }
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+vehicle_loadMonthKmCsv_short:
+    path:     /vehicles/loadMonthKmCsv/
+    defaults: { _controller: VehicleBundle:Default:loadMonthKmCsv }
+vehicle_import_xlsx:
+    path:     /vehicles/import
+    defaults: { _controller: "VehicleBundle:Default:importVehiclesXlsx" }
+    methods:  [GET, POST]
+vehicle_loadPkwsJson:
+    path:     /vehicles/loadPkwsJson
+    defaults: { _controller: VehicleBundle:Default:loadPkwsJson }
+vehicle_pin_update:
+    path:   /vehicle/pin/update
+    defaults: { _controller: VehicleBundle:Default:pinUpdate }
+    methods: [POST]
+vehicle_json:
+    path:     /vehicle/json
+    defaults: { _controller: "VehicleBundle:Default:jsonVehicle" }
+    methods:  GET
+vehicle_load_tours_vehicle:
+    path:     /vehicle/loadTours/{vehicle}
+    defaults: { _controller: VehicleBundle:Default:loadTours }
+    requirements:
+        vehicle: '\d+'
+vehicle_load_tours:
+    path:     /vehicle/loadTours
+    defaults: { _controller: VehicleBundle:Default:loadTours }
+vehicle_import_tours:
+    path:     /vehicle/importTours
+    defaults: { _controller: VehicleBundle:Default:importTours }
+vehicle_update_tour:
+    path:     /vehicle/updateTour
+    defaults: { _controller: VehicleBundle:Default:updateTour }
+    methods: [POST]
+vehicle_consumption_statisticss:
+    path:   /vehicles/consumptionstatisticss
+    defaults: { _controller: VehicleBundle:Default:consumptionStatisticsNew }
+vehicle_consumption_statistics:
+    path:   /vehicles/consumptionstatistics
+    defaults: { _controller: VehicleBundle:Default:consumptionStatisticsNew }
+    methods: [GET]    
+vehicle_km_statistics_index:
+    path:   /vehicles/kmstatistics
+    defaults: { _controller: VehicleBundle:Default:kilometersJearDriven }
+    methods: [GET]   
+vehicle_km_statistics:
+    path:   /vehicles/kmstatistics/{date1}/{date2}
+    defaults: { _controller: VehicleBundle:Default:kilometersDriven }
+    methods: [GET]   
+    requirements:
+        date1: '\d{4}-\d{2}-\d{2}'
+        date2: '\d{4}-\d{2}-\d{2}'
+vehicle_Scania_import_xlsx:
+    path:     /vehicles/importScania
+    defaults: { _controller: "VehicleBundle:Default:importScaniaXlsx" }
+    methods:  [GET, POST]        

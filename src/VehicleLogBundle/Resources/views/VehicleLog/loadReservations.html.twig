@@ -1,0 +1,15 @@
+{
+"taskNames" : ["Wochenende","Heute",
+{% for vehicle in vehicles %}
+"{{ vehicle.name }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+],
+"tasks" : [
+{% for task in weekends %}
+{"startDate":"{{ task.beginTime|date('Y-m-d H:i:s') }}","endDate":"{{ task.endTime|date('Y-m-d H:i:s') }}","taskName":"{{ task.name }}","status":"{{ task.status }}","id":"{{ task.id }}","itemId":"{{ task.id }}"}{% if not (loop.last and tasks is empty) %},{% endif %}
+{% endfor %}
+{% for task in tasks %}
+{"type":"{{task.type}}","driver":{"id":"{{task.employee.id}}","name":"{{task.employee.fullName}}"},"startDate":"{{ task.beginTime|date('Y-m-d H:i:s') }}","startPoint":{"lat":{{ task.beginPosition.lat }},"lng":{{ task.beginPosition.lon }},"name":"{{ task.beginPosition.name }}"},"endDate":"{{ task.endTime|date('Y-m-d H:i:s') }}","endPoint":{"lat":{{ task.endPosition.lat }},"lng":{{ task.endPosition.lon }},"name":"{{ task.endPosition.name }}"},"taskName":"{{ task.vehicle.name }}","status":"{{ task.status }}","id":"{{ task.id }}","itemId":"{{ task.id }}"}{% if not loop.last %},{% endif %}
+{% endfor %}
+]
+}

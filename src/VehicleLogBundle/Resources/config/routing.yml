@@ -1,0 +1,148 @@
+vehicle_log_homepage:
+    path:     /vehicleLogs
+    defaults: { _controller: VehicleLogBundle:VehicleLog:index }
+
+vehicle_log_block_employee:
+    path:     /vehicleLogs/blockEmployee
+    defaults: { _controller: VehicleLogBundle:VehicleLog:blockEmployee }
+
+vehicle_log_set_block_employee:
+    path:     /vehicleLogs/setBlockEmployee/{employee_id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:setBlockEmployee }
+    methods: [GET]
+    requirements:
+        employee_id: '\d+'
+
+vehicle_log_un_block_employee:
+    path:     /vehicleLogs/unBlockEmployee/{employee_id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:unBlockEmployee }
+    methods: [GET]
+    requirements:
+        employee_id: '\d+'
+
+vehicle_log_notloggedoutmail:
+    path:     /vehicleLogs/notloggedoutmail
+    defaults: { _controller: VehicleLogBundle:VehicleLog:notloggedoutmail }
+
+vehicle_log_showVehicle:
+    path:   /vehicleLogs/{vehicle_id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:showVehicle }
+    methods: [GET]
+    requirements:
+        vehicle_id: '\d+'
+vehicle_log_showVehicle_short:
+    path:   /vehicleLogs/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:showVehicle }
+    methods: [GET]
+
+vehicle_log_create:
+    path:   /vehicleLogs/{vehicle_id}/new
+    defaults: { _controller: VehicleLogBundle:VehicleLog:create }
+    methods: [GET,POST]
+    requirements:
+        vehicle_id: '\d+'
+vehicle_log_finalize:
+    path:   /vehicleLogs/finalize/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:finalize }
+    methods: [GET,POST]
+    requirements:
+        id: '\d+'
+vehicle_log_finalize_short:
+    path:   /vehicleLogs/finalize/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:finalize }
+    methods: [GET]
+vehicle_log_show:
+    path:   /vehicleLogs/show/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:show }
+    methods: [GET]
+    requirements:
+        id: '\d+'
+vehicle_log_edit:
+    path:   /vehicleLogs/edit/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:edit }
+    methods: [GET,POST]
+    requirements:
+        id: '\d+'
+vehicle_log_edit_short:
+    path:   /vehicleLogs/edit/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:edit }
+    methods: [GET]
+vehicle_log_delete:
+    path:   /vehicleLogs/delete/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:deleteVehiclelog, ajax:true }
+    methods: [GET,POST]
+    requirements:
+        id: '\d+'
+
+vehicle_log_loadReservationsByMonth:
+    path:     /vehicleLogs/loadReservationsByMonth/{date}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:loadReservationsByMonth }
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+vehicle_log_loadReservationsByMonth_short:
+    path:     /vehicleLogs/loadReservationsByMonth/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:loadReservationsByMonth }
+    requirements:
+        employee_id: '\d+'
+
+vehicle_reservation_create:
+    path:   /vehicleLogs/reservation/new
+    defaults: { _controller: VehicleLogBundle:VehicleLog:createReservation }
+    methods: [GET,POST]
+vehicle_vehicle_reservation_create:
+    path:   /vehicleLogs/reservation/new/{vehicle_id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:createReservation }
+    methods: [GET]
+    requirements:
+        vehicle_id: '\d+'
+vehicle_reservation_edit:
+    path:   /vehicleLogs/reservation/edit/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:editReservation }
+    methods: [GET,POST]
+    requirements:
+        id: '\d+'
+
+vehicle_reservation_ajax_edit:
+    path:   /vehicleLogs/reservation/edit/ajax/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:editReservation, ajax:true }
+    methods: [GET,POST]
+    requirements:
+        id: '\d+'
+vehicle_reservation_ajax_edit_short:
+    path:   /vehicleLogs/reservation/edit/ajax/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:editReservation, ajax:true }
+    methods: [GET,POST]
+vehicle_reservation_ajax_create:
+    path:   /vehicleLogs/reservation/new/ajax
+    defaults: { _controller: VehicleLogBundle:VehicleLog:createReservation, ajax:true }
+    methods: [GET,POST]
+vehicle_vehicle_reservation_ajax_create:
+    path:   /vehicleLogs/reservation/new/ajax/{vehicle_id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:createReservation, ajax:true }
+    methods: [GET]
+    requirements:
+        vehicle_id: '\d+'
+vehicle_reservation_ajax_delete:
+    path:   /vehicleLogs/reservation/delete/ajax/{id}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:deleteReservation, ajax:true }
+    methods: [GET,POST]
+    requirements:
+        id: '\d+'
+vehicle_reservation_ajax_delete_short:
+    path:   /vehicleLogs/reservation/delete/ajax/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:deleteReservation, ajax:true }
+    methods: [GET,POST]
+vehicle_log_loadMonthCarusageCsv:
+    path:     /vehicleLogs/loadMonthCarusageCsv/{date}
+    defaults: { _controller: VehicleLogBundle:VehicleLog:loadMonthCarusageCsv }
+    requirements:
+        date: '\d{4}-\d{2}-\d{2}'
+vehicle_log_loadMonthCarusageCsv_short:
+    path:     /vehicleLogs/loadMonthCarusageCsv/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:loadMonthCarusageCsv }
+jsoncar:
+    path:     /vehicleLogs/jsoncar/
+    defaults: { _controller: VehicleLogBundle:VehicleLog:jsoncar }    
+VehicleReportKm:    
+    path:     /vehicleLogs/VehicleReportKm
+    defaults: { _controller: VehicleLogBundle:VehicleLog:VehicleReportKm } 

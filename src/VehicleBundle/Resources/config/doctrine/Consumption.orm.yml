@@ -1,0 +1,58 @@
+VehicleBundle\Entity\Consumption:
+    type: entity
+    table: null
+    repositoryClass: VehicleBundle\Repository\ConsumptionRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    gedmo:
+        soft_deleteable:
+            field_name: deleted_at
+            time_aware: false
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        deleted_at:
+            type: datetime
+            nullable: true
+        consumptionBeginTime:
+            type: datetime
+        consumptionEndTime:
+            type: datetime
+        comment:
+            type: string
+            length: 255
+            nullable: true
+        trimbleId:
+            type: integer
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        vehicle:
+            targetEntity: VehicleBundle\Entity\Vehicle
+            fetch: EAGER
+            inversedBy: consumptions
+            joinColumn:
+                name: vehicle_id
+                referencedColumnName: id
+        driver:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: consumptions
+            joinColumn:
+                name: driver_id
+                referencedColumnName: id
+    oneToMany:
+        consumptionDetails:
+            targetEntity: VehicleBundle\Entity\ConsumptionDetail
+            mappedBy: consumption

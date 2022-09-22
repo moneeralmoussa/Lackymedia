@@ -1,0 +1,42 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Überschneidung' %}
+{% block javascripts %}
+
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Überschneidung'} %}
+            {% block content %}
+       <div class="table-responsive">
+      <table class="table table-datatable table-condensed table-striped table-hover ">
+        <thead>
+            <tr>
+                <th>{% trans %}Name{% endtrans %}</th>
+                <th>{% trans %}Datum{% endtrans %}</th>
+                 <th>{% trans %}Verwendung{% endtrans %}</th>
+            </tr>
+        </thead>
+        <tbody>
+
+             {% for error in errors %}
+             <tr>
+               <td> {{ error.employeeName }}</td>
+               <td> {{ error.date }}</td>
+               <td> {{ error.reasonName }} </td>
+             </tr>
+
+              {% endfor %}
+             </tbody>
+
+          </table>
+        </div>
+
+             {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

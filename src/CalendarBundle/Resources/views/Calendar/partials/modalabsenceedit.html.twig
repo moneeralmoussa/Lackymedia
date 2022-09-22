@@ -1,0 +1,5 @@
+{{ form_start(form, {'attr': {'id': 'absence-add'}}) }}
+    {{ form_widget(form) }}
+    <a href="{{ path('calendar_index') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+    <input type="submit" value="Anlegen" class="btn btn-primary"/>
+{{ form_end(form) }}

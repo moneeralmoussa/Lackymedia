@@ -1,0 +1,115 @@
+EmployeeBundle\Entity\Employeeworkday:
+    type: entity
+    table: employeeworkday
+    repositoryClass: EmployeeBundle\Repository\EmployeeworkdayRepository
+    #gedmo:
+    #  soft_deleteable:
+    #    field_name: deleted_at
+    #    time_aware: false
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        employeeId:
+            type: integer
+            nullable: true
+            column: employee_id
+        beginEmployeepositionDate:
+            type: datetime
+            nullable: true
+            column: begin_employeeposition_date
+        newBeginEmployeepositionDate:
+            type: datetime
+            nullable: true
+            column: new_begin_employeeposition_date
+        newBeginEmployeepositionStatusId:
+            type: integer
+            nullable: true
+            column: new_begin_employeeposition_status_id
+        newBeginEmployeepositionComment:
+            type: string
+            length: 255
+            nullable: true
+            column: new_begin_employeeposition_comment
+        endEmployeepositionDate:
+            type: datetime
+            nullable: true
+            column: end_employeeposition_date
+        newEndEmployeepositionDate:
+            type: datetime
+            nullable: true
+            column: new_end_employeeposition_date
+        newEndEmployeepositionStatusId:
+            type: integer
+            nullable: true
+            column: new_end_employeeposition_status_id
+        newEndEmployeepositionComment:
+            type: string
+            length: 255
+            nullable: true
+            column: new_end_employeeposition_comment
+        beginLoginTypeId:
+            type: integer
+            nullable: true
+            column: begin_login_type_id
+        endLoginTypeId:
+            type: integer
+            nullable: true
+            column: end_login_type_id
+        beginEditByEmployeeId:
+            type: integer
+            nullable: true
+        endEditByEmployeeId:
+            type: integer
+            nullable: true            
+        statusEndId:
+            type: integer
+            nullable: true
+        statusBeginId:
+            type: integer
+            nullable: true                        
+        sum:
+            type: integer
+            nullable: true
+        beginWebbrowser:
+            type: string
+            length: 255
+            nullable: true
+        beginIp:
+            type: string
+            length: 255
+            nullable: true
+        endWebbrowser:
+            type: string
+            length: 255
+            nullable: true
+        endIp:
+            type: string
+            length: 255
+            nullable: true
+        createAt:
+            type: datetime
+            nullable: true
+        updateAt:
+            type: datetime
+            nullable: true
+        deletedAt:
+            type: datetime
+            nullable: true                        
+    lifecycleCallbacks: {  }
+    manyToOne:
+          beginEmployeepositionId:
+              targetEntity: Employeeposition
+              nullable: true
+              joinColumn:
+                  name: begin_employeeposition_id
+                  referencedColumnName: id
+          endEmployeepositionId:
+              targetEntity: Employeeposition
+              nullable: true
+              joinColumn:
+                  name: end_employeeposition_id
+                  referencedColumnName: id

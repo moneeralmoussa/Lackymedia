@@ -1,0 +1,87 @@
+announcements:
+    resource: "@AnnouncementsBundle/Resources/config/routing.yml"
+    prefix:   /
+
+audit:
+    resource: "@AuditBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+location:
+    resource: "@LocationBundle/Resources/config/routing.yml"
+    prefix:   /
+
+vehicle_log:
+    resource: "@VehicleLogBundle/Resources/config/routing.yml"
+    prefix:   /
+
+absence:
+    resource: "@AbsenceBundle/Resources/config/routing.yml"
+    prefix:   /
+
+# user:
+    # resource: "@UserBundle/Resources/config/routing.yml"
+    # prefix:   /management
+
+app:
+    pattern:  /
+    defaults: { _controller: AppBundle:App:index }
+
+app_download_restgehaltsanspruch:
+    pattern:  /download/restgehaltsanspruch/{date}
+    defaults: { _controller: AppBundle:App:downloadRestgehaltanspruch }
+
+vehicle:
+    resource: "@VehicleBundle/Resources/config/routing.yml"
+    # prefix:   /management
+
+employee:
+    resource: "@EmployeeBundle/Resources/config/routing.yml"
+    # prefix:   /management
+
+expenses:
+    resource: "@ExpenseBundle/Resources/config/routing.yml"
+    # prefix:   /management
+
+message:
+    resource: "@MessageBundle/Resources/config/routing.yml"
+    # prefix:   /management
+
+calendar:
+    resource: "@CalendarBundle/Resources/config/routing.yml"
+    # prefix:   /management
+
+trimble_soap:
+    resource: "@TrimbleSoapBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+ShowAddressDatatables:
+    path:     /TelephoneList/ShowTelephoneList
+    defaults: { _controller: AppBundle:App:ShowTelephoneListDatatables }
+NewaddressDatatables:
+    path:     /TelephoneListe/NewTelephoneListe/
+    defaults: { _controller: AppBundle:App:NewTelephoneListeDatatables }
+EditaddressDatatables:
+    path:     /TelephoneListe/EditTelephoneListe/{id}
+    defaults: { _controller: AppBundle:App:EditTelephoneListeDatatables }
+DeleteAddressDatatables:
+    path:     /TelephoneListe/DeleteTelephoneListe/{id}
+    defaults: { _controller: AppBundle:App:DeleteTelephoneListeDatatables }
+ShowLinkDatatables:
+    path:     /linkList/ShowlinkList
+    defaults: { _controller: AppBundle:App:ShowLinkListDatatables }
+NewLinkDatatables:
+    path:     /linkListe/NewlinkListe/
+    defaults: { _controller: AppBundle:App:NewLinkListeDatatables }
+EditLinkDatatables:
+    path:     /LinkListe/EditLinkListe/{id}
+    defaults: { _controller: AppBundle:App:EditLinkListeDatatables }
+DeleteLinkDatatables:
+    path:     /LinkListe/DeleteLinkListe/{id}
+    defaults: { _controller: AppBundle:App:DeleteLinkListeDatatables }
+# fos_user_group:
+#     resource: "@FOSUserBundle/Resources/config/routing/group.xml"
+#     prefix: /groups

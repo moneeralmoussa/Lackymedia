@@ -1,0 +1,3 @@
+message:
+    resource: "@MessageBundle/Resources/config/routing/message.yml"
+    prefix:   /message

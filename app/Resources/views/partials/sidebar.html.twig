@@ -1,0 +1,269 @@
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+	<!-- sidebar: style can be found in sidebar.less -->
+
+
+
+	<section class="sidebar">
+		<!-- Sidebar user panel -->
+		<div class="user-panel">
+			<div class="pull-left image">
+				<img src="/bundles/app/img/platzhalter.jpg" class="img-circle" alt="User Image">
+			</div>
+			<div class="pull-left info">
+				<p>{{ app.user }}</p>
+				{% if app.user.employee.vehicleLogs.last == false  or  app.user.employee.vehicleLogs.last.vehicleLogEndTime != NULL %}	<i class="fa fa-circle text-success"></i> Online {% else  %} <i class="fa fa-circle text-danger"></i> Busy {% endif %}
+			</div>
+		</div>
+	<div>
+
+
+		<ul class="sidebar-menu" data-widget="tree">
+
+			<li>
+				<a href="{{path('app')}}">
+					<i class="fa fa-dashboard"></i> Dashboard
+				</a>
+			</li>
+
+			
+			<li class="treeview">
+				<a href="#">
+					<i class="fa fa-envelope"></i> <span>Nachrichten</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu">
+					{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+					<li><a href= "{{ path('message_new') }}"> <i class="fa fa-file"></i><span>Nachricht schreiben</span></a></li>
+					{% endif %}
+					<li><a href="{{ path('index_mail') }}?type=1"><i class="fa fa-circle-o text-red"></i> <span>Wichtig</span></a></li>
+					<li><a href="{{ path('index_mail') }}?type=2"><i class="fa fa-circle-o text-yellow"></i> <span>Warnung</span></a></li>
+					<li><a href="{{ path('index_mail') }}?type=3"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>
+				</ul>
+		 </li>
+
+
+				{% if app.user.employee.vehicleLogs.last == false  or  app.user.employee.vehicleLogs.last.vehicleLogEndTime != NULL %}
+
+
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+								<li class="treeview">
+									<a href="#">
+										<i class="fa fa-clock-o"></i> <span>Zeiterfassung</span>
+										<span class="pull-right-container">
+											<i class="fa fa-angle-left pull-right"></i>
+										</span>
+									</a>
+									<ul class="treeview-menu">
+										<li>
+										<a href="{{ path('WorkingtimeEmployeeByMonth', {'id': app.user.employee.id ,'date': 'now'|date('Y-m-d')}) }}">
+											<i class="fa fa-circle-o"></i> Arbeitszeiterfassung
+										</a>
+										</li>
+										<li>
+											<a href="{{ path('indexWorkingdayManagement' , { 'date' : 'now'|date('Y-m-d') }) }}">
+												<i class="fa fa-circle-o"></i> Anwesend Mitarbeiter
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('abwesendIndex') }}">
+												<i class="fa fa-circle-o"></i> Abwesenheitsbericht
+											</a>
+										</li>
+									{% if is_granted('ROLE_ADMIN') %}
+										<li>
+											<a href="{{ path('EmployeesQr') }}">
+												<i class="fa fa-circle-o"></i> Mitarbeiter ansehen
+											</a>
+										</li>
+											<li>
+											<a href="{{ path('EmployeesQrCard') }}">
+												<i class="fa fa-circle-o"></i> Mitarbeiterkarten
+											</a>
+										</li>
+								 {% endif %}
+									</ul>
+								</li>
+							{% else %}
+								<li class="treeview">
+									<a href="#">
+										<i class="fa fa-clock-o"></i> <span>Zeiterfassung</span>
+										<span class="pull-right-container">
+											<i class="fa fa-angle-left pull-right"></i>
+										</span>
+									</a>
+									<ul class="treeview-menu">
+										<li>
+										<a href="{{ path('WorkingtimeEmployeeByMonth', {'id': app.user.employee.id ,'date': 'now'|date('Y-m-d')}) }}">
+											<i class="fa fa-circle-o"></i> Arbeitszeiterfassung
+										</a>
+										</li>
+
+									</ul>
+								</li>
+							{% endif %}
+
+							<li class="treeview">
+								<a href="#">
+									<i class="fa fa-table"></i> <span>Urlaub</span>
+									<span class="pull-right-container">
+										<i class="fa fa-angle-left pull-right"></i>
+									</span>
+								</a>
+								<ul class="treeview-menu">
+									<li>
+										<a href="{{ path('calendar_show', {'id': app.user.employee.id}) }}">
+											<i class="fa fa-circle-o"></i> Mein Kalender
+										</a>
+									</li>
+									{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_HOLIDAY') %}
+									<li>
+										<a href="{{path('calendar_index')}}">
+											<i class="fa fa-circle-o"></i> Firmen Kalender
+										</a>
+									</li>
+									<li>
+										<a href="{{path('calendar_request')}}">
+											<i class="fa fa-circle-o"></i> Urlaubsanträge
+										</a>
+									</li>
+									<li>
+										<a href="{{path('reason_index')}}">
+											<i class="fa fa-circle-o"></i> Abwesenheitstypen
+										</a>
+									</li>
+									<li>
+										<a href="{{path('calendar_vacationlock')}}">
+											<i class="fa fa-circle-o"></i> Urlaubssperre
+										</a>
+									</li>
+									{% endif %}
+								</ul>
+							</li>
+
+
+
+
+
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+								<li class="treeview">
+									<a href="#">
+										<i class="fa fa-users"></i> <span>Personal</span>
+										<span class="pull-right-container">
+											<i class="fa fa-angle-left pull-right"></i>
+										</span>
+									</a>
+									<ul class="treeview-menu">
+										<li>
+											<a href="{{ path('employee_index') }}">
+												<i class="fa fa-circle-o"></i> Mitarbeiter ansehen
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('employee_new') }}">
+												<i class="fa fa-circle-o"></i> Mitarbeiter anlegen
+											</a>
+										</li>
+									{% if is_granted('ROLE_ADMIN') %}
+									<li>
+										<a href="{{ path('SalaryIndents') }}">
+											<i class="fa fa-circle-o"></i> Gehaltserhöhungsanträge
+										</a>
+									</li>
+									{% endif %}
+								 <!--		<li>
+											<a href="{{ path('employee_import_xlsx') }}">
+											  <i class="fa fa-circle-o"></i> Mitarbeiter importieren
+											</a>
+										</li>
+									</ul> -->
+									</ul>
+								</li>
+							{% endif %}
+
+
+
+
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+								<li class="treeview">
+									<a href="#">
+										<i class="fa fa-handshake-o"></i> <span>Verträge</span>
+										<span class="pull-right-container">
+											<i class="fa fa-angle-left pull-right"></i>
+										</span>
+									</a>
+									<ul class="treeview-menu">
+										<li>
+											<a href="{{ path('contract_index') }}">
+												<i class="fa fa-circle-o"></i> Verträge ansehen
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('contract_new') }}">
+												<i class="fa fa-circle-o"></i> Vertrag anlegen
+											</a>
+										</li>
+									</ul>
+								</li>
+							{% endif %}
+
+
+
+							<li class="treeview">
+									<a href="#">
+										<i class="fa fa-fw fa-file-photo-o"></i> <span>Datei-Manager</span>
+										<span class="pull-right-container">
+											<i class="fa fa-angle-left pull-right"></i>
+										</span>
+									</a>
+									<ul class="treeview-menu">
+										<li>
+											<a href="{{ path('myPhotos') }}">
+												<i class="fa fa-circle-o"></i> Meine Dateien
+											</a>
+										</li>
+										<li>
+											<a href="{{ path('IndexUploadFromDriver') }}">
+												<i class="fa fa-circle-o"></i> Datei verschicken
+											</a>
+										</li>
+									</ul>
+								</li>
+
+
+							<li>
+								<a href="{{path('announcement_index')}}">
+									<i class="fa fa-info-circle"></i> Ankündigungen
+								</a>
+							</li>
+							{% if is_granted('ROLE_ADMIN') %}
+								<li>
+									<a href="{{path('audit')}}">
+										<i class="fa fa-eye"></i> Aktivitäten
+									</a>
+								</li>
+							{% endif %}
+
+
+
+
+						{% endif %}
+				</ul>
+		</dev>
+	</section>
+
+</aside>
+
+{% block stylesheet %}
+<style>
+@media only screen and (max-height: 767px) {
+	.main-sidebar {
+		overflow-y: scroll;
+		top: 0;
+		bottom: 0;
+	}
+}
+</style>
+{% endblock %}

@@ -1,0 +1,286 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrtenbuch'|trans ~ ': ' ~  vehicle.name %}
+
+{% block content %}
+<div class="row">
+	<div class="grid-item col-xs-12">
+		<div class="row">
+			{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Fahrtenbuch'|trans ~ ': ' ~  vehicle.name } %}
+				{% block content %}
+					<div id="coordinates"></div>
+					<div>
+						{% if vehicle.pin != 0 %}
+							{% if (not vehicle.vehicleVehicleLogs is empty) and (vehicle.vehicleVehicleLogs.last.vehicleLogEndPosition is empty)%}
+								<div class="alert" role="alert" style="color:#fff;background-color:#00cd21;">
+									<strong>PIN</strong>
+									{% if not vehicle.pin is empty %}
+										{{ vehicle.pin }}
+									{% endif %}
+								</div>
+							{% endif %}
+						{% endif %}
+			
+						<table class="table">
+							<thead>
+							</thead>
+							<tbody>
+								<tr>
+									<th>
+										{% trans %}Typ{% endtrans %}
+									</th>
+									<td>
+										{{ vehicle.vehicletype.name }}
+									</td>
+								</tr>
+								<tr>
+									<th>
+										{% trans %}Fahrer{% endtrans %}
+									</th>
+									<td>
+										{% if not vehicle.vehicleVehicleLogs is empty %}
+											<a href="{{ path('employee_show', {'id':vehicle.vehicleVehicleLogs.last.employee.id}) }}">
+												{{ vehicle.vehicleVehicleLogs.last.employee }}
+											</a>
+										{% endif %}
+									</td>
+								</tr>
+								<tr>
+									<th>
+										{% trans %}Standort{% endtrans %}
+									</th>
+									<td>
+										{% if not vehicle.vehicleVehicleLogPositions is empty %}
+											{{ vehicle.vehicleVehicleLogPositions.last.name }}
+										{% endif %}
+									</td>
+								</tr>
+								<tr>
+									<th>
+										{% trans %}Kilometerstand{% endtrans %}
+									</th>
+									<td>
+										{% if not vehicle.vehicleVehicleLogPositions is empty %}
+											{{ vehicle.vehicleVehicleLogPositions.last.mileage }}
+										{% endif %}
+									</td>
+								</tr>
+								<tr>
+									<th>
+										{% trans %}Status{% endtrans %}
+									</th>
+									<td>
+										{% if not vehicle.vehicleVehicleLogPositions is empty %}
+											{% if (not vehicle.vehicleVehicleLogs is empty) and (vehicle.vehicleVehicleLogs.last.vehicleLogEndPosition is empty) %}
+												{% trans %}Unterwegs{% endtrans %}
+											{% else %}
+												{% trans %}Verf&uuml;gbar{% endtrans %}
+											{% endif %}
+										{% else %}
+											{% trans %}Verf&uuml;gbar{% endtrans %}
+										{% endif %}
+									</td>
+								</tr>
+								<tr>
+									<th>
+										{% trans %}Kommentar{% endtrans %}
+									</th>
+									<td>
+										{% if not vehicle.vehicleVehicleLogs is empty %}
+											{{ vehicle.vehicleVehicleLogs.last.comment }}
+										{% endif %}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					{% if (not vehicle.vehicleVehicleLogs is empty) and (vehicle.vehicleVehicleLogs.last.vehicleLogEndPosition is empty) %}
+						<a class="btn pull-right" href="{{ path('vehicle_log_finalize', {'id':vehicle.vehicleVehicleLogs.last.id}) }}" style="color:#fff;background-color:#cd0001;">
+							{% trans %}Ankommen{% endtrans %}
+						</a>
+					{% else %}
+						<a class="btn pull-right" href="{{ path('vehicle_log_create', {'vehicle_id':vehicle.id}) }}" style="color:#fff;background-color:#cd0001;" role="button">
+							{% trans %}Losfahren{% endtrans %}
+						</a>
+					{% endif %}
+				{% endblock %}
+			{% endembed %}
+		</div>
+	</div>
+</div>
+
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') or is_granted('ROLE_ACCOUNTING') %}
+	<div class="row">
+		<div class="grid-item col-xs-12">
+			<div class="row">
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Fahrtenbuch'|trans ~ ': ' ~  vehicle.name } %}
+					{% block content %}
+						<div class="col-xs-12">
+							<div class="table-responsive">
+								<table class="table table-datatable table-hover table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>
+												{% trans %}Abfahrt{% endtrans %}
+											</th>
+											<th>
+												{% trans %}Startort{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Start-km{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Ankunft{% endtrans %}
+											</th>
+											<th>
+												{% trans %}Zielort{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Ziel-km{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Diff-km{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Fahrer{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Typ{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Sauber{% endtrans %}
+											</th>
+											<th class="hidden-xs">
+												{% trans %}Kommentar{% endtrans %}
+											</th>
+											<th class="action-column">
+												&nbsp;
+											</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										{% for item in vehicle.vehicleVehicleLogs %}
+											<tr data-key="{{ item.id }}">
+												<td>
+													{{ item.vehicleLogBeginTime|date('Y-m-d H:i:s') }}
+												</td>
+												<td
+													{% if item.vehicleLogBeginPosition is empty %}>
+													{% elseif not item.vehicleLogBeginPosition.name is empty %}>
+														{{ item.vehicleLogBeginPosition.name }}
+													{% else %} class="lastposition">
+														{"lat":{{ item.vehicleLogBeginPosition.lat }}, "lng":{{ item.vehicleLogBeginPosition.lon }}}
+													{% endif %}
+												</td>
+												<td class="hidden-xs">
+													{{ item.vehicleLogBeginPosition.mileage }}
+												</td>
+												<td class="hidden-xs">
+													{{ item.vehicleLogEndTime|date('Y-m-d H:i:s') }}
+												</td>
+												<td
+													{% if item.vehicleLogEndPosition is empty %}>
+														</td>
+														<td class="hidden-xs">
+													{% elseif not item.vehicleLogEndPosition.name is empty %}>
+															{{ item.vehicleLogEndPosition.name }}
+														</td>
+														<td class="hidden-xs">
+															{{ item.vehicleLogEndPosition.mileage }}
+													{% else %} class="lastposition">
+															{
+																"lat":{{ item.vehicleLogEndPosition.lat }},
+																"lng":{{ item.vehicleLogEndPosition.lon }}
+															}
+														</td>
+														<td class="hidden-xs">
+															{{ item.vehicleLogEndPosition.mileage }}
+													{% endif %}
+												</td>
+												<td class="hidden-xs">
+													{% if (not item.vehicleLogBeginPosition is empty) and (not item.vehicleLogEndPosition is empty) %}
+														{{ (item.vehicleLogEndPosition.mileage-item.vehicleLogBeginPosition.mileage) }}
+													{% endif %}
+												</td>
+												<td class="hidden-xs">
+													{% if not item.employee is empty %}
+														<a href="{{ path('employee_show', {'id':item.employee.id}) }}">
+															{{ item.employee }}
+														</a>
+													{% endif %}
+												</td>
+												<td class="hidden-xs">
+													{% if not item.reason is empty %}
+														{{ item.reason.name }}
+													{% endif %}
+												</td>
+												<td class="hidden-xs">
+													{% if item.vehicleClean %}
+														{% trans %}Ja{% endtrans %}
+													{% else %}
+														{% trans %}Nein{% endtrans %}
+													{% endif %}
+												</td>
+												<td class="hidden-xs">
+													{{ item.comment }}</td>
+												<td>
+													<a href="{{ path('vehicle_log_show', {'id':item.id}) }}" title="{% trans %}Anzeigen{% endtrans %}" aria-label="{% trans %}Anzeigen{% endtrans %}" data-pjax="0">
+														<i class="fa fa-eye" aria-hidden="true"></i>
+													</a>
+													<a href="{{ path('vehicle_log_edit', {'id':item.id}) }}" title="{% trans %}Bearbeiten{% endtrans %}" aria-label="{% trans %}Bearbeiten{% endtrans %}" data-pjax="0">
+														<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+													</a>
+													{% if item.vehicleLogEndPosition is empty %}
+														<a href="{{ path('vehicle_log_finalize', {'id':item.id}) }}" title="{% trans %}Beenden{% endtrans %}" aria-label="{% trans %}Beenden{% endtrans %}" data-pjax="0">
+															<i class="fa fa-check" aria-hidden="true"></i>
+														</a>
+													{% else %}
+													{% endif %}
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					{% endblock %}
+				{% endembed %}
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDRT-dvbz9V3wxObDtziSUesCxXGMN6E2M"></script>
+<script type="text/javascript">
+	var geocoder = false;
+
+	function geocodeLatLng(latlng,target) {
+		geocoder.geocode({'location': latlng}, function(results, status) {
+			if (status === 'OK') {
+				if (results[1]) {
+					$(target).html(results[1].formatted_address);
+					$(target).show();
+				} else {
+					console.log('No results found');
+				}
+			} else {
+				console.log('Geocoder failed due to: ' + status);
+			}
+		});
+	}
+
+	$( document ).ready(function() {
+		geocoder = new google.maps.Geocoder;
+		$(".lastposition").each(function(){
+			console.log($.parseJSON($(this).html().trim()));
+			$(this).html(geocodeLatLng($.parseJSON($(this).html().trim()), this));
+		});
+
+		$(".table-datatable")
+			.DataTable()
+			.order( [ 2, 'desc' ] )
+			.draw();
+	});
+</script>
+
+{% endblock %}

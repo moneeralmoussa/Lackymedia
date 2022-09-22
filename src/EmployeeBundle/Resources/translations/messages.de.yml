@@ -1,0 +1,129 @@
+Prename: Vorname
+'Country code': Länderkennzeichen
+'Mitarbeiter bearbeiten': 'Mitarbeiter bearbeiten'
+'Benutzer zugeordnet:': 'Benutzer zugeordnet:'
+'Kein Benutzer zugeordnet': 'Kein Benutzer zugeordnet'
+Zurück: Zurück
+Mitarbeiter: Mitarbeiter
+'Mitarbeiter Liste': 'Mitarbeiter Liste'
+Name: Name
+Vorname: Vorname
+Initialien: Initialien
+Mobil: Mobil
+E-Mail: E-Mail
+Benutzername: Benutzername
+'Neuen Benutzer anlegen': 'Neuen Benutzer anlegen'
+'Mitarbeiter hinzufügen': 'Mitarbeiter hinzufügen'
+Erstellen: Erstellen
+Personalnummer: Personalnummer
+Länderkürzel: Länderkürzel
+Anrede: Anrede
+Straße: Straße
+PLZ: PLZ
+Stadt: Stadt
+Telefon: Telefon
+Fax: Fax
+Geburtstag: Geburtstag
+Geschlecht: Geschlecht
+Bearbeiten: Bearbeiten
+Löschen: Löschen
+'Geofence Wohnort': 'Geofence Wohnort'
+Geofence: Geofence
+speichern: speichern
+'Trimble id': Personalnummer
+Salutation: Anrede
+Street: Straße
+'Zip code': PLZ
+Town: Ort
+Phone: Telefon
+Mobile: Mobil
+Birthday: Geburtstag
+Sex: Geschlecht
+Initial: Initialien
+Department: Abteilung
+Contract: Vertrag
+'Is user': Benutzer zugeordnet
+Username: Benutzer
+Email: 'E-Mail'
+Password: Passwort
+Roles: Rollen
+redakteur: Verwaltung
+admin: 'Admin/GeFü'
+'personal': 'Personal'
+'disposition': 'Disposition'
+'invoice': 'Abrechnung'
+'accounting': 'Buchhaltung'
+'garage': 'Werkstatt'
+'bkf': 'Fahrer'
+'fuel_modul': 'Kraftstoffmodul'
+user: 'Benutzer'
+'Sleeps in company means sleeps at home': 'Wenn der LKW auf dem Platz steht übernachtet der Fahrer zu Hause'
+Salary: Gehalt
+'Arbeitszeit bearbeiten': 'Arbeitszeit bearbeiten'
+'Day of week': Wochentag
+Montag: Montag
+Dienstag: Dienstag
+Mittwoch: Mittwoch
+Donnerstag: Donnerstag
+Freitag: Freitag
+Samstag: Samstag
+Sonntag: Sonntag
+'Work begin': Arbeitsbeginn
+'Work end': Arbeitsende
+'Break begin': Pausenbeginn
+'Break end': Pausenende
+'Overtime premium': 'Überstundensatz (€)'
+'Overtime premium passenger': 'Überstundensatz Beifahrer (€)'
+'Overtime premium is brutto': 'Überstundensatz ist brutto'
+'Special provision': Sonderregelungen
+School: Schule
+'School begin': Schulbeginn
+'School end': Schulende
+Wochentag: Wochentag
+Pausenbeginn: Pausenbeginn
+Pausenende: Pausenende
+Überstundensatz: Überstundensatz
+'Überstundensatz Beifahrer': 'Überstundensatz Beifahrer'
+'Überstundensatz ist brutto': 'Überstundensatz ist brutto'
+Sonderregelungen: Sonderregelungen
+Schule: Schule
+Schulbeginn: Schulbeginn
+Schulende: Schulende
+'Vertrag bearbeiten': 'Vertrag bearbeiten'
+Holidays: Urlaubstage
+'Weekly hours of work': Wochenarbeitszeit
+Standby: 'Bereitschaft 24/7'
+'Additional expenses8h': 'Spesen st. 8h'
+'Additional expenses24h': 'Spesen st. 24h'
+'Training overtime premium': Weiterbilungsspesen
+Parent: 'Dieser Vertrag wird abgeleitet von:'
+Verträge: Verträge
+Bezeichnung: Bezeichnung
+Urlaubstage: Urlaubstage
+Wochenarbeitszeit: Wochenarbeitszeit
+'Bereitschaft 24/7': 'Bereitschaft 24/7'
+'Spesen st. 8h': 'Spesen st. 8h'
+'Spesen st. 24h': 'Spesen st. 24h'
+Weiterbilungsspesen: Weiterbilungsspesen
+'Neuer Vertrag': 'Neuer Vertrag'
+Vertrag: Vertrag
+'Neue Arbeitszeit': 'Neue Arbeitszeit'
+'Vacational benefit': Urlaubsgeld
+Urlaubsgeld: Urlaubsgeld
+'Mitarbeiter importieren': 'Mitarbeiter importieren'
+'Import starten': 'Import starten'
+'Datei wählen': 'Datei wählen'
+'Mitarbeiter eingefügt': 'Mitarbeiter eingefügt'
+'Remaining days of vacation': 'Resturlaub 2017'
+holiday: Urlaub
+'Usual home travel hours': 'Regulärer Arbeitsweg (Stunden)'
+Stammdaten: Stammdaten
+Stunden: Stunden
+'Abwesenheit Wohnort': 'Abwesenheit Wohnort'
+Überstunden: Überstunden
+Kalender: Kalender
+'Abwesenheit vom Wohnort': 'Abwesenheit vom Wohnort'
+Fromdate: Ab
+Todate: Bis
+Commentsalary: Kommentar
+create_at: Erstellungsdatum

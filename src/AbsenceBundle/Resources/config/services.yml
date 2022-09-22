@@ -1,0 +1,6 @@
+services:
+  absence.form.absenceType:
+    class: AbsenceBundle\Form\AbsenceType
+    arguments: ["@security.authorization_checker"]
+    tags:
+      - { name: form.type }

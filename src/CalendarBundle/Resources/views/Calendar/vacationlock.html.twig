@@ -1,0 +1,145 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Urlaubsperre' %}
+
+{% block content %}
+	<div class="row">
+		<div class="grid-item col-xs-12">
+			<div class="row">
+				{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Urlaubsperre' } %}
+						{% block content %}
+								<div id="calendar"></div>
+						{% endblock %}
+						{% block footer %}
+						<a href="#!" id="saveDates" class="btn btn-info pull-right">{% trans %}Tage sperren/entsperren{% endtrans %}</a>
+						{% endblock %}
+				{% endembed %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/assets/bootstrap-year-calendar/css/bootstrap-year-calendar.min.css" rel="stylesheet">
+<link href="/assets/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+<style media="screen">
+		.calendar {
+			overflow: visible;
+		}
+		.panel-default{
+			border:none;
+			box-shadow: none;
+		}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script src="/assets/moment/min/moment-with-locales.min.js"></script>
+<script src="/assets/bootstrap-year-calendar/js/bootstrap-year-calendar.min.js"></script>
+<script src="/assets/bootstrap-year-calendar/js/languages/bootstrap-year-calendar.de.js"></script>
+<script src="/assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script>
+$(document).ready(function() {
+
+	var enumerateDaysBetweenDates = function(startDate, endDate) {
+    var dates = [];
+
+    var currDate = moment(startDate).startOf('day');
+    var lastDate = moment(endDate).startOf('day');
+
+		dates.push(currDate.clone().toDate());
+    while(currDate.add(1, 'days').diff(lastDate) < 0) {
+        console.log(currDate.toDate());
+        dates.push(currDate.clone().toDate());
+    }
+		dates.push(lastDate.clone().toDate());
+    return dates;
+	};
+
+
+		$('#saveDates').on('click', function(){
+			disableddays = calendar.getDataSource();
+			var arrSorted = {};
+			var year;
+			// console.log(disableddays);
+			_.each(disableddays, function(o) {
+				year = new moment(o.startDate).year();
+				if(!_.isNil(_.get(arrSorted,year))){
+					arrSorted[year].push(new moment(o.startDate).toDate());
+				} else {
+					arrSorted[year] = [new moment(o.startDate).toDate()];
+				}
+			});
+
+			$.ajax({
+				method: "POST",
+				url: "{{ path('calendar_ajaxpostvacationlock') }}",
+				contentType: "application/json; charset=utf-8",
+        dataType: "json",
+				data: JSON.stringify(arrSorted),
+				success: function(){
+				}
+			});
+
+			swal({
+				type: 'success',
+				title: 'Gespeichert!',
+				showConfirmButton: false,
+				timer: 1500
+			});
+		});
+
+		$.ajax({
+				url: "{{ path('calendar_ajaxgetvacationlock')}}",
+				success: function(data) {
+					var datasource = [];
+					_.each(data, function(value,key){
+						_.each(value, function(v){
+							datasource.push({
+								startDate: new Date(v),
+								endDate: new Date(v),
+								color: '#ccc'
+							});
+						});
+					});
+					$('#calendar').data('calendar').setDataSource(datasource);
+				}
+		}).done(function() {
+			swal({
+				type: 'success',
+				title: 'Daten geladen!',
+				showConfirmButton: false,
+				timer: 1500
+			});
+		});
+
+	var calendar = $('#calendar').calendar({
+		displayWeekNumber: true,
+		language: 'de',
+		enableRangeSelection: true,
+		selectRange: function(e) {
+			var dates = enumerateDaysBetweenDates(e.startDate,e.endDate);
+			var datasource = calendar.getDataSource();
+			var uniqDates = _.uniqWith(dates, _.isEqual);
+			_.each(uniqDates, function(date){
+				data = calendar.getEvents(new Date(date));
+				if(!_.isEmpty(data)){
+					_.each(data, function(e){
+						datasource = _.without(datasource,e);
+					});
+				} else {
+					datasource.push({
+						startDate: new Date(date),
+						endDate: new Date(date),
+						color: '#ccc'
+					});
+				}
+			});
+			calendar.setDataSource(datasource);
+		},
+		yearChanged: function(e) {
+			// e.preventRendering = true;
+		},
+	});
+});
+</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Profil bearbeiten' %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Profil bearbeiten' } %}
+          {% block content %}
+          {{ form_start(form, { 'action': path('fos_user_profile_edit'), 'attr': { 'class': 'fos_user_profile_edit' } }) }}
+            {{ form_widget(form) }}
+                <input type="submit" value="Speichern" class="btn btn-info pull-right"/>
+          {{ form_end(form) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

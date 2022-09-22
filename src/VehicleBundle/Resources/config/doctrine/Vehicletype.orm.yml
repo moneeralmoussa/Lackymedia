@@ -1,0 +1,31 @@
+VehicleBundle\Entity\Vehicletype:
+    type: entity
+    table: null
+    repositoryClass: VehicleBundle\Repository\VehicletypeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        komalogId:
+            type: integer
+            nullable: true
+            unique: true
+            column: komalog_id
+        name:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }
+    oneToMany:
+        vehicles:
+            targetEntity: Vehicle
+            mappedBy: vehicletype
+    manyToOne:
+        vehicletypetype:
+            targetEntity: Vehicletypetype
+            inversedBy: vehicleTypes
+            joinColumn:
+                name: vehicletype_id
+                referencedColumnName: id

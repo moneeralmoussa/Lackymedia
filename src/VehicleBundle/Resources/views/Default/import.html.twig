@@ -1,0 +1,87 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Fahrzeuge importieren' %}
+
+{% block content %}
+<div class="row">
+	<div class="grid-item col-xs-12">
+		<div class="row">
+		{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Importieren' } %}
+			{% block content %}
+				{% if step == 1 %}
+					<form action="{{ path('vehicle_import_xlsx') }}" method="POST" enctype="multipart/form-data">
+						<input type="file" name="excelfile" accept=".xlsx,.xls,.csv" id="file-input" class="file" data-preview-file-type="text">
+					</form>
+				{% else %}
+					<div class="alert alert-success alert-dismissible">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<h4><i class="icon fa fa-check"></i> {% trans %}Fahrzeuge eingefügt{% endtrans %}</h4>
+						{{ inserted }} {% trans %}Fahrzeuge eingefügt{% endtrans %}
+
+						{% for vehicle in inserted_vehicles %}
+						<p>{{ vehicle.id }} {{ vehicle.name }} {{ vehicle.komalogId }} {{ vehicle.pin }}</p>
+						{% endfor %}
+					</div>
+
+					<div class="alert alert-danger alert-dismissible">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<h4><i class="icon fa fa-check"></i> {% trans %}Fahrzeuge abgelegt{% endtrans %}</h4>
+						{{ deleted }} {% trans %}Fahrzeuge abgelegt{% endtrans %}
+
+						{% for vehicle in deleted_vehicles %}
+						<p>{{ vehicle.id }} {{ vehicle.name }} {{ vehicle.komalogId }} {{ vehicle.pin }}</p>
+						{% endfor %}
+					</div>
+					<a href="{{ path('vehicle_homepage') }}" class="btn btn-info pull-right">{% trans %}Zurück zur Übersicht{% endtrans %}</a>
+				{% endif %}
+			{% endblock %}
+		{% endembed %}
+		</div>
+	</div>
+</div>
+{#
+<div class="col-xs-12">
+    {% if step == 1 %}
+        <h2>{% trans %}Datei wählen{% endtrans %}</h2>
+        <form action="{{ path('vehicle_import_xlsx') }}" method="POST" enctype="multipart/form-data">
+            <p>
+                <input type="file" name="excelfile" accept=".xlsx,.xls,.csv">
+            </p>
+            <ul class="list-inline">
+                <li>
+                    <a href="{{ path('vehicle_homepage') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+                </li>
+                <li>
+                    <input type="submit" value="{% trans %}Import starten{% endtrans %}" class="btn btn-primary">
+                </li>
+            </ul>
+        </form>
+    {% else %}
+        <h2>{% trans %}Fahrzeuge eingefügt{% endtrans %}</h2>
+        <p>
+            {{ inserted }} {% trans %}Fahrzeuge eingefügt{% endtrans %}
+        </p>
+        <ul class="list-inline">
+            <li>
+                <a href="{{ path('vehicle_homepage') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+            </li>
+        </ul>
+    {% endif %}
+</div>
+#}
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/assets/bootstrap-fileinput/css/fileinput.min.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/assets/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/assets/bootstrap-fileinput/js/locales/de.js"></script>
+    <script type="text/javascript">
+		$( document ).ready(function() {
+			$("#input-id").fileinput({
+				language: "de",
+			});
+		});
+    </script>
+{% endblock %}

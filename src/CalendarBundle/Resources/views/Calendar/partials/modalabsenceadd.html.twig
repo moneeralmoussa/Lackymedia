@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'class': 'absence-add', 'required' : 'required'}}) }}
+    {{ form_widget(form) }}
+      <small id="edited" class="pull-right"></small></br>
+      <a href="{{ path('calendar_index') }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+      <input type="submit" value="Speichern" class="btn btn-primary"/>
+      <a href="#!" class="btn btn-danger delete hidden">{% trans %}Löschen{% endtrans %}</a>
+    {{ form_end(form) }}
+<span id="csrf_token" data-token="{{ csrf_token('form') }}"></span>

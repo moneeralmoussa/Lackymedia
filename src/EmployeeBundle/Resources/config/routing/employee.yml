@@ -1,0 +1,239 @@
+employee_index:
+    path:                                                /
+    defaults: { _controller:                             "EmployeeBundle:Employee:index" }
+    methods:                                             GET
+
+employee_mail:
+    path:                                                /mail
+    defaults: { _controller:                             "EmployeeBundle:Employee:mail" }
+    methods:                                             GET
+
+employee_show:
+    path:                                                /{id}/show
+    defaults: { _controller:                             "EmployeeBundle:Employee:show" }
+    methods:                                             GET
+
+employee_new:
+    path:                                                /new
+    defaults: { _controller:                             "EmployeeBundle:Employee:new" }
+    methods:                                             [GET, POST]
+
+employee_edit:
+    path:                                                /{id}/edit
+    defaults: { _controller:                             "EmployeeBundle:Employee:edit" }
+    methods:                                             [GET, POST]
+
+employee_delete:
+    path:                                                /{id}/delete
+    defaults: { _controller:                             "EmployeeBundle:Employee:delete" }
+    methods:                                             DELETE
+
+employee_home_update:
+    path:                                                /home/update
+    defaults: { _controller:                             "EmployeeBundle:Employee:homeUpdate" }
+    methods:                                             [POST]
+
+employee_daysofvacation_update:
+    path:                                                /daysofvacation/update
+    defaults: { _controller:                             "EmployeeBundle:Employee:updateDaysOfVacation" }
+    methods:                                             [GET,POST]
+
+employee_salaryRemainingDaysOfVacation:
+    path:                                                /salaryRemainingDaysOfVacation/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employee:jsonSalaryRemainingDaysOfVacation" }
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+
+employee_salaryRemainingDaysOfVacation_short:
+    path:                                                /salaryRemainingDaysOfVacation/
+    defaults: { _controller:                             "EmployeeBundle:Employee:jsonSalaryRemainingDaysOfVacation" }
+
+employee_salaryRemainingDaysOfVacationDepartment:
+    path:                                                /salaryRemainingDaysOfVacationDepartment/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employee:jsonSalaryRemainingDaysOfVacationDepartment" }
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+
+employee_salaryRemainingDaysOfVacationDepartment_short:
+    path:                                                /salaryRemainingDaysOfVacationDepartment
+    defaults: { _controller:                             "EmployeeBundle:Employee:jsonSalaryRemainingDaysOfVacationDepartment" }
+
+employee_json:
+    path:                                                /json
+    defaults: { _controller:                             "EmployeeBundle:Employee:jsonEmployee" }
+    methods:                                             GET
+
+employee_remainingmtl:
+    path:                                                /remainingmtl
+    defaults: { _controller:                             "EmployeeBundle:Employee:remainingmtl" }
+    methods:                                             [GET,POST]
+
+employee_import_xlsx:
+    path:                                                /import
+    defaults: { _controller:                             "EmployeeBundle:Employee:importEmpoyeesXlsx" }
+    methods:                                             [GET, POST]
+mycoderandom:
+    path:                                                /mycoderandom
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:mycoderandom" }
+    methods:                                             GET
+servercodesessionbegin:
+    path:                                                /servercodesessionbegin/{id}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:servercodesessionbegin" }
+    methods:                                             GET
+servercodesessionend:
+    path:                                                /servercodesessionend/{id}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:servercodesessionend" }
+    methods:                                             GET
+createBreaktime:
+    path:                                                /createBreaktime
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:createBreaktime" }
+    methods:                                             GET
+createWorkday:
+    path:                                                /createWorkday
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:create" }
+    methods:                                             [GET, POST]
+indexWorkingdayManagement:
+    path:                                                /indexWorkingdayManagement/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:index" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+abwesendIndex:
+    path:                                                /AbsenceReport
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:absenceReport" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+EditBeginStatus:
+    path:                                                /EditBeginStatus/{id}/{status}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:editBeginStatus" }
+    methods:                                             [GET, POST]
+EditEndStatus:
+    path:                                                /EditEndStatus/{id}/{status}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:editEndStatus" }
+    methods:                                             [GET, POST]
+WorkingtimeEmployeeByMonth:
+    path:                                                /WorkingtimeEmployeeByMonth/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:employeeByMonth" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+WorkingtimeEmployeeByMonthPrint:
+    path:                                                /WorkingtimeEmployeeByMonthPrint/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:employeeByMonthPrint" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+managers:
+    path:                                                /managers
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:managers" }
+    methods:                                             [GET, POST]
+EmployeesQr:
+    path:                                                /EmployeesQr
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:EmployeesQr" }
+    methods:                                             [GET, POST]
+EmployeesQrCard:
+    path:                                                /EmployeesQrCard
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:EmployeesQrCard" }
+    methods:                                             [GET, POST]
+EditEmployeeWorkingDay:
+    path:                                                /EditEmployeeWorkingDay/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:edit" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+employeeByMonthJson:
+    path:                                                /employeeByMonthJson/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:employeeByMonthJson" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+editEmployeeWorkingDayTable:
+    path:                                                /editemployeeworkday/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:editDayTable" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+deleteWorkingdayByIdJson:
+    path:                                                /deleteWorkingdayByIdJson/{id}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:deleteWorkingdayByIdJson" }
+    methods:                                             [GET, POST]
+moveWorkingdayByIdJson:
+    path:                                                /moveWorkingdayByIdJson/{id}/{date}/{status}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:moveWorkingdayByIdJson" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
+        status:                                          '\d'
+deleteEndTimeWorkingday:
+    path:                                                /deleteEndTimeWorkingday/{id}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:deleteEndTimeWorkingdayByIdJson" }
+    methods:                                             [GET, POST]
+deleteBreakByIdJson:
+    path:                                                /deleteBreakByIdJson/{id}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:deleteBreakByIdJson" }
+    methods:                                             [GET, POST]
+EditBeginBreakByIdJson:
+    path:                                                /EditBeginBreakByIdJson/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:EditBeginBreakByIdJson" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
+EditEndBreakByIdJson:
+    path:                                                /EditEndBreakByIdJson/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:EditEndBreakByIdJson" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
+EditBeginWorkingdayJson:
+    path:                                                /EditBeginWorkingdayJson/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:EditBeginWorkingdayJson" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
+EditEndWorkingdayJson:
+    path:                                                /EditEndWorkingdayJson/{id}/{date}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:EditEndWorkingdayJson" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
+editstatusAjax:
+    path:                                                /editstatusAjax/{id}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:editstatusAjax" }
+    methods:                                             [GET, POST]
+CreateWorkingday:
+    path:                                                /CreateDay/{id}/{date}/{Btime}/{Etime}/{comment}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:createWorkingdayAjax" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+        Btime:                                           '\d{2}:\d{2}'
+        Etime:                                           '\d{2}:\d{2}'
+CreateWorkingday2:
+    path:                                                /CreateDay2/{id}/{date}/{time}/{comment}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:createWorkingday2Ajax" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+        time:                                           '\d{2}:\d{2}'
+CreateBreak:
+    path:                                                /Createbreak/{id}/{date}/{Btime}/{Etime}
+    defaults: { _controller:                             "EmployeeBundle:Employeeworkday:createbreak" }
+    methods:                                             [GET, POST]
+    requirements:
+        date:                                            '\d{4}-\d{2}-\d{2}'
+        Btime:                                           '\d{2}:\d{2}'
+        Etime:                                           '\d{2}:\d{2}'
+ajaxEdit:
+    path:                                                /{id}/ajaxEdit
+    defaults: { _controller:                             "EmployeeBundle:Employee:ajaxEdit" }
+    methods:                                             [GET, POST]
+save_email:
+    path:                                                /save_email
+    defaults: { _controller:                             "EmployeeBundle:Employee:saveEmail" }
+    methods:                                             [GET, POST]
+delEmployee:
+    path:                                                /delEmployee
+    defaults: { _controller:                             "EmployeeBundle:Employee:delEmployee" }
+    methods:                                             [GET, POST]
+    

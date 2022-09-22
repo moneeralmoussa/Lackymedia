@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Die 3 Meta-Tags oben *müssen* zuerst im head stehen; jeglicher sonstiger head-Inhalt muss *nach* diesen Tags kommen -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="G&L Manager">
+    <meta name="apple-mobile-web-app-title" content="G&L Manager">
+    <meta name="theme-color" content="#cd0001">
+    <meta name="msapplication-navbutton-color" content="#cd0001">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-starturl" content="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" sizes="72x72" href="/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icon-72x72.png">
+    <link rel="icon" sizes="96x96" href="/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="/icon-96x96.png">
+    <link rel="icon" sizes="128x128" href="/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="/icon-128x128.png">
+    <link rel="icon" sizes="144x144" href="/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icon-144x144.png">
+    <link rel="icon" sizes="152x152" href="/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152x152.png">
+    <link rel="icon" sizes="192x192" href="/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.png">
+    <link rel="icon" sizes="384x384" href="/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="/icon-384x384.png">
+    <link rel="icon" sizes="512x512" href="/icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512x512.png">
+
+    <title>{% trans %}Lackymedia Management {% endtrans %}</title>
+
+    <!-- Bootstrap-CSS -->
+    <link href="/bundles/app/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/bundles/app/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/bundles/app/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <!-- Font-awesome-CSS -->
+    <link href="/bundles/app/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/bundles/app/css/main.css" rel="stylesheet">
+    <!-- Besondere Stile für diese Vorlage -->
+    <!-- <link href="justified-nav.css" rel="stylesheet"> -->
+
+    {% block stylesheet %}
+    {% endblock %}
+
+    <script src="/bundles/app/js/jquery.min.js"></script>
+    <script src="/bundles/app/js/bootstrap.min.js"></script>
+    <script src="/bundles/app/js/jquery.dataTables.min.js"></script>
+    <script src="/bundles/app/js/dataTables.bootstrap.min.js"></script>
+    <script src="/bundles/app/js/dataTables.fixedHeader.min.js"></script>
+    <script src="/bundles/app/js/main.js"></script>
+    <script src="/assets/lodash/dist/lodash.min.js"></script>
+    <!-- Unterstützung für Media Queries und HTML5-Elemente in IE8 über HTML5 shim und Respond.js -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    {% block javascripts %}
+    {% endblock %}
+
+    <link rel="manifest" href="../../../../manifest.json">
+    <script>
+      /* if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('../../sw.js').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      } */
+      (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in
+      d&&(chref=d.href).replace(e.href,"").indexOf("#")&&(!/^[a-z\+\.\-]+:/i.test(chref)||chref.indexOf(e.protocol+"//"+e.host)===0)&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
+      if(window.navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations()
+        .then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+    </script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+
+    {% block navi %}
+      <!-- Das gleichmäßig ausgerichtete Navigations-Menü ist für eine Zeile pro
+           Listeneintrag gedacht. Mehrere Zeilem erfordern Code, der in Bootstrap
+           nicht enthalten ist. -->
+      <div class="masthead">
+        <a href="{{ path('app') }}"><img src="/bundles/app/images/logo.png" alt="Lackymedia Transport &amp; Logistik" id="logo" class="img-responsive"/></a>
+        <!-- <h3 class="text-muted">{% trans %}Giesker Laakmann Speditions Management {% endtrans %}</h3> -->
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+        <div class="pull-right noprint">
+            {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+            <a href="{{ path('fos_user_profile_show')}}">Profile</a> |
+            <a href="{{ path('fos_user_security_logout') }}">
+                {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+            </a>
+        </div>
+        {% endif %}
+        <nav class="noprint">
+          <ul class="nav nav-justified">
+          {% block navi_content %}
+          {% endblock %}
+          </ul>
+        </nav>
+      </div>
+    {% endblock %}
+
+{% block jumbotron %}
+  {% include 'partials/jumbotron.html.twig' with { title: 'Giesker Laakmann'|trans } %}
+{% endblock %}
+      <!-- Beispiel-Zeile von Spalten -->
+      <div class="row">
+{% block content %}
+<div class="col-xs-12 col-md-4">
+  <a href="{{ path('vehicle_log_homepage') }}">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/vehicle_log.png" alt="{% trans %}Fahrtenbuch{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Fahrtenbuch{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich das Fahrtenbuch an.{% endtrans %}</p>
+      <a href="{{ path('vehicle_log_homepage') }}" class="btn btn-primary">{% trans %}Fahrtenbuch öffnen{% endtrans %}</a>
+    </div>
+  </article>
+  </a>
+</div>
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+<div class="col-xs-12 col-md-4">
+<a href="{{ path('employee_index') }}">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/employee.png" alt="{% trans %}Personal{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Personal{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich das Personal an.{% endtrans %}</p>
+      <a href="{{ path('employee_index') }}" class="btn btn-primary">{% trans %}Personal ansehen{% endtrans %}</a>
+    </div>
+  </article>
+  </a>
+</div>
+{% endif %}
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') %}
+<div class="col-xs-12 col-md-4">
+<a href="{{ path('vehicle_homepage') }}">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/vehicle.png" alt="{% trans %}Fahrzeuge{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Fahrzeuge{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich die Fahrzeuge an.{% endtrans %}</p>
+      <a href="{{ path('vehicle_homepage') }}" class="btn btn-primary">{% trans %}Fahrzeuge ansehen{% endtrans %}</a>
+    </div>
+  </article>
+  </a>
+</div>
+{% endif %}
+<div class="col-xs-12 col-md-4">
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+      <a href="{{ path('expenses_index') }}">
+{% else %}
+      <a href="{{ path('expenses_employee_view', {'employee_id': user}) }}">
+{% endif %}
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/expenses.png" alt="{% trans %}Spesen{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Spesen{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich die Spesen an.{% endtrans %}</p>
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+      <a href="{{ path('expenses_index') }}" class="btn btn-primary">{% trans %}Spesen ansehen{% endtrans %}</a>
+{% else %}
+      <a href="{{ path('expenses_employee_view', {'employee_id': user}) }}" class="btn btn-primary">{% trans %}Spesen ansehen{% endtrans %}</a>
+{% endif %}
+    </div>
+  </article>
+  </a>
+</div>
+
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') %}
+<div class="col-xs-12 col-md-4">
+<a href="{{ path('contract_index') }}">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/contract.jpg" alt="{% trans %}Verträge{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Verträge{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich die Vertragsdaten an.{% endtrans %}</p>
+      <a href="{{ path('contract_index') }}" class="btn btn-primary">{% trans %}Verträge ansehen{% endtrans %}</a>
+    </div>
+  </article>
+  </a>
+</div>
+{% endif %}
+
+<div class="col-xs-12 col-md-4">
+<a href="{{ path('calendar_show', {'id': user}) }}">
+  <article class="card animated fadeInLeft">
+    <img class="card-img-top img-responsive" src="/bundles/app/images/absence.png" alt="{% trans %}Urlaub{% endtrans %}" />
+    <div class="card-block">
+      <h4 class="card-title">{% trans %}Urlaub{% endtrans %}</h4>
+      <h6 class="text-muted">{% trans %}Information{% endtrans %}</h6>
+      <p class="card-text">{% trans %}Sehen sie sich die Urlaubsplanung an.{% endtrans %}</p>
+      <a href="{{ path('calendar_show', {'id': user}) }}" class="btn btn-primary">{% trans %}Urlaubsplanung ansehen{% endtrans %}</a>
+    </div>
+  </article>
+  </a>
+</div>
+{% endblock %}
+
+      </div>
+
+    </div> <!-- /container -->
+
+    {% block modal %}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Information</h4>
+          </div>
+          <div class="modal-body">
+            <div id="modal-content"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    {% endblock %}
+    <!-- IE10-Anzeigefenster-Hack für Fehler auf Surface und Desktop-Windows-8 -->
+    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+  </body>
+</html>

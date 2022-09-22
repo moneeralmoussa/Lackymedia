@@ -1,0 +1,32 @@
+ExpenseBundle\Entity\Provenexpense:
+    type: entity
+    table: null
+    repositoryClass: ExpenseBundle\Repository\ProvenexpenseRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        startdate:
+            type: date
+        enddate:
+            type: date
+        prooveTime:
+            type: datetime
+        approoveTime:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+        approvedBy:
+            targetEntity: EmployeeBundle\Entity\Employee
+            joinColumn:
+                name: approvedbyemployee_id
+                referencedColumnName: id

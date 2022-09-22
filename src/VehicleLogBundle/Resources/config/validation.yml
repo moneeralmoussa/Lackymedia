@@ -1,0 +1,30 @@
+VehicleLogBundle\Entity\VehicleLogPosition:
+    properties:
+        #lat:
+        #    - NotBlank: ~
+        #lon:
+        #    - NotBlank: ~
+        mileage:
+            - NotBlank: ~
+        vehicle:
+            - NotBlank: ~
+        name:
+            - NotBlank: ~
+
+VehicleLogBundle\Entity\VehicleLog:
+    constraints:
+        - Expression:
+            expression: "this.getVehicleLogEndTime() in ['',null] or this.getVehicleLogBeginTime() <= this.getVehicleLogEndTime()"
+            message: "The from date must be before the end date."
+    properties:
+        vehicleLogBeginTime:
+            - DateTime: ~
+        #vehicleLogBeginPosition:
+        #    - NotBlank: ~
+        #employee:
+        #    - NotBlank: ~
+        #vehicle:
+        #    - NotBlank: ~
+        reason:
+            - NotBlank: ~
+

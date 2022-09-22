@@ -1,0 +1,28 @@
+{
+"taskNames" : [
+{% for key,driver in drivers %}
+"{% if  driver.driver is empty %}{{ key }}{% else %}{{ driver.driver.name }}{% endif %}"{% if not (loop.last and activities is empty) %},{% endif %}
+{% endfor %}
+{% for activity in activities %}
+"{{ activity.activity.name }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+],
+"tasks" : [
+{% set i = 0 %}
+{% for key,driver in drivers %}
+{"link":"{{ path('employee_show', {'id':driver.driver.id}) }}","startDate":"{{ driver.starttime|date('Y-m-d H:i:s') }}","startPoint":{"lat":{{ driver.startlat }},"lng":{{ driver.startlon }}},"endDate":"{{ driver.endtime|date('Y-m-d H:i:s') }}","endPoint":{"lat":{{ driver.endlat }},"lng":{{ driver.endlon }}},"taskName":"{% if  driver.driver is empty %}{{ key }}{% else %}{{ driver.driver.name }}{% endif %}","status":"{{ driver.status }}","id":"activity_{{ i }}","type":"driver","itemId":"{% if  driver.driver is empty %}{{ key }}"{% else %}{{ driver.driver.id }}","home":{"address":"{{driver.driver.street}}, {{driver.driver.zipCode}} {{driver.driver.town}}", "latLng":{"lat": {% if  driver.driver.lat is empty %}null{% else %}{{driver.driver.lat}}{% endif %}, "lng": {% if  driver.driver.lon is empty %}null{% else %}{{driver.driver.lon}}{% endif %}},"radius":{% if  driver.driver.geofenceMeters is empty %}null{% else %}{{driver.driver.geofenceMeters}}{% endif %}}{% endif %}}{% if not (loop.last and activities is empty) %},{% endif %}
+{% set i = i+1 %}
+{% endfor %}
+{% for activity in activities %}
+{% for lid_id, lid in activity.lids %}
+{"link":false,"startDate":"{{ lid.starttime|date('Y-m-d H:i:s') }}","startPoint":{"lat":{{ lid.startlat }},"lng":{{ lid.startlon }}},"endDate":"{{ lid.endtime|date('Y-m-d H:i:s') }}","endPoint":{"lat":{{ lid.endlat }},"lng":{{ lid.endlon }}},"taskName":"{{ activity.activity.name }}","status":"SUCCEEDED","id":"activity_{{ i }}","type":"activity","itemId":"{{ lid_id }}"}{% if not (loop.last and loop.parent.loop.last) %},{% endif %}
+{% set i = i+1 %}
+{% endfor %}
+{% endfor %}
+],
+"flightPlanCoordinates" : [
+{% for position in positions %}
+{"lat":{{ position.lat }},"lng":{{ position.lon }}}{% if not loop.last %},{% endif %}
+{% endfor %}
+]
+}

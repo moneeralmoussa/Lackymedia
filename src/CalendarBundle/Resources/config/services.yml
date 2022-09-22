@@ -1,0 +1,6 @@
+# services:
+#   calendar.form.CalendarModalAbsenceAddType:
+#     class: CalendarBundle\Form\CalendarModalAbsenceAddType
+#     arguments: ["@security.authorization_checker"]
+#     tags:
+#       - { name: form.type }

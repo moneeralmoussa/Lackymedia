@@ -1,0 +1,33 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Linkliste' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Linkliste' } %}
+            {% block content %}
+              {{ form_start(form) }}
+                  {{ form_widget(form) }}
+                  <input type="submit" value="{% trans %}Adresse anlegen{% endtrans %}" class="btn btn-info pull-right" style="background-color:red"/>
+				   
+              {{ form_end(form) }}
+			  <a href="/linkList/ShowlinkList"><input type="button" href="/" value="{% trans %}Zurück{% endtrans %}" class="btn btn-info pull-right" style="background-color:green"/></a>
+            {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+          $('.datetimepicker').datetimepicker({
+            locale: 'de'
+          });
+        });
+    </script>
+{% endblock %}

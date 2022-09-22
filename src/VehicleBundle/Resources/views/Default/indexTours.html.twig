@@ -1,0 +1,294 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Tourauswertung' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        var bgcolors = {};
+        function updateSums() {
+            var zeilen = 0;
+            var anzahlauftraege = 0;
+            
+            var filterbase = $('.tourfilter:checked').length>0?'.tourfilter:checked':'.tourfilter';
+
+            $(filterbase).parent().parent().find('.item_anzahlauftraege').each(function(){
+                anzahlauftraege += parseFloat($(this).html());
+                zeilen++;
+            });
+            $('#sum_anzahlauftraege').html(anzahlauftraege + '<br>&Oslash; ' + Math.round(anzahlauftraege/zeilen*10)/10);
+
+
+            var leerkm = 0;
+            $(filterbase).parent().parent().find('.item_leerkm').each(function(){
+                leerkm += parseFloat($(this).html());
+            });
+            $('#sum_leerkm').html(Math.round(leerkm*100)/100 + '<br>&Oslash; ' + Math.round(leerkm/zeilen*100)/100);
+
+            var lastkm = 0;
+            $(filterbase).parent().parent().find('.item_lastkm').each(function(){
+                lastkm += parseFloat($(this).html());
+            });
+            $('#sum_lastkm').html(Math.round(lastkm*100)/100 + '<br>&Oslash; ' + Math.round(lastkm/zeilen*100)/100);
+
+            var gesamtkm = 0;
+            $(filterbase).parent().parent().find('.item_gesamtkm').each(function(){
+                gesamtkm += parseFloat($(this).html());
+            });
+            $('#sum_gesamtkm').html(Math.round(gesamtkm*100)/100 + '<br>&Oslash; ' + Math.round(gesamtkm/zeilen*100)/100);
+
+
+            var leerzeit = 0;
+            $(filterbase).parent().parent().find('.item_leerzeit').each(function(){
+                leerzeit += parseFloat($(this).html());
+            });
+            $('#sum_leerzeit').html(Math.round(leerzeit*100)/100 + '<br>&Oslash; ' + Math.round(leerzeit/zeilen*100)/100);
+
+            var lastzeit = 0;
+            $(filterbase).parent().parent().find('.item_lastzeit').each(function(){
+                lastzeit += parseFloat($(this).html());
+            });
+            $('#sum_lastzeit').html(Math.round(lastzeit*100)/100 + '<br>&Oslash; ' + Math.round(lastzeit/zeilen*100)/100);
+
+            var gesamtzeit = 0;
+            $(filterbase).parent().parent().find('.item_gesamtzeit').each(function(){
+                gesamtzeit += parseFloat($(this).html());
+            });
+            $('#sum_gesamtzeit').html(Math.round(gesamtzeit*100)/100 + '<br>&Oslash; ' + Math.round(gesamtzeit/zeilen*100)/100);
+
+
+            var leerkosten = 0;
+            $(filterbase).parent().parent().find('.item_leerkosten').each(function(){
+                leerkosten += parseFloat($(this).html());
+            });
+            $('#sum_leerkosten').html(Math.round(leerkosten*100)/100 + '<br>&Oslash; ' + Math.round(leerkosten/zeilen*100)/100);
+
+            var lastkosten = 0;
+            $(filterbase).parent().parent().find('.item_lastkosten').each(function(){
+                lastkosten += parseFloat($(this).html());
+            });
+            $('#sum_lastkosten').html(Math.round(lastkosten*100)/100 + '<br>&Oslash; ' + Math.round(lastkosten/zeilen*100)/100);
+
+            var gesamtkosten = 0;
+            $(filterbase).parent().parent().find('.item_gesamtkosten').each(function(){
+                gesamtkosten += parseFloat($(this).html());
+            });
+            $('#sum_gesamtkosten').html(Math.round(gesamtkosten*100)/100 + '<br>&Oslash; ' + Math.round(gesamtkosten/zeilen*100)/100);
+
+
+            var gewicht = 0;
+            $(filterbase).parent().parent().find('.item_gewicht').each(function(){
+                gewicht += parseFloat($(this).html());
+            });
+            $('#sum_gewicht').html(Math.round(gewicht) + '<br>&Oslash; ' + Math.round(gewicht/zeilen));
+
+            var erloes = 0;
+            $(filterbase).parent().parent().find('.item_erloes').each(function(){
+                erloes += parseFloat($(this).html());
+            });
+            $('#sum_erloes').html(Math.round(erloes*100)/100 + '<br>&Oslash; ' + Math.round(erloes/zeilen*100)/100);
+
+            var rentabilitaet = 0;
+            $(filterbase).parent().parent().find('.item_rentabilitaet').each(function(){
+                rentabilitaet += parseFloat($(this).html());
+            });
+            $('#sum_rentabilitaet').html(Math.round(rentabilitaet*100)/100 + '<br>&Oslash; ' + Math.round(rentabilitaet/zeilen*100)/100);
+
+        }
+
+        $( document ).ready(function() {
+            $('#tourtable').on( 'draw.dt', function() {
+                updateSums();
+            });
+
+            $('.tourfilter').on('click', function(){
+                updateSums();
+            });
+
+            $('#datetimepicker1').datetimepicker({
+                locale: 'de',
+                format: 'L', //MMM YYYY',
+                defaultDate: '{{ base_date|date('n/j/Y') }}',
+                date: '{{ base_date|date('n/j/Y') }}',
+            });
+        });
+        
+    </script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Download' } %}
+          {% block content %}
+            <div class='input-group date' id='datetimepicker1'>
+              <input type='text' class="form-control" />
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <span class="input-group-btn">
+                  <a href="{{ path('vehicle_index_tours') }}" onclick="this.href='{{ path('vehicle_index_tours') }}/'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD');" class="btn btn-success">{% trans %}Aktualisieren{% endtrans %}</a>
+                {#<div class="dropdown">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        {% trans %}Download{% endtrans %}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}" onclick="this.href='{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD')+'/active';" target="_blank">{% trans %}Aktive{% endtrans %}</a></li>
+                        <li><a href="{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}" onclick="this.href='{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD')+'/archived';" target="_blank">{% trans %}Ehemalige{% endtrans %}</a></li>
+                        <li><a href="{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}" onclick="this.href='{{ path('expenses_workday_loadWorkdaysByMonthCsv_short') }}'+$('#datetimepicker1').data('DateTimePicker').date().format('YYYY-MM-DD');" target="_blank">{% trans %}Alle{% endtrans %}</a></li>
+                    </ul>
+                </div>#}
+              </span>
+            </div>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="nav-tabs-custom">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_1" data-toggle="tab">Touren</a></li>
+        {#<li><a href="#tab_2" data-toggle="tab">Ehemalige Mitarbeiter</a></li>#}
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab_1">
+          <div class="table-responsive">
+              <table id="tourtable" class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th></th>
+                          <th>{% trans %}LKW{% endtrans %}</th>
+                          <th>{% trans %}Tournummer{% endtrans %}</th>
+                          <th>{% trans %}Gewicht{% endtrans %}<br><span id="sum_gewicht">0</span></th>
+                          <th>{% trans %}Rechnungs-<br>empfänger{% endtrans %}</th>
+                          <th>{% trans %}Beladeort{% endtrans %}</th>
+                          <th>{% trans %}Entladeort{% endtrans %}</th>
+                          <th>{% trans %}Empfangsorte{% endtrans %}</th>
+                          <th>{% trans %}Aufträge{% endtrans %}<br><span id="sum_anzahlauftraege">0</span></th>
+
+                          <th>{% trans %}Beginn{% endtrans %}</th>
+                          <th>{% trans %}Ende{% endtrans %}</th>
+
+                          <th>{% trans %}Lastkm{% endtrans %}<br><span id="sum_lastkm">0</span></th>
+                          <th>{% trans %}Leerkm{% endtrans %}<br><span id="sum_leerkm">0</span></th>
+                          <th>{% trans %}Gesamtkm{% endtrans %}<br><span id="sum_gesamtkm">0</span></th>
+
+                          <th>{% trans %}Lastzeit{% endtrans %}<br><span id="sum_lastzeit">0</span></th>
+                          <th>{% trans %}Leerzeit{% endtrans %}<br><span id="sum_leerzeit">0</span></th>
+                          <th>{% trans %}Gesamtzeit{% endtrans %}<br><span id="sum_gesamtzeit">0</span></th>
+
+                          <th>{% trans %}Lastkosten{% endtrans %}<br><span id="sum_lastkosten">0</span></th>
+                          <th>{% trans %}Leerkosten{% endtrans %}<br><span id="sum_leerkosten">0</span></th>
+                          <th>{% trans %}Gesamtkosten{% endtrans %}<br><span id="sum_gesamtkosten">0</span></th>
+
+                          <th>{% trans %}Erlös{% endtrans %}<br><span id="sum_erloes">0</span></th>
+                          <th>{% trans %}Rentabilität{% endtrans %}<br><span id="sum_rentabilitaet">0</span></th>
+
+                          <th>{% trans %}Beschreibung{% endtrans %}</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for tour in tours %}
+                      <tr{% if tour.currentDetail %} style="background-color:#8DB87C;"{% endif %} class="tourzeile">
+                          <td><input type="checkbox" name="tourfilter" value="{{ tour.id }}" class="tourfilter" /></td>
+                          <td>{{ tour.vehicle }}</td>
+                          <td><a href="{% if tour.vehicle %}{% if tour.currentDetail %}{{ path('vehicle_detail_date', {'id':tour.vehicle.id,'date':tour.currentDetail.beginn|date('Y-m-d')}) }}{% else %}{{ path('vehicle_detail_date', {'id':tour.vehicle.id,'date':tour.originalDetail.beginn|date('Y-m-d')}) }}{% endif %}{% endif %}" target="_blank">{{ tour.tournummer }}</a></td>
+                          <td style="text-align: right;"><span class="item_gewicht" style="display:none;">{{ '%06.2f'|format(tour.gewicht) }}</span>{{ tour.gewicht|number_format(2,',','.') }}</td>
+                          <td>{{ tour.rechnungsempfaenger }}</td>
+                          <td>{{ tour.beladeort }}</td>
+                          <td>{{ tour.entladeort }}</td>
+                          <td>{{ tour.empfangsorte }}</td>
+                          <td><span class="item_anzahlauftraege">{{ tour.anzahlauftraege }}</span></td>
+
+                          <td>{% if tour.currentDetail %}<span style="display:none;">{{ tour.currentDetail.beginn|date('U') }}</span>{{ tour.currentDetail.beginn|date('d.m.Y H:i') }}{% else %}<span style="display:none;">{{ tour.originalDetail.beginn|date('U') }}</span>{{ tour.originalDetail.beginn|date('d.m.Y H:i') }}{% endif %}</td>
+                          <td>{% if tour.currentDetail %}<span style="display:none;">{{ tour.currentDetail.ende|date('U') }}</span>{{ tour.currentDetail.ende|date('d.m.Y H:i') }}{% else %}<span style="display:none;">{{ tour.originalDetail.ende|date('U') }}</span>{{ tour.originalDetail.ende|date('d.m.Y H:i') }}{% endif %}</td>
+
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_lastkm" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.lastkm) }}</span>{{ tour.currentDetail.lastkm|number_format(2,',','.') }}{% else %}<span class="item_lastkm" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.lastkm) }}</span>{{ tour.originalDetail.lastkm|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_leerkm" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.leerkm) }}</span>{{ tour.currentDetail.leerkm|number_format(2,',','.') }}{% else %}<span class="item_leerkm" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.leerkm) }}</span>{{ tour.originalDetail.leerkm|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_gesamtkm" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.gesamtkm) }}</span>{{ tour.currentDetail.gesamtkm|number_format(2,',','.') }}{% else %}<span class="item_gesamtkm" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.gesamtkm) }}</span>{{ tour.originalDetail.gesamtkm|number_format(2,',','.') }}{% endif %}</td>
+
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_lastzeit" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.lastzeit) }}</span>{{ tour.currentDetail.lastzeit|number_format(2,',','.') }}{% else %}<span class="item_lastzeit" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.lastzeit) }}</span>{{ tour.originalDetail.lastzeit|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_leerzeit" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.leerzeit) }}</span>{{ tour.currentDetail.leerzeit|number_format(2,',','.') }}{% else %}<span class="item_leerzeit" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.leerzeit) }}</span>{{ tour.originalDetail.leerzeit|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_gesamtzeit" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.gesamtzeit) }}</span>{{ tour.currentDetail.gesamtzeit|number_format(2,',','.') }}{% else %}<span class="item_gesamtzeit" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.gesamtzeit) }}</span>{{ tour.originalDetail.gesamtzeit|number_format(2,',','.') }}{% endif %}</td>
+
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_lastkosten" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.lastkosten) }}</span>{{ tour.currentDetail.lastkosten|number_format(2,',','.') }}{% else %}<span class="item_lastkosten" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.lastkosten) }}</span>{{ tour.originalDetail.lastkosten|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_leerkosten" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.leerkosten) }}</span>{{ tour.currentDetail.leerkosten|number_format(2,',','.') }}{% else %}<span class="item_leerkosten" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.leerkosten) }}</span>{{ tour.originalDetail.leerkosten|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_gesamtkosten" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.gesamtkosten) }}</span>{{ tour.currentDetail.gesamtkosten|number_format(2,',','.') }}{% else %}<span class="item_gesamtkosten" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.gesamtkosten) }}</span>{{ tour.originalDetail.gesamtkosten|number_format(2,',','.') }}{% endif %}</td>
+
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_erloes" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.erloes) }}</span>{{ tour.currentDetail.erloes|number_format(2,',','.') }}{% else %}<span class="item_erloes" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.erloes) }}</span>{{ tour.originalDetail.erloes|number_format(2,',','.') }}{% endif %}</td>
+                          <td style="text-align: right;">{% if tour.currentDetail %}<span class="item_rentabilitaet" style="display:none;">{{ '%06.2f'|format(tour.currentDetail.erloes - tour.currentDetail.gesamtkosten) }}</span>{{ (tour.currentDetail.erloes - tour.currentDetail.gesamtkosten)|number_format(2,',','.') }}{% else %}<span class="item_rentabilitaet" style="display:none;">{{ '%06.2f'|format(tour.originalDetail.erloes - tour.originalDetail.gesamtkosten) }}</span>{{ (tour.originalDetail.erloes - tour.originalDetail.gesamtkosten)|number_format(2,',','.') }}{% endif %}</td>
+
+                          <td>{{ tour.beschreibung }}</td>
+                          {#<td><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{{ employee.name }}</a></td>
+                          <td>{{ employee.trimbleId }}</td>
+                          <td>{{ employee.mobile }}</td>
+                          <td>
+                            {% if employee.user is not null %}
+                                <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if employee.provenexpense(base_date,provenexpense) == true %}
+                              <span class="label label-danger">{{base_date|date('M Y')}}</span>
+                            {% else %}
+                              <span class="label label-success">{{base_date|date('M Y')}}</span>
+                            {% endif %}
+                          </td>#}
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+        </div>
+        {#<div class="tab-pane" id="tab_2">
+          <div class="table-responsive">
+              <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}Name{% endtrans %}</th>
+                          <th>{% trans %}Vorname{% endtrans %}</th>
+                          <th>{% trans %}Pers.Nr.{% endtrans %}</th>
+                          <th>{% trans %}Mobil{% endtrans %}</th>
+                          <th>{% trans %}E-Mail{% endtrans %}</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for employee in employees_deleted %}
+                      <tr>
+                          <td><a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}">{{ employee.name }}</a></td>
+                          <td>{{ employee.prename }}</td>
+                          <td>{{ employee.trimbleId }}</td>
+                          <td>{{ employee.mobile }}</td>
+                          <td>
+                            {% if employee.user is not null %}
+                                <a href="mailto:{{ employee.user.email }}">{{ employee.user.email }}</a>
+                            {% endif %}
+                          </td>
+                          <td>
+                              <ul class="list-inline">
+                                  <li>
+                                      <a href="{{ path('expenses_employee_view', { 'employee_id': employee.id }) }}"><i class="fa fa-eye" aria-hidden="true" title="Show {{ employee.fullname }}"></i></a>
+                                  </li>
+                              </ul>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+        </div>#}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

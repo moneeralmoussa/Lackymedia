@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<div class="col-xs-12">
+    <h1>{% trans %}Abwesenheiten{% endtrans %}</h1>
+
+    <h2>{% trans %}Statistik{% endtrans %}</h2>
+    <div class="row">
+      <div class="col-xs-12 col-sm-4">
+        <div class="card">
+          <div class="card-block">
+          <h3 class="text-center">{{ employee.contract.holidays - absencecount}}</h3>
+          <hr>
+          <p>{% trans %}Urlaubstage übrig von {% endtrans %} {{ employee.contract.holidays }}</p>
+        </div>
+      </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-4">
+        <div class="card">
+          <div class="card-block">
+          <h3 class="text-center">{% trans %}Benutzte Tage{% endtrans %}</h3>
+          <hr>
+          {% for key,value in absencemerged %}
+          <ul class="list-unstyled">
+            <li><strong>{{ key }}:</strong></li>
+            <li>{{ value }}</li>
+          </ul>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+      <div class="col-xs-12 col-sm-4">
+        <div class="card">
+          <div class="card-block">
+          <h3 class="text-center">{% trans %}Details{% endtrans %}</h3>
+          <hr>
+          <ul class="list-unstyled">
+            <li><strong>{% trans %}Mitarbeiter:{% endtrans %}</strong></li>
+            <li>
+              {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('employee_show', { 'id': employee.id }) }}">{{ employee.prename }} {{ employee.name }}</a>
+              {% else %}
+                {{ employee.prename }} {{ employee.name }}
+              {% endif %}
+            </li>
+            <li><strong>{% trans %}Abteilung:{% endtrans %}</strong></li>
+            <li>{{ employee.department.description | default("Keine Abteilung ausgewählt")}}</li>
+            <li><strong>{% trans %}Vertrag: {% endtrans %}</strong></li>
+            <li>{{ employee.contract.name }}</li>
+            <li><strong>{% trans %}Resturlaub letztes Jahr{% endtrans %}</strong></li>
+            <li>-</li>
+            <li><strong>{% trans %}Urlaubstage in {% endtrans %} {{ 'now'|date('Y') }}:</strong></li>
+            <li>{{ employee.contract.holidays }}</li>
+            <li><strong>{% trans %}Gesamturlaubstage{% endtrans %}</strong></li>
+            <li>-</li>
+          </ul>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <h2>{% trans %}Kalendar{% endtrans %}</h2>
+    <div id="calendar"></div>
+
+    <h2>{% trans %}Alle Abwesenheiten{% endtrans %}</h2>
+    <div class="table-responsive">
+    <table class="table table-datatable table-condensed table-striped table-hover">
+      <thead>
+          <tr>
+              <th>{% trans %}Von{% endtrans %}</th>
+              <th>{% trans %}Bis{% endtrans %}</th>
+              <th>{% trans %}Tage{% endtrans %}</th>
+              <th class="hidden-xs">{% trans %}Grund{% endtrans %}</th>
+              <th class="hidden-xs">{% trans %}Bearbeitet von{% endtrans %}</th>
+              <th class="hidden-xs">{% trans %}Status{% endtrans %}</th>
+              <th class="hidden-xs">{% trans %}Bemerkung{% endtrans %}</th>
+              <th></th>
+          </tr>
+      </thead>
+      <tbody>
+      {% for absence in employee.absences %}
+          <tr class="{% if absence.status.id == 1 %}success{% elseif absence.status.id == 2 %}danger{% endif %}">
+              <td>{% if absence.fromDate %}{{ absence.fromDate|date('d.m.Y H:i') }}{% endif %}</td>
+              <td>{% if absence.toDate %}{{ absence.toDate|date('d.m.Y H:i') }}{% endif %}</td>
+              <td title="Gesamte Tage: {{ absence.calculatedDay }} davon {{ absence.day}} Tage als {{ absence.reason }} berechnet">{{ absence.calculatedDay }} ({{ absence.day}})</td>
+              <td class="hidden-xs" title="{{ absence.reason }}">{{ absence.reason }}</td>
+              <td class="hidden-xs" title="{{ absence.approvedBy }}">{{ absence.approvedBy }}</td>
+              <td class="hidden-xs" title="{{ absence.status.name }}">{{ absence.status.name }}</td>
+              <td class="hidden-xs" title="{{ absence.note }}">{{ absence.note|slice(0, 20) ~ '..' }}</td>
+              <td>
+                  <ul class="list-inline">
+                      <li>
+                        {% if absence.status.name != 'genehmigt' %}
+                          <a href="{{ path('absence_edit', { 'id': absence.id }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                        {% endif %}
+                      </li>
+                  </ul>
+              </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+  <a href="{{ path('calendar_show', {id:employee.id}) }}" class="btn btn-default">{% trans %}Zurück{% endtrans %}</a>
+  <a href="{{ path('absence_new_employee', { 'id': app.user.employee.id }) }}" class="btn btn-primary">{% trans %}Neue Abwesenheit anlegen{% endtrans %}</a>
+  </div>
+{% endblock %}
+
+{% block stylesheet %}
+<link href="/bundles/app/css/bootstrap-year-calendar.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+  {% include 'AbsenceBundle:Absence:partials/bootstrap-calendar-js.html.twig' with { 'employee_id': employee.id } %}
+{% endblock %}

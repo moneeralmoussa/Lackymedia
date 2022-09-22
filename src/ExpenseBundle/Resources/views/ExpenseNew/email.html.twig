@@ -1,0 +1,9 @@
+<h3>{{ drivers|length }} Mitarbeiter haben den Spesenvorschlag bearbeitet</h3>
+
+<p>Guten Morgen,</p>
+<p>Folgende Mitarbeiter haben den Spesenvorschlag bearbeitet:</p>
+<ul>
+{% for item in drivers %}
+    <li><a href="https://management.giesker-laakmann.de{{ path('expenses_employee_view', { 'employee_id': item.id }) }}/{{ date }}">{{ item }}</a></li>
+{% endfor %}
+</ul>

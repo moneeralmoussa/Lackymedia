@@ -1,0 +1,17 @@
+message_new:
+    path:                                                /new
+    defaults: { _controller:                             "MessageBundle:Default:new" }
+    methods:                                             [GET,POST]
+
+message_mail:
+    path:                                                /mail
+    defaults: { _controller:                             "MessageBundle:Default:mail" }
+    methods:                                             GET
+index_mail:
+    path:                                                /index
+    defaults: { _controller:                             "MessageBundle:Default:index" }
+    methods:                                             GET
+delete_mail:
+    path:                                                /delete
+    defaults: { _controller:                             "MessageBundle:Default:delete" }
+    methods:                                             [GET,POST]

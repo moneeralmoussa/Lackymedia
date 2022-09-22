@@ -1,0 +1,49 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Länderspezifische Spesensätze' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Länderspezifische Spesensätze' } %}
+          {% block content %}
+          <div class="table-responsive">
+              <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}Kürzel{% endtrans %}</th>
+                          <th>{% trans %}Land{% endtrans %}</th>
+                          <th>{% trans %}Spesen 8h{% endtrans %}</th>
+                          <th>{% trans %}Spesen 24h{% endtrans %}</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for countryspecificexpense in countryspecificexpenses %}
+                      <tr>
+                          <td><a href="{{ path('expenses_countryspecificexpenses_show', { 'id': countryspecificexpense.id }) }}">{{ countryspecificexpense.countryISO }}</a></td>
+                          <td>{{ countryspecificexpense.countryName }}</td>
+                          <td>{{ countryspecificexpense.expenses8h }}</td>
+                          <td>{{ countryspecificexpense.expenses24h }}</td>
+                          <td>
+                              <ul class="list-inline">
+                                  <li>
+                                      <a href="{{ path('expenses_countryspecificexpenses_show', { 'id': countryspecificexpense.id }) }}"><i class="fa fa-eye" aria-hidden="true" title="Show {{ countryspecificexpense.countryName }}"></i></a>
+                                  </li>
+                                  <li>
+                                      <a href="{{ path('expenses_countryspecificexpenses_edit', { 'id': countryspecificexpense.id }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                  </li>
+                              </ul>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+          <a href="{{ path('expenses_countryspecificexpenses_new') }}" class="btn btn-info pull-right">{% trans %}Neuer Länderspesensatz{% endtrans %}</a>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

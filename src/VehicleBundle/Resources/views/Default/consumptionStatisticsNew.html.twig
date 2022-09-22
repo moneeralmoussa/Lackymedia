@@ -1,0 +1,858 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Verbrauchsstatistik' %}
+
+{% block content %}
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="row">
+					{% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Bericht w&auml;hlen' } %}
+						{% block content %}
+							<div class="input-group ">
+								<!-- <label for="reports">Bericht ausw&auml;hlen:</label> -->
+								<div class="callout callout-info"><h4>Wöchentliche Berichte</h4>
+								<form action='{{ path('vehicle_consumption_statisticss') }}'  method='POST'>
+								<span class="custom-dropdown big">
+								<select class="form-control" name='date' id="reports" style="position: static;z-index: auto;background-color:green" >
+									{% for reportDate in reportDates %}
+										{% if consumptions[0].consumptionBeginTime|date('d.m.Y') == reportDate.consumptionBeginTime|date('d.m.Y') %}
+										<option selected data-startdate="{{ reportDate.consumptionBeginTime|date('Y-m-d') }} 00:00:00" data-enddate="{{ reportDate.consumptionEndTime|date('Y-m-d') }} 23:59:59">
+											{{ reportDate.consumptionBeginTime|date('d.m.Y') }} - {{ reportDate.consumptionEndTime|date('d.m.Y') }}
+										</option>
+										{% else %}
+										<option data-startdate="{{ reportDate.consumptionBeginTime|date('Y-m-d') }} 00:00:00" data-enddate="{{ reportDate.consumptionEndTime|date('Y-m-d') }} 23:59:59">
+											{{ reportDate.consumptionBeginTime|date('d.m.Y') }} - {{ reportDate.consumptionEndTime|date('d.m.Y') }}
+										</option>
+										{% endif %}
+									{% endfor %}
+								</select>
+								</span>
+									<button type='submit' class="btn btn-success">
+									{% trans %}Anzeigen{% endtrans %}
+									</a>
+								</form>
+								</div>
+								</div> 
+							 	{% block stylesheet %}
+								<style type="text/css">/* Chart.js */
+								.big {
+								font-size: 1.2em;
+								}
+								.small {
+								font-size: .7em;
+								}
+								.square {
+								width: .7em;
+								height: .7em;
+								margin: .5em;
+								display: inline-block;
+								}
+								/* Custom dropdown */
+								.custom-dropdown {
+								position: relative;
+								display: inline-block;
+								vertical-align: middle;
+								margin: 10px; /* demo only */
+								}
+								.custom-dropdown select {
+								background-color: #cd0001;
+								color: #fff;
+								font-size: medium;
+								padding: .5em;
+								padding-right: 2.5em;	
+								border: 0;
+								margin: 0;
+								border-radius: 3px;
+								text-indent: 0.01px;
+								text-overflow: '';
+								-webkit-appearance: button; /* hide default arrow in chrome OSX */
+								}
+								.custom-dropdown::before,
+								.custom-dropdown::after {
+								content: "";
+								position: absolute;
+								pointer-events: none;
+								}
+								.custom-dropdown::after { /*  Custom dropdown arrow */
+								content: "\25BC";
+								height: 1em;
+								font-size: .625em;
+								line-height: 1;
+								right: 1.2em;
+								top: 50%;
+								margin-top: -.5em;
+								}
+								.custom-dropdown::before { /*  Custom dropdown arrow cover */
+								width: 2em;
+								right: 0;
+								top: 0;
+								bottom: 0;
+								border-radius: 0 3px 3px 0;
+								}
+								.custom-dropdown select[disabled] {
+								color: rgba(0,0,0,.3);
+								}
+
+								.custom-dropdown select[disabled]::after {
+								color: rgba(0,0,0,.1);
+								}
+
+								.custom-dropdown::before {
+								background-color: rgba(0,0,0,.15);
+								}
+
+								.custom-dropdown::after {
+								color: rgba(0,0,0,.4);
+								}
+
+
+
+								[data-tooltip] {
+								display: inline-block;
+								position: relative;
+								cursor: help;
+								padding: 4px;
+							}
+							/* Tooltip styling */
+							[data-tooltip]:before {
+								content: attr(data-tooltip);
+								display: none;
+								position: absolute;
+								background: #000;
+								color: #fff;
+								padding: 4px 8px;
+								font-size: 14px;
+								line-height: 1.4;
+								min-width: 100px;
+								text-align: center;
+								border-radius: 4px;
+							}
+							/* Dynamic horizontal centering */
+							[data-tooltip-position="top"]:before,
+							[data-tooltip-position="bottom"]:before {
+								left: 50%;
+								-ms-transform: translateX(-50%);
+								-moz-transform: translateX(-50%);
+								-webkit-transform: translateX(-50%);
+								transform: translateX(-50%);
+							}
+							/* Dynamic vertical centering */
+							[data-tooltip-position="right"]:before,
+							[data-tooltip-position="left"]:before {
+								top: 50%;
+								-ms-transform: translateY(-50%);
+								-moz-transform: translateY(-50%);
+								-webkit-transform: translateY(-50%);
+								transform: translateY(-50%);
+							}
+							[data-tooltip-position="top"]:before {
+								bottom: 100%;
+								margin-bottom: 6px;
+							}
+							[data-tooltip-position="right"]:before {
+								left: 100%;
+								margin-left: 6px;
+							}
+							[data-tooltip-position="bottom"]:before {
+								top: 100%;
+								margin-top: 6px;
+							}
+							[data-tooltip-position="left"]:before {
+								right: 100%;
+								margin-right: 6px;
+							}
+
+							/* Tooltip arrow styling/placement */
+							[data-tooltip]:after {
+								content: '';
+								display: none;
+								position: absolute;
+								width: 0;
+								height: 0;
+								border-color: transparent;
+								border-style: solid;
+							}
+							/* Dynamic horizontal centering for the tooltip */
+							[data-tooltip-position="top"]:after,
+							[data-tooltip-position="bottom"]:after {
+								left: 50%;
+								margin-left: -6px;
+							}
+							/* Dynamic vertical centering for the tooltip */
+							[data-tooltip-position="right"]:after,
+							[data-tooltip-position="left"]:after {
+								top: 50%;
+								margin-top: -6px;
+							}
+							[data-tooltip-position="top"]:after {
+								bottom: 100%;
+								border-width: 6px 6px 0;
+								border-top-color: #000;
+							}
+							[data-tooltip-position="right"]:after {
+								left: 100%;
+								border-width: 6px 6px 6px 0;
+								border-right-color: #000;
+							}
+							[data-tooltip-position="bottom"]:after {
+								top: 100%;
+								border-width: 0 6px 6px;
+								border-bottom-color: #000;
+							}
+							[data-tooltip-position="left"]:after {
+								right: 100%;
+								border-width: 6px 0 6px 6px;
+								border-left-color: #000;
+							}
+							/* Show the tooltip when hovering */
+							[data-tooltip]:hover:before,
+							[data-tooltip]:hover:after {
+								display: block;
+								z-index: 50;
+							}
+
+								</style>
+								{% endblock %}
+								<div class="input-group ">
+									<div class="callout callout-info"><h4>Berichte nach Zeiträumen</h4> <h7 style="margin-left:3em;" >
+									 Warnung : Es wird empfohlen, keine großen Zeiträume anzugeben:
+									 </h7>
+									<form action='{{ path('vehicle_consumption_statisticss') }}'  method='post'>
+							<span class="custom-dropdown big">
+								<select class="form-control" name='begintime' id="reports1" style="position: static;z-index: auto">
+									{% for reportDate in reportDates %}
+									{% if consumptions[0].consumptionBeginTime|date('d.m.Y') == reportDate.consumptionBeginTime|date('d.m.Y') %}
+										<option selected value="{{ reportDate.consumptionBeginTime|date('Y-m-d') }} 00:00:00">
+									    Von	{{ reportDate.consumptionBeginTime|date('d-m-Y') }} 00:00:00
+										</option>
+										{% else %}
+										<option value="{{ reportDate.consumptionBeginTime|date('Y-m-d') }} 00:00:00">
+									    Von	{{ reportDate.consumptionBeginTime|date('d-m-Y') }} 00:00:00
+										</option>
+										{% endif %}
+									{% endfor %}
+								</select>
+							</span>
+
+
+									<span class="custom-dropdown big">
+									<select class="form-control" name='endtime' id="reports2" style="position: static;z-index: auto">
+									{% for reportDate in reportDates %}
+									{% if consumptions[(consumptions|length -1)].consumptionEndTime|date('d.m.Y') == reportDate.consumptionEndTime|date('d.m.Y') %}
+										<option selected class="hidee" value="{{ reportDate.consumptionEndTime|date('Y-m-d') }} 23:59:59">
+										Bis zu	{{ reportDate.consumptionEndTime|date('d-m-Y') }} 23:59:59
+										</option>
+										{% else %}
+									<option class="hidee" value="{{ reportDate.consumptionEndTime|date('Y-m-d') }} 23:59:59">
+										Bis zu	{{ reportDate.consumptionEndTime|date('d-m-Y') }} 23:59:59
+										</option>
+									{% endif %}	
+									{% endfor %}
+								</select>
+								{% block javascripts %}
+			<script>
+			$(document).ready(function(){
+			var index = $('#reports1').find('option:selected').index();
+				$('#reports2').find('option:lt(' + index + ')').hide();
+				$('#reports2').find('option:gt(' + index + ')').show();
+			var index = $('#reports2').find('option:selected').index();
+				$('#reports1').find('option:gt(' + index + ')').hide();
+				$('#reports1').find('option:lt(' + index + ')').show();	
+			});
+				$('#reports1').change(function () {
+				var index = $(this).find('option:selected').index();
+				$('#reports2').find('option:lt(' + index + ')').hide();
+				$('#reports2').find('option:gt(' + index + ')').show();
+			});
+				$('#reports2').change(function () {
+				var index = $(this).find('option:selected').index();
+				$('#reports1').find('option:gt(' + index + ')').hide();
+				$('#reports1').find('option:lt(' + index + ')').show();
+			});
+			</script>		
+{% endblock %}
+								</span>
+									<button type='submit' class="btn btn-success" >
+									{% trans %}Anzeigen{% endtrans %}
+									</a>
+								<form>
+	
+								
+								</div>
+
+							</div>
+						{% endblock %}
+										
+					{% endembed %}
+				</div>
+			</div>
+		</div>
+
+	{% if consumptions %}
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-danger" id="consumption">
+					<div class="box-header with-border">
+						<h3 class="box-title">
+							Verbrauchsstatistik {{ consumptions[0].consumptionBeginTime|date('d.m.Y') }} - {{ consumptions[(consumptions|length -1)].consumptionEndTime|date('d.m.Y') }}
+						</h3>
+						<div class="box-tools pull-right">
+							<button type="button" class="btn btn-box-tool" data-widget="collapse">
+								<i class="fa fa-minus"></i>
+							</button>
+						</div>
+					</div>
+					<!-- /.box-header -->
+					<div class="box-body">
+						<small>Folgende Fahrzeuge sind weniger als 5KM gefahren worden und sind in der Statistik ausgenommen:
+							{% for consumption in consumptions %}
+								{% if consumption.vehicle and consumption.detailByLabel('Strecke-KM').value < 5 %}
+									<a href="{{ path('vehicle_detail', { 'id': consumption.vehicle.id }) }}">
+										L {{ consumption.vehicle.trimbleId }}
+									</a>
+									({% if (consumption.driver and (usr.employee.id == consumption.driver.id)) %}ich{% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_DISPOSITION') %}
+										{{ consumption.driver.name }}
+									{% endif %}),
+								{% endif %}
+							{% endfor %}
+						</small>
+						<div class="table-responsive">
+							<table id="consumptiontable" class="table table-striped table-hover table-condensed">
+								<thead style="background: rgb(205,0,1); color: #fff;">
+									<tr>
+										<th>{% trans %}Marke{% endtrans %}</th>
+										<th>{% trans %}LKW{% endtrans %}</th>
+										<th>{% trans %}Typ{% endtrans %}</th>
+										<th>{% trans %}Kennz.{% endtrans %}</th>
+										<th>{% trans %}Fahrer{% endtrans %}</th>
+										<th>{% trans %}Datum{% endtrans %}</th>
+										<th>{% trans %}Strecke{% endtrans %} km</th>
+										<th>{% trans %}Verbrauch{% endtrans %} L/100 km</th>
+										<th>{% trans %}Verbrauch in L{% endtrans %}</th>
+										<th>{% trans %}Tempomat{% endtrans %}</th>
+										<th>{% trans %}Leerlauf{% endtrans %}</th>
+										<th>{% trans %}N-Antrieb{% endtrans %}</th>
+										<th>{% trans %}Ausrollzeit{% endtrans %}</th>
+										<th>{% trans %}Ausrollentfernung{% endtrans %}</th>
+										<th>{% trans %}Bremsorg.{% endtrans %}</th>
+										<th>{% trans %}Verlangsamung{% endtrans %}</th>
+										<th>{% trans %}Beschleunigung{% endtrans %}</th>
+										<th>{% trans %}Geschw.<span class="hidden-xs">-überschr. </span>{% endtrans %} </th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									{% include 'VehicleBundle:Default:partials/consumption_loopnew.html.twig' %}
+								</tbody>
+								<tfoot style="background: rgb(205,0,1); color: #fff;">
+									<tr>
+										<th>
+											<input type="text" style="color:#000;" data-col="0" placeholder="Suche Marke" />
+										</th>
+										<th>
+											<input type="text" style="color:#000;" data-col="1" placeholder="Suche LKW" />
+										</th>
+										<th>
+										
+										</th>
+										<th>
+											<input type="text" style="color:#000;" data-col="3" placeholder="Suche Kennz." />
+										</th>
+										<th>
+											<input type="text" style="color:#000;" data-col="4" placeholder="Suche Fahrer" />
+										</th>
+										<th>
+											<input type="text" style="color:#000;" data-col="5" placeholder="Suche Datum" />
+										</th>
+										<th id="route-avg" class="text-right"></th>
+										<th id="consumption-avg" class="text-right"></th>
+										<th id="consumption-sum" class="text-right"></th>
+										<th id="cruise-control-avg" class="text-right"></th>
+										<th id="neutral-avg" class="text-right"></th>
+										<th id="auxiliary-drive-avg" class="text-right"></th>
+										<th id="AusrollzeitAvg" class="text-right"></th>
+										<th id="AusrollentfernungAvg" class="text-right"></th>
+										<th id="BremsenAvg" class="text-right"></th>
+										<th id="VerlangsamungAvg" class="text-right"></th>
+										<th id="BeschleunigungAvg" class="text-right"></th>
+										<th id="too-fast-avg" class="text-right"></th>
+										<th></th>
+									</tr>
+								</tfoot>
+							</table>
+						
+						</div>
+					</div>
+					<!-- /.box-body -->
+				</div>
+			</div>
+			</div>
+		
+		
+		<br>
+	<div class="row">
+     	<div class="col-xs-12">
+          <div class="box box-solid">
+            <div class="box-header">
+              <i class="fa fa-bar-chart-o"></i>
+              <h3 class="box-title">Verbrauchsstatistik Verbrauch L/100 km:  </h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+			{% set values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']%}
+			{% set color = '#' ~ random(values) ~ random(values) ~ random(values) ~ random(values) ~ random(values) ~ random(values) %}
+	    <div class="box-body">
+			  <div class="row">
+		  	{%  for key, knopresult in knopresults %}
+			  <div class="col-xs-6 col-md-3 text-center">
+                  <div style="display:inline;width:90px;height:90px;">
+				  <canvas width="120" height="120" style='text-center: initial ;text-align: unset !important'></canvas>
+				  <input type="text" class="knob" value="{{knopresult|number_format(2)}}" data-skin="tron" data-thickness="0.2" readonly="readonly"
+				   data-anglearc="250" data-angleoffset="-125" data-width="120" data-height="120" 
+				   data-fgcolor="{{ '#' ~ random(values) ~ random(values) ~ random(values) ~ random(values) ~ random(values) ~ random(values)  }}" style="width: 64px; height: 40px;
+				   position: absolute; vertical-align: middle; margin-top: 40px; margin-left: 0px; border: 0px none;
+				    background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; font: bold 24px Arial; text-align: unset;
+					 color: rgb(221, 75, 57) !important; padding: 0px; -moz-appearance: none;">
+				  <div class="knob-label"><h5 style ='margin-left:0em;'> 
+				  <span><img src="https://img.icons8.com/wired/64/000000/gas-station.png"><b>{% set groupname = key|split(':', 2) %}	 {{ groupname[0] }}</b></span>
+				  <span class="label label-danger badge">{% if groupname[1] is defined %}<i class="fa fa-truck" aria-hidden="true"></i>
+					{{ groupname[1] }}{% endif %}</span></h5></div>
+				</div>
+                </div>
+				{% endfor %}
+				 <!-- ./col -->
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- /.box-body -->
+			</div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+	 </div>
+
+	
+	{% endif %}
+{% endblock %}
+
+{% block stylesheet %}
+	<link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+	<style>
+		table.dataTable.table-condensed>thead>tr>th:nth-child(6),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(7),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(8),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(9),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(10),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(11),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(12),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(13),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(14),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(15),
+		table.dataTable.table-condensed>thead>tr>th:nth-child(16) {
+			text-align: right;
+			padding-right: 5px;
+			padding-left: 20px;
+		}
+		table.dataTable.table-condensed>thead>tr>th:nth-child(6):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(7):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(8):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(9):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(10):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(11):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(12):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(13):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(14):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(15):after,
+		table.dataTable.table-condensed>thead>tr>th:nth-child(16):after,
+		table.dataTable.table-condensed>thead>tr>th:last-child:after{
+			opacity: 0!important;
+		}
+		#consumption {
+			margin-bottom: 0;
+		}
+		.table-responsive {
+			margin-bottom: 0;
+		}
+		thead th {
+			white-space: nowrap;
+		}
+		#consumptiontable_wrapper div.dataTables_scrollBody {
+			min-height: 300px;
+		}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_PERSONAL') %}
+			@media only screen and (min-width: 992px) {
+				#consumptiontable_wrapper div.dataTables_scrollBody {
+					max-height: calc(100vh - 480px) !important;
+				}
+			}
+		{% else %}
+			@media only screen and (min-width: 992px) {
+				#consumptiontable_wrapper div.dataTables_scrollBody {
+					max-height: calc(100vh - 320px) !important;
+				}
+			}
+		{% endif %}
+
+	</style>
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+	<script>
+		function calcAVG() {
+			$( "#consumptiontable tfoot tr:last th" ).each(function( index ) {
+				if (index > 5){
+					$( this ).text('');
+				}
+			});
+			var routeavg = 0;
+			var consumptionavg = 0;
+			var cruisecontrolavg = 0;
+			var neutralavg = 0;
+			var auxiliarydriveavg = 0;
+			var consumptionsum = 0;
+			var AusrollzeitAvg = 0;
+			var AusrollentfernungAvg = 0; 
+			var VerlangsamungAvg = 0;
+			var BeschleunigungAvg = 0 ;
+			var toofastavg = 0;
+			var BremsenAvg = 0 ;
+			var rows = $("#consumptiontable").dataTable().$('tr', { "filter" : "applied" });
+			// console.log(rows);
+			var routeavglenght = 0;
+			var consumptionavglenght = 0;
+			var cruisecontrolavglenght = 0;
+			var neutralavglenght = 0;
+			var auxiliarydriveavglenght = 0;
+			var toofastavglenght = 0;
+			var AusrollzeitAvglenght = 0;
+			var AusrollentfernungAvglenght = 0; 
+			var VerlangsamungAvglenght = 0;
+			var BeschleunigungAvglenght = 0 ;
+			var BremsenAvglenght = 0;
+
+			for(var i=0;i<rows.length;i++) {
+				if(parseFloat($(rows[i]).find("td:eq(6) span").html()) !='0'){
+				routeavg += parseFloat($(rows[i]).find("td:eq(6) span").html());
+				routeavglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(7) > span").html()) != '0' ) {
+				consumptionavg += parseFloat($(rows[i]).find("td:eq(7) > span").html());
+				consumptionavglenght++;
+				}
+				consumptionsum += parseFloat($(rows[i]).find("td:eq(8) > span").html());
+				if (parseFloat($(rows[i]).find("td:eq(9) > span").html()) != '0'){
+				cruisecontrolavg += parseFloat($(rows[i]).find("td:eq(9) > span").html());
+				cruisecontrolavglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(10) > span").html()) != '0'){
+				neutralavg += parseFloat($(rows[i]).find("td:eq(10) > span").html());
+				neutralavglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(11) > span").html()) !='0'){
+				auxiliarydriveavg += parseFloat($(rows[i]).find("td:eq(11) > span").html());
+				auxiliarydriveavglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(12) > span").html()) !='0'){
+				AusrollzeitAvg += parseFloat($(rows[i]).find("td:eq(12) > span").html());
+				AusrollzeitAvglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(13) > span").html()) !='0'){
+				AusrollentfernungAvg += parseFloat($(rows[i]).find("td:eq(13) > span").html());
+				AusrollentfernungAvglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(14) > span").html()) !='0'){
+				BremsenAvg += parseFloat($(rows[i]).find("td:eq(14) > span").html());
+				BremsenAvglenght++;
+				}
+
+				if(parseFloat($(rows[i]).find("td:eq(15) > span").html()) !='0'){
+				VerlangsamungAvg += parseFloat($(rows[i]).find("td:eq(14) > span").html());
+				VerlangsamungAvglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(16) > span").html()) !='0'){
+				 BeschleunigungAvg+= parseFloat($(rows[i]).find("td:eq(15) > span").html());
+				BeschleunigungAvglenght++;
+				}
+				if(parseFloat($(rows[i]).find("td:eq(17) > span").html()) != '0'){
+				toofastavg += parseFloat($(rows[i]).find("td:eq(16) > span").html());
+				toofastavglenght++;
+				}
+				
+			}
+			$('.dataTables_scrollFoot #route-avg').html('&Oslash; ' + (routeavg / routeavglenght).toFixed(0));
+			$('.dataTables_scrollFoot #consumption-avg').html('&Oslash; ' + (consumptionavg / consumptionavglenght).toFixed(1));
+			$('.dataTables_scrollFoot #consumption-sum').html('&sum; ' + consumptionsum.toFixed(1));
+			$('.dataTables_scrollFoot #cruise-control-avg').html('&Oslash; ' + (cruisecontrolavg / cruisecontrolavglenght).toFixed(1)+ '%');
+		 	$('.dataTables_scrollFoot #neutral-avg').html('&Oslash; ' + (neutralavg / neutralavglenght).toFixed(1)+ '%');
+			$('.dataTables_scrollFoot #auxiliary-drive-avg').html('&Oslash; ' + (auxiliarydriveavg / auxiliarydriveavglenght).toFixed(1) + '%');
+			//new
+			$('.dataTables_scrollFoot #BremsenAvg').html('&Oslash; ' + (BremsenAvg / BremsenAvglenght).toFixed(3));
+			$('.dataTables_scrollFoot #AusrollzeitAvg').html('&Oslash; ' + (AusrollzeitAvg / AusrollzeitAvglenght).toFixed(3));
+			$('.dataTables_scrollFoot #AusrollentfernungAvg').html('&Oslash; ' + (AusrollentfernungAvg / AusrollentfernungAvglenght).toFixed(3));
+			$('.dataTables_scrollFoot #VerlangsamungAvg').html('&Oslash; ' + (VerlangsamungAvg / VerlangsamungAvglenght).toFixed(3));
+			$('.dataTables_scrollFoot #BeschleunigungAvg').html('&Oslash; ' + (BeschleunigungAvg / BeschleunigungAvglenght).toFixed(3));
+			$('.dataTables_scrollFoot #too-fast-avg').html('&Oslash; ' + (toofastavg / toofastavglenght).toFixed(3));
+		}
+		$(document).ready(function() {
+			calcAVG();
+			var table = $('#consumptiontable').DataTable({
+				 initComplete: function () {
+            this.api().columns(2).every( function () {
+                var column = this;
+                var select = $('<select style="color:black"><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on('change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    });
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        },
+				destroy: true,
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FUEL_MODUL') or is_granted('ROLE_PERSONAL') %}
+					scrollY: 'calc(100vh - 520px)',
+				{% else %}
+					scrollY: 'calc(100vh - 380px)',
+				{% endif%}
+				scrollX: true,
+				scrollXInner: "100%",
+				scrollCollapse: true,
+				paging: false,
+				order: [
+					[6, 'desc']
+				],
+				searching: true,
+				info: false,
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.10.15/i18n/German.json"
+				},
+				dom: 'Bfrtip',
+				buttons: {
+					buttons: [{
+						extend: 'print',
+						text: '<i class="fa fa-print"></i> Print',
+						title: $('h1').text(),
+						exportOptions: {
+							columns: ':not(.no-print)'
+						},
+						footer: true,
+					}, {
+						extend: 'pdfHtml5',
+						text: '<i class="fa fa-file-pdf-o"></i> PDF',
+						title: $('h1').text(),
+						pageSize: 'A0',
+						orientation: 'landscape',
+						exportOptions: {
+							columns: ':not(.no-print)'
+						},
+						footer: true
+					}, {
+						extend: 'copy'
+					}, {
+						extend: 'csv'
+					}, {
+						extend: 'excel'
+					}],
+					dom: {
+						container: {
+							className: 'dt-buttons'
+						},
+						button: {
+							className: 'btn btn-default'
+						}
+					}
+				},
+			});
+
+			table.on('search.dt',function () {
+				// console.log('test');
+				calcAVG();
+			});
+
+			table.footer().columns().each( function ( colIdx ) {
+				$( 'input', table.column().footer() ).on('keyup change', function (){
+					table.column($(this).data('col'))
+					.search(this.value)
+					.draw();
+					calcAVG();
+				});
+			});
+
+			$('#go').on('click', function() {
+				reports = $( "#reports option:selected" );
+				startdate_post = reports.data('startdate');
+				enddate_post = reports.data('enddate');
+				$.ajax({
+					url: '{{ path('vehicle_ajax_consumption_statistics') }}',
+					data: {
+						startdate: startdate_post,
+						enddate: enddate_post
+					},
+					type: 'POST',
+				//	dataType: 'json',
+			
+				});
+			});
+		});
+	</script>
+
+
+<script src="/bundles/newApp/jquery.knob.min.js"></script>
+
+	<script>
+
+  $(function () {
+    /* jQueryKnob */
+
+    $('.knob').knob({
+      /*change : function (value) {
+       //console.log("change : " + value);
+       },
+       release : function (value) {
+       console.log("release : " + value);
+       },
+       cancel : function () {
+       console.log("cancel : " + this.value);
+       },*/
+      draw: function () {
+
+        // "tron" case
+        if (this.$.data('skin') == 'tron') {
+
+          var a   = this.angle(this.cv)  // Angle
+            ,
+              sa  = this.startAngle          // Previous start angle
+            ,
+              sat = this.startAngle         // Start angle
+            ,
+              ea                            // Previous end angle
+            ,
+              eat = sat + a                 // End angle
+            ,
+              r   = true
+
+          this.g.lineWidth = this.lineWidth
+
+          this.o.cursor
+          && (sat = eat - 0.3)
+          && (eat = eat + 0.3)
+
+          if (this.o.displayPrevious) {
+            ea = this.startAngle + this.angle(this.value)
+            this.o.cursor
+            && (sa = ea - 0.3)
+            && (ea = ea + 0.3)
+            this.g.beginPath()
+            this.g.strokeStyle = this.previousColor
+            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false)
+            this.g.stroke()
+          }
+
+          this.g.beginPath()
+          this.g.strokeStyle = r ? this.o.fgColor : this.fgColor
+          this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false)
+          this.g.stroke()
+
+          this.g.lineWidth = 2
+          this.g.beginPath()
+          this.g.strokeStyle = this.o.fgColor
+          this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false)
+          this.g.stroke()
+
+          return false
+        }
+      }
+    })
+    /* END JQUERY KNOB */
+
+    //INITIALIZE SPARKLINE CHARTS
+
+
+    /* SPARKLINE DOCUMENTATION EXAMPLES http://omnipotent.net/jquery.sparkline/#s-about */
+ 
+
+  })
+
+  function drawDocSparklines() {
+
+    // Bar + line composite charts
+    $('#compositebar').sparkline('html', {
+      type    : 'bar',
+      barColor: '#aaf'
+    })
+    $('#compositebar').sparkline([4, 1, 5, 7, 9, 9, 8, 7, 6, 6, 4, 7, 8, 4, 3, 2, 2, 5, 6, 7],
+      {
+        composite: true,
+        fillColor: true,
+        lineColor: 'red'
+      })
+    // Line charts taking their values from the tag
+    // Customized line chart
+   $('.mouseoverdemo').bind('sparklineRegionChange', function (ev) {
+      var sparkline = ev.sparklines[0],
+          region    = sparkline.getCurrentRegionFields()
+      value         = region.y
+      $('.mouseoverregion').text('x=' + region.x + ' y=' + region.y)
+    }).bind('mouseleave', function () {
+      $('.mouseoverregion').text('')
+    })
+  }
+  /**
+   ** Draw the little mouse speed animated graph
+   ** This just attaches a handler to the mousemove event to see
+   ** (roughly) how far the mouse has moved
+   ** and then updates the display a couple of times a second via
+   ** setTimeout()
+   **/
+  function drawMouseSpeedDemo() {
+    var mrefreshinterval = 500 // update display every 500ms
+    var lastmousex       = -1
+    var lastmousey       = -1
+    var lastmousetime
+    var mousetravel      = 0
+    var mpoints          = []
+    var mpoints_max      = 30
+    $('html').mousemove(function (e) {
+      var mousex = e.pageX
+      var mousey = e.pageY
+      if (lastmousex > -1) {
+        mousetravel += Math.max(Math.abs(mousex - lastmousex), Math.abs(mousey - lastmousey))
+      }
+      lastmousex = mousex
+      lastmousey = mousey
+    })
+    var mdraw = function () {
+      var md      = new Date()
+      var timenow = md.getTime()
+      if (lastmousetime && lastmousetime != timenow) {
+        var pps = Math.round(mousetravel / (timenow - lastmousetime) * 1000)
+        mpoints.push(pps)
+        if (mpoints.length > mpoints_max) {
+          mpoints.splice(0, 1)
+        }
+        mousetravel = 0
+        $('#mousespeed').sparkline(mpoints, {
+          width        : mpoints.length * 2,
+          tooltipSuffix: ' pixels per second'
+        })
+      }
+      lastmousetime = timenow
+      setTimeout(mdraw, mrefreshinterval)
+    }
+    // We could use setInterval instead, but I prefer to do it this way
+    setTimeout(mdraw, mrefreshinterval);
+  }
+</script>
+{% endblock %}

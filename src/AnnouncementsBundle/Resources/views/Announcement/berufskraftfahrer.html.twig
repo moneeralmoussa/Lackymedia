@@ -1,0 +1,42 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Berufskraftfahrer' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Berufskraftfahrer-Codex' } %}
+          {% block content %}
+          <div class="box-body chat" id="chat-box">
+          <div class="item">
+            <img src="/bundles/app/img/g&l_icon.png" alt="user image" style="border: 2px solid #dd4b39;">
+
+            <p class="message">
+              <a href="{{ path('announcement_show', { 'id': '1'}) }}" class="name">
+                <small class="text-muted pull-right">
+                  <i class="fa fa-clock-o"></i>
+                  21.01.2019 9:00</small>
+                Berufskraftfahrer-Codex
+              </a>
+          Liebe Kollegen, <br/>
+          "Wenn bei einem Auffahrunfall mit Beteiligung von LKWs Menschen getötet werden, weil der Fahrer des LKW abgelenkt war, ist es doppeltes Leid, wenn eine technische Hilfe den Unfall hätte vermeiden können." Wir als Unternehmen ordern grundsätzlich alle Zugmaschinen  mit Notbremsassistenten, um Sicherheit durch Technik zu gewährleisten. 
+          Zusätzlich gebietet die Verantwortung eines jeden Berufskraftfahrers ggü. der eigenen und den anderen Personen, dass man keine potentielle Gefahr im Straßenverkehr darstellt.<br/>
+
+          Aus diesem Grund verpflichten sich unsere angestellten Berufskraftfahrer ab sofort dem folgendem Berufskraftfahrer-Codex.<br/>
+          1. Wir unterlassen Tätigkeiten am Steuer, die nicht mit den verantwortungsvollen Aufgaben eines Berufskraftfahrers vereinbar sind.<br/>
+          2. Wir halten uns an die Geschwindigkeitsbegrenzungen und konzentrieren uns auf den Verkehr.<br/>
+          3. Wir telefonieren während der Fahrt nur mit Freisprecheinrichtung.<br/>
+          4. Wir nutzen kein Social Media, WhatsApp oder SMS, sobald der LKW rollt.<br/>
+          5. Das Einhalten von 0,0 Promille am Arbeitsplatz gebietet uns die Berufsehre.<br/>
+          <img src="/bundles/app/images/Berufskraftfahrer-Codex.png" alt="Berufskraftfahrer-Codex" id="Berufskraftfahrer-Codex" class="img-responsive"/>
+            </p>
+          </div>
+        </div>
+          {% endblock %}
+          {% block footer %}
+          {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

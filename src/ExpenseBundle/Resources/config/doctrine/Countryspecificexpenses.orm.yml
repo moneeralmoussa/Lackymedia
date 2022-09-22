@@ -1,0 +1,29 @@
+ExpenseBundle\Entity\Countryspecificexpenses:
+    type: entity
+    table: null
+    repositoryClass: ExpenseBundle\Repository\CountryspecificexpensesRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        countryISO:
+            type: string
+            length: '10'
+            unique: true
+        countryName:
+            type: string
+            length: 255
+        expenses8h:
+            type: decimal
+            precision: 10
+            scale: 0
+            nullable: true
+        expenses24h:
+            type: decimal
+            precision: 10
+            scale: 0
+            nullable: true
+    lifecycleCallbacks: {  }

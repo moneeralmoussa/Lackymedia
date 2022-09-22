@@ -1,0 +1,178 @@
+EmployeeBundle\Entity\Employee:
+    type: entity
+    table: employee
+    repositoryClass: EmployeeBundle\Repository\EmployeeRepository
+    indexes:
+        idx_komalog_id:
+            columns: [ komalog_id ]
+    #gedmo:
+    #  soft_deleteable:
+    #    field_name: deleted_at
+    #    time_aware: false
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        komalogId:
+            type: integer
+            nullable: true
+            column: komalog_id
+        trimbleId:
+            type: string
+            length: 10
+            nullable: true
+            unique: true
+            column: trimble_id
+        countryCode:
+            type: string
+            length: 5
+            nullable: true
+            column: country_code
+        name:
+            type: string
+            length: 255
+        prename:
+            type: string
+            length: 255
+            nullable: true
+        salutation:
+            type: string
+            length: 50
+            nullable: true
+        street:
+            type: string
+            length: 255
+            nullable: true
+        zipCode:
+            type: string
+            length: '5'
+            nullable: true
+            column: zip_code
+        town:
+            type: string
+            length: 255
+            nullable: true
+        phone:
+            type: string
+            length: 255
+            nullable: true
+        fax:
+            type: string
+            length: 255
+            nullable: true
+        mobile:
+            type: string
+            length: 255
+            nullable: true
+        phonePrivate:
+            type: string
+            length: 50
+            nullable: true
+            column: phone_private
+        emailPrivate:
+            type: string
+            length: 50
+            nullable: true
+            column: email_private
+        birthday:
+            type: date
+            nullable: true
+        vehicleLogBlocked:
+            type: datetime
+            nullable: true
+        entry_date:
+            type: date
+            nullable: true
+        # sex:
+        #     type: smallint
+        #     nullable: true
+        initial:
+            type: string
+            length: '10'
+            nullable: true
+        deleted_at:
+            type: datetime
+            nullable: true
+        lat:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        lon:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        geofenceMeters:
+            type: decimal
+            nullable: true
+        sleepsInCompanyMeansSleepsAtHome:
+            type: boolean
+            default: true
+        salary:
+            type: decimal
+            precision: '10'
+            scale: '2'
+            nullable: true
+        remainingDaysOfVacation:
+            type: decimal
+            precision: 10
+            scale: 1
+            nullable: true
+        usualHomeTravelHours:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+    lifecycleCallbacks: {  }
+    oneToOne:
+        user:
+            targetEntity: User
+            mappedBy: employee
+            cascade: [remove]
+        # contract:
+        #     targetEntity: Contract
+        #     mappedBy: employee
+    oneToMany:
+        absences:
+            targetEntity: AbsenceBundle\Entity\Absence
+            mappedBy: employee
+        workdays:
+            targetEntity: ExpenseBundle\Entity\Workday
+            mappedBy: employee
+        vehicleLogs:
+            targetEntity: VehicleLogBundle\Entity\VehicleLog
+            mappedBy: employee
+        vehicleReservations:
+            targetEntity: VehicleLogBundle\Entity\VehicleReservation
+            mappedBy: employee
+        absenceClearings:
+            targetEntity: EmployeeBundle\Entity\AbsenceClearing
+            mappedBy: employee
+        geofences:
+            targetEntity: LocationBundle\Entity\Location
+            mappedBy: employee
+        consumptions:
+            targetEntity: VehicleBundle\Entity\Consumption
+            mappedBy: driver
+        employeeArchivs:
+            targetEntity: EmployeeBundle\Entity\EmployeeArchiv
+            mappedBy: employee
+        messagess:
+            targetEntity: MessageBundle\Entity\Messages
+            mappedBy: employee
+    manyToOne:
+          department:
+              targetEntity: Department
+              nullable: true
+              joinColumn:
+                  name: department_id
+                  referencedColumnName: id
+          contract:
+              targetEntity: Contract
+              joinColumn:
+                  name: contract_id
+                  referencedColumnName: id

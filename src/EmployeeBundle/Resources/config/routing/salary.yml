@@ -1,0 +1,10 @@
+deleteSalaryById:
+    path:                                                /{id}/delete
+    defaults: { _controller:                             "EmployeeBundle:Employee:deleteSalary" }
+SalaryToArchive:
+    path:                                                SalaryToArchive/
+    defaults: { _controller:                             "EmployeeBundle:Employee:createSalaryToArchive" }
+    methods:                                             GET
+SalaryIndents:
+    path:                                                /SalaryIndents
+    defaults: { _controller:                              "EmployeeBundle:Employee:salaryIndents" }

@@ -1,0 +1,24 @@
+AbsenceBundle\Entity\PublicHoliday:
+    type: entity
+    table: null
+    repositoryClass: AbsenceBundle\Repository\PublicHolidayRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        state:
+            type: string
+            length: 10
+        title:
+            type: string
+            length: 255
+        start:
+            type: datetime
+        end:
+            type: datetime
+        type:
+            type: integer
+    lifecycleCallbacks: {  }

@@ -1,0 +1,28 @@
+EmployeeBundle\Entity\WorkingHoursPause:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\WorkingHoursPauseRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+
+        fromTime:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+        toTime:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+        rate:
+            type: decimal
+            precision: 10
+            scale: 2
+            nullable: true
+    lifecycleCallbacks: {  }

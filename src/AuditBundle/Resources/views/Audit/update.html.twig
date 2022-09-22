@@ -1,0 +1,46 @@
+{% if log.diff.lastLogin is defined %}
+<tr>
+  <td class="col-min">
+    <span class="label bg-purple-active color-palette"><i class="fa fa-user"></i></span>
+  </td>
+  <td>
+    <strong>{{ audit_rename(log.source.typLabel) }}</strong> {{ audit_assoc(log.source) }} hat sich eingeloggt
+  </td>
+  <td class="col-min">{{ log.loggedAt|time_diff }}</td>
+  <td class="col-min">
+    <a class="btn btn-xs btn-link" href="{{ path('app_audit_diff', {id: log.id}) }}">
+      <i class="fa fa-search" title="Show diff"></i>
+    </a>
+  </td>
+</tr>
+{% elseif log.diff.lastLogout is defined %}
+<tr>
+  <td class="col-min">
+    <span class="label bg-maroon-active color-palette"><i class="fa fa-user"></i></span>
+  </td>
+  <td>
+    <strong>{{ audit_rename(log.source.typLabel) }}</strong> {{ audit_assoc(log.source) }} hat sich ausgeloggt
+  </td>
+  <td class="col-min">{{ log.loggedAt|time_diff }}</td>
+  <td class="col-min">
+    <a class="btn btn-xs btn-link" href="{{ path('app_audit_diff', {id: log.id}) }}">
+      <i class="fa fa-search" title="Show diff"></i>
+    </a>
+  </td>
+</tr>
+{% else %}
+<tr>
+  <td class="col-min">
+    <span class="label label-info"><i class="fa fa-pencil"></i></span>
+  </td>
+  <td>
+    <strong>{{ audit_rename(log.source.typLabel) }}</strong> {{ audit_assoc(log.source) }} wurde {{ audit_blame(log.blame) }} bearbeitet
+  </td>
+  <td class="col-min">{{ log.loggedAt|time_diff }}</td>
+  <td class="col-min">
+    <a class="btn btn-xs btn-link" href="{{ path('app_audit_diff', {id: log.id}) }}">
+      <i class="fa fa-search" title="Show diff"></i>
+    </a>
+  </td>
+</tr>
+{% endif %}

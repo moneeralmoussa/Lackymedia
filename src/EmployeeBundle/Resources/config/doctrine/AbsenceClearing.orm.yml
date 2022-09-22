@@ -1,0 +1,48 @@
+EmployeeBundle\Entity\AbsenceClearing:
+    type: entity
+    table: null
+    repositoryClass: EmployeeBundle\Repository\AbsenceClearingRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        remainingDaysOfVacation:
+            type: decimal
+            precision: 10
+            scale: '1'
+            nullable: true
+            options:
+                default: 0
+        substractDaysOfVacation:
+            type: decimal
+            precision: 10
+            scale: '1'
+            nullable: true
+            options:
+                default: 0
+        additionalDaysOfVacation:
+            type: decimal
+            precision: 10
+            scale: '1'
+            nullable: true
+            options:
+                default: 0
+        comment:
+            type: string
+            nullable: true
+        comment2:
+            type: string
+            nullable: true
+        year:
+            type: smallint
+    lifecycleCallbacks: {  }
+    manyToOne:
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: absenceClearings
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id

@@ -1,0 +1,18 @@
+AbsenceBundle\Entity\Absence:
+  # constraints:
+  #   - Expression:
+  #       expression: "this.getFromDate() < this.getToDate()"
+  #       message: "The from date must be before the end date."
+  #   - Callback: validateDays
+    # - Expression:
+    #     expression: "(this.getFromDate().diff(this.getToDate()).d) >= this.getDay()"
+    #     message: "Invalid Days."
+  properties:
+    day:
+      - NotBlank: ~
+      # - GreaterThan: 0
+    note:
+          - Length:
+              max: 255
+    reason:
+      - NotBlank: ~

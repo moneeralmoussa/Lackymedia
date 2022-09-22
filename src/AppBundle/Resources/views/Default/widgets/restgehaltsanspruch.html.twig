@@ -1,0 +1,163 @@
+{% if is_granted('ROLE_ADMIN') %}
+    <div class="box box-primary">
+            <div class="box-header">
+              <i class="ion ion-clipboard"></i>
+              <h3 class="box-title" id="salaryRemainingDaysOfVacationDate">Restgehaltsanspruch</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body" id="overlay-rg">
+              <div class="form-group">
+                  <div class='input-group date' id='datetimepicker1'>
+                      <input type='text' class="form-control" />
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                      <span class="input-group-btn">
+                            <a class="btn btn-success" type="button" id="download-restgehalt" href="#!">
+                                Download
+                            </a>
+                      </span>
+                  </div>
+              </div>
+
+              <div id="salaryRemainingDaysOfVacation"></div>
+              <span class="text pull-right" id="sum">Gesamtsumme: 0,00€</span>
+            </div>
+          </div>
+{% endif %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+
+    $(document).ready(function(){
+      $(document).on('click', "input[type=checkbox]",function() {
+        var salary = 0.0;
+        $('.salary-check:checked').each(function () {
+          salary += parseFloat($(this).next().next().data('salary'));
+        });
+        $('#sum').text('Gesamtsumme: '+format_salaryRemainingDaysOfVacation(salary));
+	});
+
+		$(document).on('click', "#download-restgehalt",function() {
+			var date = $("#datetimepicker1").data("DateTimePicker").date();
+			url = '/download/restgehaltsanspruch/'+ date.format('YYYY-MM-DD');
+			window.location = url;
+	  	});
+
+	});
+
+    var createAccordion = function(data){
+      html='';
+      console.log(data);
+      $.each(data.department, function (department, value) {
+        var uniqueid = uniqid(department);
+        html += `<div class="panel">
+                  <div class="">
+                    <span class="box-title">
+                      <input type="checkbox" class="salary-check">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#`+uniqueid+`">
+                        `+department+`
+                      </a>
+                      <span class="pull-right employee-sum" data-salary="`+value.sum+`">`+format_salaryRemainingDaysOfVacation(value.sum)+`</span>
+                    </span>
+                  </div>
+                  <div id="`+uniqueid+`" class="panel-collapse collapse">
+                    <div class="box-body">
+                    <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Mitarbeiter</th>
+                        <!--<th>Tage</th>-->
+                        <th class="pull-right">Restgehaltsanspruch</th>
+                      </tr>
+                    </thead><tbody>`;
+                    $.each(value.employee, function (employee, value) {
+                      html += `<tr>
+                                <td>`+employee+`</td>
+                                <!--<td>`+value.holidays+`</td>-->
+                                <td>
+                                  <span class="pull-right">`+format_salaryRemainingDaysOfVacation(value.salary)+`</span>
+                                </td>
+                               </tr>`;
+                    });
+                    html += `</tbody></table></div>
+                  </div>
+                </div>`;
+      });
+    return html;
+    }
+
+        function format_salaryRemainingDaysOfVacation(value) {
+            return value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) + " (" + (value*1.2).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) + ")";
+        }
+        function load_salaryRemainingDaysOfVacation(salaryRemainingDaysOfVacation_date) {
+          // if(salaryRemainingDaysOfVacation_date == null){
+          //   salaryRemainingDaysOfVacation_date = moment().endOf('month').format('Y-m-d');
+          // }
+            var load_salaryRemainingDaysOfVacation_url = "{{ path('employee_salaryRemainingDaysOfVacationDepartment_short') }}/"+salaryRemainingDaysOfVacation_date;
+            $("#overlay-rg").after('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
+            $.ajax({
+              method: "GET",
+              url: load_salaryRemainingDaysOfVacation_url,
+            })
+            .done(function( data ) {
+              console.log(data);
+                $("#overlay-rg").next('.overlay').remove();
+
+                content = $(createAccordion(data));
+                $("#salaryRemainingDaysOfVacationDate").html('Restgehaltsanspruch '+ data.date);
+                $('#salaryRemainingDaysOfVacation').html( content );
+                $('.grid').masonry("reloadItems").masonry("layout");
+            });
+        }
+        $( document ).ready(function() {
+            $('#datetimepicker1').datetimepicker({
+                locale: 'de',
+                format: 'MMM YYYY',
+                defaultDate: '{{ date()|date('n') }}/1/{{ date()|date('Y') }}',
+                date: '{{ date()|date('n') }}/1/{{ date()|date('Y') }}',
+            });
+            $('#datetimepicker1').on('dp.change', function(e){
+                load_salaryRemainingDaysOfVacation(e.date.format('YYYY-MM-DD'));
+            });
+        });
+
+        function eliminateDuplicates(arr) {
+    var i, len = arr.length,
+        out = [],
+        obj = {};
+
+    for (i = 0; i < len; i++) {
+        obj[arr[i]] = 0;
+    }
+    for (i in obj) {
+        out.push(i);
+    }
+    return out;
+}
+
+var uniqid = function(str) {
+    var len = str.length;
+    var chars = [];
+    for (var i = 0; i < len; i++) {
+
+        chars[i] = str[Math.floor((Math.random() * len))];
+
+    }
+
+    var filtered = eliminateDuplicates(chars);
+
+
+    return filtered.join('').replace('/','');
+
+
+}
+
+    </script>
+{% endblock %}

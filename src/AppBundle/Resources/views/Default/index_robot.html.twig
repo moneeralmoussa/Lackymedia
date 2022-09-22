@@ -1,0 +1,22 @@
+{% if is_granted('ROLE_ROBOT') %}
+        {% extends 'base_new_robot.html.twig' %}
+        {% set title = 'Dashboard' %}
+
+        {% block content %}
+       
+          <div class="row grid">
+          <div class="grid-sizer"></div>
+            <div class="grid-item" >
+                  {% include 'AppBundle:Default:widgets/mycode.html.twig' %}
+              </div>
+            </div>  
+        {% endblock %}
+
+
+        {% block javascripts %}
+        <script src="/bundles/app/js/appview/jquery.qrcode.js"></script>
+        <script src="/bundles/app/js/appview/qrcode.js"></script>
+        <script src="/bundles/app/js/appview/list.min.js"></script>
+
+        {% endblock %}
+{% endif %}

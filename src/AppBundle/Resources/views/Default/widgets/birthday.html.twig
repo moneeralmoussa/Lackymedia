@@ -1,0 +1,61 @@
+
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<h3 class="box-title"><i class="fa fa-birthday-cake"></i>
+Geburtstage der letzten und der n&auml;chsten Woche</h3>
+		<div class="box-tools pull-right">
+		<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+		</div>
+	</div>
+	<!-- /.box-header -->
+	<div class="box-body search-results" id="search-results">
+
+
+            <button class="sort btn bg-purple btn-flat margin " data-sort="name" style="float: right1;" >
+                Name <i class="fa fa-fw"></i>
+            </button>
+            <button class="sort btn bg-orange btn-flat margin asc" data-sort="date" style="float: inline-end;">
+               Geburtstag <i class="fa fa-fw fa-sort-asc"></i>
+            </button>
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+            <button class="sort btn bg-maroon margin" data-sort="difficulty" style="float: inline-end;">
+               Alter <i class="fa fa-fw"></i>
+            </button>
+			{% endif %}
+
+			<div class="list">
+			{% for employee in employees %}
+					<div class="Sort">
+					<div class="product-info">
+					<span  class="product-title name"> <i class="fa fa-user "></i>
+						{{ employee.Fname }}
+					  </span>
+					<span class="product-description date bg-orange badge" style="float: inline-end;">
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+							<i class="fa fa-calendar" aria-hidden="true"> </i> <span class="hide"> {{ employee.birthday|date('m.d') }} </span>	{{ employee.birthday|date('d.m.Y') }}
+							{% else %}
+							 <i class="fa fa-calendar" aria-hidden="true"> </i>  <span class="hide"> {{ employee.birthday|date('m.d') }} </span>	{{ employee.birthday|date('d.m.') }}
+							{% endif %}
+						</span>
+						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+					<span class="label label-success pull-right difficulty bg-maroon badge "> <i class="fa fa-birthday-cake"></i>	{{ employee.birthday ? employee.birthday.diff( date("now") ).format('%y') }}</span>
+						{% else %}
+							{% if employee.birthday|date('d') == "now"|date('d') %}
+								<i class="fa fa-calendar" aria-hidden="true"></i>
+							<span class="label label-success pull-righ difficultyt ">Heute</span></a>
+							{% endif %}
+						{% endif %}
+
+					</div>
+				</div>
+
+			{% endfor %}
+			</div>
+
+	</div>
+	{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PERSONAL') or is_granted('ROLE_DISPOSITION') %}
+		<div class="box-footer text-center">
+			<a href="{{ path('employee_index') }}" class="uppercase">Zu der Mitarbeiter&uuml;bersicht</a>
+		</div>
+	{% endif %}
+</div>

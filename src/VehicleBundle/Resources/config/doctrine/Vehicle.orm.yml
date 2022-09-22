@@ -1,0 +1,75 @@
+VehicleBundle\Entity\Vehicle:
+    type: entity
+    table: null
+    gedmo:
+        soft_deleteable:
+            field_name: deleted_at
+            time_aware: false
+    repositoryClass: VehicleBundle\Repository\VehicleRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        komalogId:
+            type: integer
+            nullable: true
+            column: komalog_id
+        trimbleId:
+            type: string
+            length: '50'
+            nullable: true
+            column: trimble_id
+        name:
+            type: string
+            length: 255
+        comment:
+            type: string
+            length: 255
+            nullable: true
+            column: Comment
+        pin:
+            type: integer
+            default: false
+        serialNumber:
+            type: string
+            length: 255
+            nullable: true
+        deleted_at:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        vehicletype:
+            targetEntity: Vehicletype
+            inversedBy: vehicles
+            joinColumn:
+                name: vehicletype_id
+                referencedColumnName: id
+    oneToMany:
+        truckWorkdays:
+            targetEntity: ExpenseBundle\Entity\Workday
+            mappedBy: truck
+        carWorkdays:
+            targetEntity: ExpenseBundle\Entity\Workday
+            mappedBy: car
+        vehicleVehicleLogPositions:
+            targetEntity: VehicleLogBundle\Entity\VehicleLogPosition
+            mappedBy: vehicle
+        vehicleVehicleLogs:
+            targetEntity: VehicleLogBundle\Entity\VehicleLog
+            mappedBy: vehicle
+        vehicleVehicleReservationPositions:
+            targetEntity: VehicleLogBundle\Entity\VehicleReservationPosition
+            mappedBy: vehicle
+        vehicleVehicleReservations:
+            targetEntity: VehicleLogBundle\Entity\VehicleReservation
+            mappedBy: vehicle
+        consumptions:
+            targetEntity: VehicleBundle\Entity\Consumption
+            mappedBy: vehicle
+        tours:
+            targetEntity: VehicleBundle\Entity\Tour
+            mappedBy: vehicle

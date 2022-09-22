@@ -1,0 +1,81 @@
+LocationBundle\Entity\Location:
+    type: entity
+    table: null
+    repositoryClass: LocationBundle\Repository\LocationRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        deletedAt:
+            type: datetime
+            nullable: true
+            column: deleted_at
+        name:
+            type: string
+            length: 255
+        street:
+            type: string
+            length: 255
+            nullable: true
+        zipCode:
+            type: string
+            length: '5'
+            nullable: true
+        town:
+            type: string
+            length: 255
+            nullable: true
+        phone:
+            type: string
+            length: 255
+            nullable: true
+        fax:
+            type: string
+            length: 255
+            nullable: true
+        lat:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        lon:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        geofenceMeters:
+            type: decimal
+            nullable: true
+        countryCode:
+            type: string
+            length: 5
+            nullable: true
+            column: country_code
+    lifecycleCallbacks:
+        prePersist : [onPrePersist]
+    manyToOne:
+        locationtype:
+            targetEntity: Locationtype
+            inversedBy: locations
+            joinColumn:
+                name: location_type
+                referencedColumnName: id
+        employee:
+            targetEntity: EmployeeBundle\Entity\Employee
+            inversedBy: geofences
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id

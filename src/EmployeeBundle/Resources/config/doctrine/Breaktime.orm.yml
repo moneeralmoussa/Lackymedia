@@ -1,0 +1,34 @@
+EmployeeBundle\Entity\Breaktime:
+    type: entity
+    table: breaktime
+    repositoryClass: EmployeeBundle\Repository\BreaktimeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        begin:
+            type: datetime
+            nullable: false
+        end:
+            type: datetime
+            nullable: true
+        createAt:
+            type: datetime
+            nullable: true
+        updateAt:
+            type: datetime
+            nullable: true    
+        deletedAt:
+            type: datetime
+            nullable: true    
+    lifecycleCallbacks: {  }
+    manyToOne:
+          employeeworkdayId:
+              targetEntity: Employeeworkday
+              nullable: true
+              joinColumn:
+                  name: employeeworkday_id
+                  referencedColumnName: id

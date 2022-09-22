@@ -1,0 +1,70 @@
+TrimbleSoapBundle\Entity\Tracedata:
+    type: entity
+    table: null
+    repositoryClass: TrimbleSoapBundle\Repository\TracedataRepository
+    indexes:
+        did:
+            columns: [ did ]
+        source:
+            columns: [ source ]
+        time:
+            columns: [ time ]
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: integer
+            nullable: true
+        source:
+            type: string
+            length: '50'
+            nullable: true
+        time:
+            type: datetime
+            nullable: true
+        lat:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        lon:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        mileage:
+            type: integer
+            nullable: true
+        heading:
+            type: smallint
+            nullable: true
+        speed:
+            type: smallint
+            nullable: true
+        did:
+            type: string
+            length: '20'
+            nullable: true
+    lifecycleCallbacks: {  }
+    manyToOne:
+        tracepolldata:
+            targetEntity: Tracepolldata
+            inversedBy: tracedatas
+            joinColumn:
+                name: tracepolldata_id
+                referencedColumnName: id
+        #tracetype:
+        #    targetEntity: Tracetype
+        #    inversedBy: tracedatas
+        #    joinColumn:
+        #        name: type
+        #        referencedColumnName: id
+
+    oneToMany:
+        tracedataproperties:
+            targetEntity: Tracedataproperty
+            mappedBy: tracedata

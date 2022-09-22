@@ -1,0 +1,9 @@
+{# Symfony/Bridge/Twig/Resources/views/Form/form_div_layout.html.twig #}
+
+{% block color_widget %}
+    {% spaceless %}
+        {% set type = 'color' %}
+        {{ block('form_widget_simple') }}
+
+    {% endspaceless %}
+{% endblock %}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Die 3 Meta-Tags oben *müssen* zuerst im head stehen; jeglicher sonstiger head-Inhalt muss *nach* diesen Tags kommen -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="G&amp;L Manager">
+    <meta name="apple-mobile-web-app-title" content="G&amp;L Manager">
+    <meta name="theme-color" content="#cd0001">
+    <meta name="msapplication-navbutton-color" content="#cd0001">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-starturl" content="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" sizes="72x72" href="/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icon-72x72.png">
+    <link rel="icon" sizes="96x96" href="/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="/icon-96x96.png">
+    <link rel="icon" sizes="128x128" href="/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="/icon-128x128.png">
+    <link rel="icon" sizes="144x144" href="/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icon-144x144.png">
+    <link rel="icon" sizes="152x152" href="/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152x152.png">
+    <link rel="icon" sizes="192x192" href="/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.png">
+    <link rel="icon" sizes="384x384" href="/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="/icon-384x384.png">
+    <link rel="icon" sizes="512x512" href="/icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512x512.png">
+
+    <title>{% trans %}Zeiterfassung {% endtrans %}</title>
+
+    <!-- Bootstrap-CSS -->
+    <link rel="stylesheet" href="/assets/bootstrap/dist/css/bootstrap.min.css">
+    <link href="/assets/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/bundles/app/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <!-- Font-awesome-CSS -->
+    <link href="/assets/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- <link href="/bundles/app/css/main.css" rel="stylesheet"> -->
+
+    <link href="/bundles/app/css/AdminLTE.min.css" rel="stylesheet">
+    <link href="/bundles/app/css/skin-black-light.min.css" rel="stylesheet">
+
+    <link href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" rel="stylesheet">
+
+	<link rel="stylesheet" href="/assets/swiper/dist/css/swiper.min.css">
+
+    <!-- Besondere Stile für diese Vorlage -->
+    <!-- <link href="justified-nav.css" rel="stylesheet"> -->
+
+    {% block stylesheet %}
+    {% endblock %}
+
+
+    <script src="/assets/jquery/dist/jquery.min.js"></script>
+    <script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/assets/moment/min/moment-with-locales.min.js"></script>
+    <script src="/assets/datatables.net/js/jquery.dataTables.min.js"></script>
+	  <script src="/assets/datatables-datetime-moment/dist/js/datetime-moment.min.js"></script>
+    <script src="/assets/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="/assets/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/assets/lodash/dist/lodash.min.js"></script>
+    <script src="/assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="/bundles/app/js/dataTables.fixedHeader.min.js"></script>
+    <script src="/bundles/app/js/main.js"></script>
+    <script src="/assets/masonry-layout/dist/masonry.pkgd.min.js"></script>
+    <script src="/assets/swiper/dist/js/swiper.min.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+
+    <script src="/bundles/app/js/adminlte.min.js"></script>
+    <!-- Unterstützung für Media Queries und HTML5-Elemente in IE8 über HTML5 shim und Respond.js -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- <script type="text/javascript">
+    // Register the service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          // Registration was successful
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(err) {
+          // registration failed :(
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+
+    }
+$(document).ready(function(){
+    let deferredPrompt;
+    const addBtn = document.querySelector('#install');
+    addBtn.style.display = 'none';
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI to notify the user they can add to home screen
+      addBtn.style.display = 'block';
+
+      addBtn.addEventListener('click', (e) => {
+        // hide our user interface that shows our A2HS button
+        addBtn.style.display = 'none';
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the A2HS prompt');
+            } else {
+              console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+          });
+      });
+    });
+    });
+    </script> -->
+
+    {% block javascripts %}
+    {% endblock %}
+
+	{% block loading %}
+	{% endblock %}
+
+    <!-- <script type="text/javascript">
+$(document).ready(function(){
+  $( "#delete-form" ).on('submit', function(e) {
+    return false;
+    confirmDelete($(this));
+  });
+});
+
+      function confirmDelete(form){
+
+        swal({
+          title: 'Sind Sie sich sicher?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Ja, löschen',
+          cancelButtonColor: '#d33',
+          cancelButtonText: 'Abbrechen',
+        }).then((result) => {
+          if (result.value) {
+            swal(
+              'Gelöscht!',
+              'Der Eintrag wurde entfernt.',
+              'success'
+            );
+            form.submit();
+          } else {
+          }
+        });
+      }
+    </script> -->
+
+    <link rel="manifest" href="../../../../manifest.json">
+	</head>
+	<body class="skin-black-light sidebar-collapse fixed">
+		<div>
+		<!-- Content Header (Page header) -->
+		<section class="content1">
+			{% block content %}
+			{% endblock %}
+		</section>
+    </div>
+
+  </div>
+  </body>
+</html>

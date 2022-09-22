@@ -1,0 +1,42 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Ankündigung anlegen' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Ankündigung' } %}
+          {% block content %}
+            {{ form_start(form, {'attr': {'id': 'announcement-new'}}) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+          {% endblock %}
+          {% block footer %}
+          <div class="text-right">
+            <a href="#!" onclick="event.preventDefault();document.getElementById('announcement-new').submit();" class="btn btn-info">Speichern</a>
+            <a href="{{ path('announcement_index') }}" class="btn btn-default">Zur Übersicht</a>
+          </div>
+          {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="/assets/moment/min/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="/assets/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $( document ).ready(function() {
+      $(function () {
+        $('.datetimepicker').datetimepicker({
+          locale: 'de',
+        });
+      });
+    });
+</script>
+{% endblock %}
+
+{% block stylesheet %}
+<link rel="stylesheet" type="text/css" href="/assets/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+{% endblock %}

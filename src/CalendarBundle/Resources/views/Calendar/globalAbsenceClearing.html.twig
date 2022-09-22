@@ -1,0 +1,150 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Abzügl./Zuzügl. Global' %}
+
+{% block content %}
+  <div class="row">
+    <div class="grid-item col-xs-12">
+      <div class="row">
+        {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Abzügl./Zuzügl. Global' } %}
+            {% block content %}
+                    {{ form_start(form) }}
+                    <div class="col-xs-12">
+                          <div class="form-group">
+                            {{ form_row(form.type)}}
+                          </div>
+                    </div>
+                    <div class="col-xs-12">
+                      <div class="form-group">
+                        {{ form_row(form.day) }}
+                      </div>
+                    </div>
+                    <div class="col-xs-12">
+                      <div class="form-group">
+                        {{ form_row(form.note) }}
+                      </div>
+                    </div>
+                    <div class="col-xs-12">
+                      <div class="form-group">
+                        {{ form_row(form.group) }}
+                      </div>
+                    </div>
+                    <div class="col-xs-12">
+                      <div class="form-group">
+                        {{ form_row(form.employee) }}
+                      </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                      <div class="form-group">
+                        {{ form_row(form.departments) }}
+                      </div>
+                    </div>
+
+                  <input type="submit" value="{% trans %}Anlegen{% endtrans %}" class="btn btn-info pull-right" style="background-color:red"/>
+                  {{ form_end(form) }}
+			            <a href="{{ path('app') }}"><input type="button" href="{{ path('app') }}" value="{% trans %}Zurück{% endtrans %}" class="btn btn-info pull-right" style="background-color:green"/></a>
+            {% endblock %}
+        {% endembed %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block javascripts %}
+    <link type="text/css" rel="stylesheet" href="/assets/tail.select/css/modern/tail.select-light-feather.css" />
+    <script type="text/javascript" src="/assets/tail.select/js/tail.select-full.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+          $("#CalendarBundle_GlobalAbsenceClearing_employee")[0].parentElement.hidden=true;
+          $("#CalendarBundle_GlobalAbsenceClearing_departments")[0].parentElement.hidden=false;
+          tail.select(".type", {
+                search: false,
+                descriptions: true,
+                animate: true,              // [0.3.0]      Boolean
+                locale: 'de',
+                multiSelectAll: false,
+                });
+        tail.select(".employee", {
+              search: true,
+              descriptions: true,
+              animate: true,              // [0.3.0]      Boolean
+              locale: 'de',
+              multiSelectAll: true,
+              });
+        tail.select(".department", {
+              search: true,
+              descriptions: true,
+              animate: true,              // [0.3.0]      Boolean
+              locale: 'de',
+              multiSelectAll: true,
+              });
+        tail.select(".group", {
+               search: false,
+               descriptions: true,
+               animate: true,
+               locale: 'de',
+               multiSelectAll: false,
+               }).on("change", function(item, state){
+                 if(item.key == 2)
+                 {
+                    $("#CalendarBundle_GlobalAbsenceClearing_employee")[0].parentElement.hidden=false;
+                    $("#CalendarBundle_GlobalAbsenceClearing_departments")[0].parentElement.hidden=true;
+                  }
+                  else
+                  {
+                     $("#CalendarBundle_GlobalAbsenceClearing_employee")[0].parentElement.hidden=true;
+                     $("#CalendarBundle_GlobalAbsenceClearing_departments")[0].parentElement.hidden=false;
+                  }
+                });
+         });
+    </script>
+<script>
+$(document).ready(function() {
+function setInputFilter(textbox, inputFilter) {
+  ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+    textbox.addEventListener(event, function() {
+      if (inputFilter(this.value)) {
+        this.oldValue = this.value;
+        this.oldSelectionStart = this.selectionStart;
+        this.oldSelectionEnd = this.selectionEnd;
+      } else if (this.hasOwnProperty("oldValue")) {
+        this.value = this.oldValue;
+        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+      } else {
+        this.value = "";
+      }
+    });
+  });
+}
+setInputFilter(document.getElementById("CalendarBundle_GlobalAbsenceClearing_day"), function(value) {
+  return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 5); });
+});
+</script>
+
+
+    	<script src="/bundles/newApp/moment-range.js"></script>
+    	<script type="text/javascript">
+    		window['moment-range'].extendMoment(moment);
+    	</script>
+    	<script type="text/javascript" src="/assets/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    	<script type="text/javascript">
+    		var employee_id = {{ app.user.employee.id }};
+    		var publicHolidays = [];
+    		var workday = [];
+    		$(document).on('change', 'input[type=radio]', function() {
+    			calcDaysFromRadio();
+    		});
+    	</script>
+{% endblock %}
+{% block stylesheet %}
+	<link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/highslide.css"/>
+	<link rel="stylesheet" type="text/css" href="/assets/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"/>
+	<style>
+		.btn-half {
+			height: 100%;
+			background: linear-gradient(90deg, #e6e6e6 50%, #00a65a 50%)!important;
+			border-color: #adadad!important;
+		}
+	</style>
+{% endblock %}

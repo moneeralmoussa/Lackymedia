@@ -1,0 +1,17 @@
+{
+"taskNames" : [
+{% for workday in tasknames %}
+"{{ workday.date|date('d.m.Y') }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+],
+"dayStrings" : [
+{% for workday in tasknames %}
+"{{ workday.date|date('Y-m-d') }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+],
+"tasks" : [
+{% for workday in workdays %}
+{"startDate":"{{ base_date|date('Y-m-d') }} {{ workday.workdayBeginTime|date('H:i:s') }}","startHome":{% if workday.workdayBeginHome %}1{% else %}0{% endif %},"startTime":"{{ workday.workdayBeginTime|date('Y-m-d H:i:s') }}","startPoint":{"lat":{{ workday.workdayBeginLat }},"lng":{{ workday.workdayBeginLon }}{% if workday.workdayBeginAddress %},"town":"{{ workday.workdayBeginAddress }}"{% endif %}},"endDate":"{{ base_date|date('Y-m-d') }} {{ workday.workdayEndTime|date('H:i:s') }}","endHome":{% if workday.workdayEndHome %}1{% else %}0{% endif %},"endTime":"{{ workday.workdayEndTime|date('Y-m-d H:i:s') }}","endPoint":{"lat":{{ workday.workdayEndLat }},"lng":{{ workday.workdayEndLon }}{% if workday.workdayEndAddress %},"town":"{{ workday.workdayEndAddress }}"{% endif %}},"taskName":"{{ workday.date|date('d.m.Y') }}","location_status":"{{ workday.location_status }}","source_status":"{{ workday.source_status }}","id":"workday_{{ workday.id }}","itemId":"{{ workday.id }}","vehicle":"{{ workday.vehicle }}","vehicle_id":"{{ workday.vehicle.id }}","country_id":{{workday.country_id}},"country":"{{workday.country}}", "workingTime":{{workday.workingTime}}, "overTime":{{workday.overTime}},"absenceHome":{% if workday.absenceHome %}{{ workday.absenceHome }}{% else %}0{% endif %}}{% if not loop.last %},{% endif %}
+{% endfor %}
+]
+}

@@ -1,0 +1,108 @@
+{% extends 'base_new.html.twig' %}
+{% set title = 'Vertrag'|trans ~ ': ' ~  contract.name %}
+
+{% block content %}
+<div class="row">
+  <div class="grid-item col-xs-12 col-md-6">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Vertrag' } %}
+          {% block content %}
+          <table class="table table-hover">
+              <thead>
+              </thead>
+              <tbody>
+                  <tr>
+                      <th>{% trans %}Bezeichnung{% endtrans %}</th>
+                      <td>{{ contract.name }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Urlaubstage{% endtrans %}</th>
+                      <td>{{ contract.holidays }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Urlaubsgeld{% endtrans %}</th>
+                      <td>{{ contract.vacationalBenefit }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Wochenarbeitszeit{% endtrans %}</th>
+                      <td>{{ contract.weeklyHoursOfWork }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Bereitschaft 24/7{% endtrans %}</th>
+                      <td>{% if contract.standby %}Ja{% else %}Nein{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Spesen st. 8h{% endtrans %}</th>
+                      <td>{{ contract.additionalExpenses8h }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Spesen st. 24h{% endtrans %}</th>
+                      <td>{{ contract.additionalExpenses24h }}</td>
+                  </tr>
+                  <tr>
+                      <th>{% trans %}Weiterbilungsspesen{% endtrans %}</th>
+                      <td>{{ contract.trainingOvertimePremium }}</td>
+                  </tr>
+              </tbody>
+          </table>
+          {% endblock %}
+          {% block footer %}
+              <a href="{{ path('contract_edit', { 'id': contract.id }) }}" class="btn btn-info pull-right">{% trans %}Vertrag bearbeiten{% endtrans %}</a>
+              {{ form_start(delete_form) }}
+                  <input class="btn btn-danger pull-right" type="submit" value="Löschen" style="margin-right:15px;">
+              {{ form_end(delete_form) }}
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+
+  <div class="grid-item col-xs-12 col-md-6">
+    <div class="row">
+      {% embed "partials/box.html.twig" with {'class': 'col-xs-12', 'title': 'Arbeitszeit' } %}
+          {% block content %}
+          <div class="table-responsive">
+              <table class="table table-datatable table-striped table-hover table-condensed">
+                  <thead>
+                      <tr>
+                          <th>{% trans %}Wochentag{% endtrans %}</th>
+                          <th>{% trans %}Arbeitsbeginn{% endtrans %}</th>
+                          <th>{% trans %}Arbeitsende{% endtrans %}</th>
+                          <th>{% trans %}Überstundensatz{% endtrans %}</th>
+                          <th>{% trans %}Sonderregelungen{% endtrans %}</th>
+                          <th>{% trans %}Schule{% endtrans %}</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for workingtime in contract.workingtimes %}
+                      <tr>
+                          <td>{{ workingtime.dayOfWeek }} <a href="{{ path('contract_workingtime_show', { 'id': workingtime.id }) }}">{{ workingtime.dayOfWeekText }}</a></td>
+                          <td>{% if workingtime.workBegin %}{{ workingtime.workBegin|date('H:i:s') }}{% endif %}</td>
+                          <td>{% if workingtime.workEnd %}{{ workingtime.workEnd|date('H:i:s') }}{% endif %}</td>
+                          <td>{{ workingtime.overtimePremium }}</td>
+                          <td>{{ workingtime.specialProvision }}</td>
+                          <td>{% if workingtime.school %}Ja{% else %}Nein{% endif %}</td>
+                          <td>
+                              <ul class="list-inline">
+                                  <li>
+                                      <a href="{{ path('contract_workingtime_show', { 'id': workingtime.id }) }}"><i class="fa fa-eye" aria-hidden="true" title="Show {{ workingtime.dayOfWeek }}"></i></a>
+                                  </li>
+                                  <li>
+                                      <a href="{{ path('contract_workingtime_edit', { 'id': workingtime.id }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                  </li>
+                              </ul>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+          {% endblock %}
+          {% block footer %}
+            <a href="{{ path('contract_workingtime_new_contractid', { 'contract_id': contract.id }) }}" class="btn btn-info pull-right">{% trans %}Neue Arbeitszeit anlegen{% endtrans %}</a>
+          {% endblock %}
+      {% endembed %}
+    </div>
+  </div>
+</div>
+{% endblock %}

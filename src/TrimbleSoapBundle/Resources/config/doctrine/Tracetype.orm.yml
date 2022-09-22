@@ -1,0 +1,17 @@
+TrimbleSoapBundle\Entity\Tracetype:
+    type: entity
+    table: null
+    repositoryClass: TrimbleSoapBundle\Repository\TracetypeRepository
+    id:
+        id:
+            type: integer
+            id: true
+    fields:
+        name:
+            type: string
+            length: '50'
+    lifecycleCallbacks: {  }
+    #oneToMany:
+    #    tracedatas:
+    #        targetEntity: Tracedata
+    #        mappedBy: tracetype

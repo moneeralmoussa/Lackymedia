@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+  {% include 'AbsenceBundle:Absence:partials/bootstrap-calendar-js.html.twig' with { 'employee_id': 0 } %}
+    <script type="text/javascript" src="/bundles/vehicle/js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/bundles/vehicle/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+          $('#datetimepicker').datetimepicker({
+            locale: 'de',
+            format: 'DD.MM.YYYY',
+            inline: true,
+          });
+          $('#datetimepicker').on('dp.change', function(e){
+            $.ajax({
+              url: "{{ path('absence_index')}}days/"+e.date.format('YYYY-MM-DD')+"/json",
+              success: function(result){
+                $('#calc-content').html(
+                  '<h3 class="text-center">'+result+'</h3>'
+                  +'<p>Tage übrig zum gewälten Zeitpunkt</p>'
+                );
+              }
+            });
+
+
+          });
+        });
+
+
+
+    </script>
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/highslide.css" />
+    <link rel="stylesheet" type="text/css" href="/bundles/vehicle/css/bootstrap-datetimepicker.min.css" />
+    <link href="/bundles/app/css/bootstrap-year-calendar.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12">
+  <h2>{% trans %}Statistik{% endtrans %}</h2>
+  <div class="row">
+    <div class="col-xs-12 col-sm-4">
+      <div class="card">
+        <div class="card-block">
+        <h3 class="text-center">{% trans %}Statistik{% endtrans %}</h3>
+        <hr>
+        <h3 class="text-center">{{ absenceLeftDays }}</h3>
+        <p>{% trans %}Urlaubstage übrig von {% endtrans %} {{ sumContractDays }} für das Jahr {{ carbonnow }}</p>
+      </div>
+    </div>
+    </div>
+    <div class="col-xs-12 col-sm-4">
+      <div class="card">
+        <div class="card-block">
+        <h3 class="text-center">{% trans %}Benutzte Tage{% endtrans %}</h3>
+        <hr>
+        <h3 class="text-center">{{ absencesSum }}</h3>
+        <p>{% trans %}genutzte Tage von Anbegin des Jahres{% endtrans %}</p>
+        {% for value in absencesBetween %}
+        <ul class="list-unstyled">
+          <li><strong>{{ value.name }}:</strong></li>
+          <li>{{ value.days }}</li>
+        </ul>
+        {% else %}
+
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+    <div class="col-xs-12 col-sm-4">
+      <div class="card">
+        <div class="card-block">
+        <h3 class="text-center">{% trans %}Details{% endtrans %}</h3>
+        <hr>
+        <div class="form-group">
+            <div id='datetimepicker'></div>
+        </div>
+        <div id="calc-content"></div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <h2>{% trans %}Kalendar{% endtrans %}</h2>
+  <div id="calendar"></div>
+    <h1>{% trans %}Abwesenheitsliste{% endtrans %}</h1>
+    <div class="table-responsive">
+      <table class="table table-datatable table-condensed table-striped table-hover">
+        <thead>
+            <tr>
+                <th>{% trans %}Name{% endtrans %}</th>
+                <th>{% trans %}Abteilung{% endtrans %}</th>
+                <th>{% trans %}Von{% endtrans %}</th>
+                <th>{% trans %}Bis{% endtrans %}</th>
+                <th class="hidden-xs">{% trans %}Tage{% endtrans %}</th>
+                <th class="hidden-xs">{% trans %}Grund{% endtrans %}</th>
+                <th class="hidden-xs">{% trans %}Angelegt von{% endtrans %}</th>
+                <th class="hidden-xs">{% trans %}Status{% endtrans %}</th>
+                <th class="hidden-xs">{% trans %}Bemerkung{% endtrans %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for absence in absences %}
+            <tr class="{% if absence.status.id == 1 %}success{% elseif absence.status.id == 2 %}danger{% endif %}">
+                <td title="{{ absence.employee }}"><a href="{{ path('absence_show', { 'id': absence.employee.id }) }}">{{ absence.employee }}</a></td>
+                <td>
+                  {% if absence.employee.department is not null %}
+                    {{ absence.employee.department.description}}</td>
+                  {% endif %}
+                <td>{% if absence.fromDate %}{{ absence.fromDate|date('d.m.Y H:i') }}{% endif %}</td>
+                <td>{% if absence.toDate %}{{ absence.toDate|date('d.m.Y H:i') }}{% endif %}</td>
+                <td class="hidden-xs" title="{% trans %}Gesamter Zeitraum:{% endtrans %} {{ absence.calculatedDay }} {% trans %}davon berechnete Tage:{% endtrans %} {{ absence.day}}">{{ absence.calculatedDay }} ({{ absence.day}})</td>
+                <td class="hidden-xs" title="{{ absence.reason }}">{{ absence.reason }}</td>
+                <td class="hidden-xs" title="{{ absence.approvedBy }}">{{ absence.approvedBy }}</td>
+                <td class="hidden-xs" title="{{ absence.status.name }}">{{ absence.status.name }}</td>
+                <td class="hidden-xs" title="{{ absence.note }}">{{ absence.note|slice(0, 20) ~ '..'  }}</td>
+                <td>
+                    <ul class="list-inline">
+                        <li>
+                            <a href="{{ path('absence_show', { 'id': absence.employee.id }) }}"><i class="fa fa-eye" aria-hidden="true" title="Show {{ absence.employee.name }}"></i></a>
+                        </li>
+                        <li>
+                            <a href="{{ path('absence_edit', { 'id': absence.id }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true" title="Edit this absence"></i></a>
+                        </li>
+                        <li>
+                          <form action="{{ path('absence_delete', { 'id': absence.id }) }}" method="post">
+                            <input type="hidden" name="_method" value="DELETE" />
+                            {{ form_widget(deleteForms[absence.id]) }}
+                            <button type="submit" class="btn btn-link no-gap" title="Delete this absence">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+  </div>
+
+    <a href="{{ path('absence_new') }}" class="btn btn-primary">{% trans %}Neue Abwesenhet anlegen{% endtrans %}</a>
+
+  </div>
+{% endblock %}

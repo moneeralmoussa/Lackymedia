@@ -1,0 +1,49 @@
+TrimbleSoapBundle\Entity\Expenseview:
+    type: entity
+    table: null
+    repositoryClass: TrimbleSoapBundle\Repository\ExpenseviewRepository
+    indexes:
+        did:
+            columns: [ did ]
+        source:
+            columns: [ source ]
+        time:
+            columns: [ time ]
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        type:
+            type: integer
+            nullable: true
+        source:
+            type: string
+            length: '50'
+            nullable: true
+        time:
+            type: datetime
+            nullable: true
+        lat:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        lon:
+            type: decimal
+            precision: '8'
+            scale: '5'
+            nullable: true
+        mileage:
+            type: integer
+            nullable: true
+        did:
+            type: integer
+            nullable: true
+        tracedataId:
+            type: integer
+            nullable: true    
+    lifecycleCallbacks: {  }
+

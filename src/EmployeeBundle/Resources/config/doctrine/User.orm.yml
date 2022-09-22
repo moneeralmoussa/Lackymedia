@@ -1,0 +1,33 @@
+EmployeeBundle\Entity\User:
+    type: entity
+    table: user
+    repositoryClass: EmployeeBundle\Repository\UserRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        lastLogout:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }
+    oneToOne:
+        employee:
+            targetEntity: Employee
+            inversedBy: user
+            joinColumn:
+                name: employee_id
+                referencedColumnName: id
+                manyToMany:
+    groups:
+        targetEntity: Group
+        joinTable:
+            name: fos_user_group
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+            inverseJoinColumns:
+                group_id:
+                    referencedColumnName: id

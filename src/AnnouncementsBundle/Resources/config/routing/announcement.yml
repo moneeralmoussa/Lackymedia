@@ -1,0 +1,28 @@
+announcement_index:
+    path:             /
+    defaults: { _controller: "AnnouncementsBundle:Announcement:index" }
+    methods:          GET
+
+announcement_show:
+    path:             /{id}/show
+    defaults: { _controller: "AnnouncementsBundle:Announcement:show" }
+    methods:          GET
+
+announcement_new:
+    path:             /new
+    defaults: { _controller: "AnnouncementsBundle:Announcement:new" }
+    methods:          [GET, POST]
+
+announcement_edit:
+    path:             /{id}/edit
+    defaults: { _controller: "AnnouncementsBundle:Announcement:edit" }
+    methods:          [GET, POST]
+
+announcement_delete:
+    path:             /{id}/delete
+    defaults: { _controller: "AnnouncementsBundle:Announcement:delete" }
+    methods:          DELETE
+
+Berufskraftfahrer:
+    path:             /berufskraftfahrer
+    defaults: { _controller: "AnnouncementsBundle:Announcement:berufskraftfahrer" }
