@@ -474,6 +474,7 @@ class EmployeeworkdayController extends Controller
               $i++;
             }
           }
+
             $WorkingHours = $this->getDoctrine()->getRepository('EmployeeBundle:WorkingHours')->findBy(array('employeeId' => $employee->getId()));
             date_default_timezone_set("Europe/Berlin");
             $Date=new \DateTime($date);
@@ -483,6 +484,7 @@ class EmployeeworkdayController extends Controller
             {
                 $Day = $Date->format('Y-m') . '-' . $i;
                 $DayDatetime=clone(new \DateTime($Day));
+
                 $employeeworkingday=  $this->findEmployeeworkdayPrint($id,$Day,$WorkingHours);
                 $HoursOfWork=($WorkingHours[$DayDatetime->format('N')-1]->getOvertime());
                 $employeeworkingday->HoursOfWork = $HoursOfWork;

@@ -15,6 +15,7 @@ class EmployeeworkdayRepository extends \Doctrine\ORM\EntityRepository
             ->createQuery(
                 "SELECT e FROM EmployeeBundle:Employeeworkday e WHERE e.employeeId = '".$id."' AND e.deletedAt IS NULL AND e.beginEmployeepositionDate LIKE '".$now."%'"
             )
+            ->setMaxResults(1)
         ->getOneOrNullResult();
     }
 
@@ -24,6 +25,7 @@ class EmployeeworkdayRepository extends \Doctrine\ORM\EntityRepository
             ->createQuery(
                 "SELECT e FROM EmployeeBundle:Employeeworkday e WHERE e.employeeId = '".$id."' AND e.deletedAt IS NULL AND e.beginEmployeepositionDate LIKE '".$date."%'"
             )
+            ->setMaxResults(1)
         ->getOneOrNullResult();
     }
 
@@ -34,6 +36,7 @@ class EmployeeworkdayRepository extends \Doctrine\ORM\EntityRepository
             ->createQuery(
                 "SELECT e FROM EmployeeBundle:Employeeworkday e WHERE e.employeeId = '".$id."'AND e.endEmployeepositionDate IS NOT NULL AND e.deletedAt IS NULL AND e.beginEmployeepositionDate LIKE '".$now."%'"
             )
+            ->setMaxResults(1)
             ->getOneOrNullResult();
     }
 
@@ -53,6 +56,7 @@ class EmployeeworkdayRepository extends \Doctrine\ORM\EntityRepository
             ->createQuery(
                 "SELECT e FROM EmployeeBundle:Employeeworkday e WHERE e.employeeId = '".$id."' AND e.deletedAt IS NULL AND (e.statusBeginId = '3' or e.statusEndId ='3' )AND e.beginEmployeepositionDate LIKE '".$now."%'"
             )
+            ->setMaxResults(1)
             ->getOneOrNullResult();
     }
 
@@ -82,6 +86,7 @@ class EmployeeworkdayRepository extends \Doctrine\ORM\EntityRepository
             ->createQuery(
                 "SELECT e FROM EmployeeBundle:Employeeworkday e WHERE e.id = '".$id."' AND e.beginEmployeepositionDate <= '".$date."' AND e.endEmployeepositionDate >= '".$date."' AND e.deletedAt IS NULL"
             )
+            ->setMaxResults(1)
             ->getOneOrNullResult();
     }
 
@@ -92,6 +97,7 @@ class EmployeeworkdayRepository extends \Doctrine\ORM\EntityRepository
             ->createQuery(
                 "SELECT e FROM EmployeeBundle:Employeeworkday e WHERE e.employeeId = '".$id."' AND e.deletedAt IS NULL AND e.beginEmployeepositionDate LIKE '".$now."%'"
             )
+            ->setMaxResults(1)
             ->getOneOrNullResult();
     }
 }
